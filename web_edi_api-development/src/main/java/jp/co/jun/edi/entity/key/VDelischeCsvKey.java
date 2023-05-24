@@ -1,0 +1,42 @@
+package jp.co.jun.edi.entity.key;
+
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+import lombok.Data;
+
+/**
+ * デリスケCsvViewのKey.
+ */
+@Embeddable
+@Data
+public class VDelischeCsvKey implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    /** 発注ID. */
+    @Column(name = "order_id")
+    private BigInteger orderId;
+
+    /** 納品ID. */
+    @Column(name = "delivery_id")
+    private BigInteger deliveryId;
+
+    /** 納品依頼回数. */
+    @Column(name = "delivery_count")
+    private Integer deliveryCount;
+
+    /** 納期. */
+    @Column(name = "delivery_at")
+    private Date deliveryAt;
+
+    /** カラー. */
+    @Column(name = "color_code")
+    private String colorCode;
+
+    /** サイズ. */
+    private String size;
+}
