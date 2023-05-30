@@ -1,0 +1,302 @@
+<div class="main">
+  <app-delivery-header-error-message [affiliation]="affiliation" [deliveryApproveStatus]="deliveryApproveStatus"
+    [isQualityApproved]="isQualityApproved" [fatalErrorMsgCode]="fatalErrorMsgCode" [path]="path">
+  </app-delivery-header-error-message>
+  <form [formGroup]="mainForm" *ngIf="isInitDataSetted">
+    <!-- ExpressionChangedAfterItHasBeenCheckedErrorになるのでここでも*ngIf="isInitDataSetted"を記述します -->
+    <!-- PRD_0033 mod SIT start -->
+    <!--<app-delivery-header *ngIf="isInitDataSetted" [itemData]="itemData" [orderData]="orderData"
+      [deliveryHistoryList]="deliveryHistoryList" [distributionRatioMastaList]="distributionRatioMastaList"
+      [deliveryApproveStatus]="deliveryApproveStatus" [path]="path" [submitted]="submitted" [mainForm]="mainForm"
+      [deliveryPlan]="deliveryPlan" [deliveryDetails]="deliveryDetailList" [isDirectDelivery]="isDirectDelivery"
+      [deliveryVoucherFileInfos]="deliveryVoucherFileInfos" (distribute)="onDistribute($event)"
+      (clearDeliveryLotValue)="onClearDeliveryLotValue()" (inputDeliveryAt)="onInputDeliveryAt()"
+      (handleFatalApiError)="showBaseDataGetApiErrorMessage($event)">-->
+      <!--PRD_0123 #7054 mod JFE start -->
+      <!--<app-delivery-header *ngIf="isInitDataSetted" [itemData]="itemData" [orderData]="orderData"
+      [deliveryHistoryList]="deliveryHistoryList" [distributionRatioMastaList]="distributionRatioMastaList"
+      [deliveryApproveStatus]="deliveryApproveStatus" [path]="path" [submitted]="submitted" [mainForm]="mainForm"
+      [deliveryPlan]="deliveryPlan" [deliveryDetails]="deliveryDetailList" [isDirectDelivery]="isDirectDelivery"
+      [deliveryVoucherFileInfos]="deliveryVoucherFileInfos" [session]="session" (distribute)="onDistribute($event)"
+      (clearDeliveryLotValue)="onClearDeliveryLotValue()" (inputDeliveryAt)="onInputDeliveryAt()"
+      (handleFatalApiError)="showBaseDataGetApiErrorMessage($event)">-->
+    <!-- PRD_0033 mod SIT end -->
+    <app-delivery-header *ngIf="isInitDataSetted" [itemData]="itemData" [orderData]="orderData"
+      [deliveryHistoryList]="deliveryHistoryList" [distributionRatioMastaList]="distributionRatioMastaList" [deliveryLocationList]="deliveryLocationList" [isShowDeliveryLocationList]="isShowDeliveryLocationList"
+      [deliveryApproveStatus]="deliveryApproveStatus" [path]="path" [submitted]="submitted" [mainForm]="mainForm"
+      [deliveryPlan]="deliveryPlan" [deliveryDetails]="deliveryDetailList" [isDirectDelivery]="isDirectDelivery"
+      [deliveryVoucherFileInfos]="deliveryVoucherFileInfos" [session]="session" (distribute)="onDistribute($event)"
+      (clearDeliveryLotValue)="onClearDeliveryLotValue()" (inputDeliveryAt)="onInputDeliveryAt()"
+      (handleFatalApiError)="showBaseDataGetApiErrorMessage($event)">
+    <!--PRD_0123 #7054 mod JFE start -->
+    </app-delivery-header>
+
+    <div class="container-fluid mt-1">
+
+      <div class="row">
+        <div class="col-md-12">
+
+          <!-- 納品数量エラーメッセージ -->
+          <div class="invalid-feedback custom_error_msg" display="none" translate id="deliveryLotErrorInfo"
+            name="errorInfo"></div>
+
+          <div *ngIf="submitted">
+            <ng-container *ngIf="fErr">
+              <!-- 更新処理時は納期と納品数量が未入力の場合に削除処理とする為エラーにしない -->
+              <div *ngIf="fErr['deliveryAtLotRequired'] && !isUpdate" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.DELIVERY_LOT_EMPTY"}}'>
+              </div>
+              <div *ngIf="fErr['photoDeliveryLotRequired']" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.PHOTO_DELIVERY_LOT_EMPTY"}}'>
+              </div>
+              <div *ngIf="fErr['sewingDeliveryLotRequired']" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.SEWING_DELIVERY_LOT_EMPTY"}}'>
+              </div>
+              <div *ngIf="fErr['deliveryLotRequired']" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.PRODUCT_DELIVERY_LOT_EMPTY"}}'>
+              </div>
+            </ng-container>
+            <div *ngIf="isDeliveryLotMaxError" class="invalid-feedback d-block" translate='{{"ERRORS.VALIDATE.DELIVERY_LOT_OVER_ARRIVAL"}}'></div>
+            <div *ngIf="isDeliveryLotPatternError" class="invalid-feedback d-block" translate='{{"ERRORS.VALIDATE.DELIVERY_LOT_PATTERN_NUMBER"}}'></div>
+          </div>
+
+          <div class="main-container">
+            <!-- 左見出し -->
+            <div class="left-heading">
+              <div class="header">
+                <div class="grid">
+                  <div class="grid-cell fixed">
+                    <p class="text-center">カラー</p>
+                  </div>
+                  <div class="grid-cell fixed">
+                    <p class="text-center">サイズ</p>
+                  </div>
+                  <div class="grid-cell fixed">
+                    <p class="text-center">納品可能数</p>
+                  </div>
+                  <div class="grid-cell fixed">
+                    <p class="text-center">配分数</p>
+                    <button class="btn btn-outline-secondary btn-sm btn-block"
+                      (click)="openDistributionModal()" type="button">
+                      合計配分指定
+                  </button>
+                  </div>
+                  <div class="grid-cell fixed">
+                    <p class="text-center">合計</p>
+                  </div>
+                </div>
+              </div>
+              <div class="order-sku-container" formArrayName="distributionFormArray">
+                <ng-container *ngFor="let orderSku of orderSkuList; let rowIdx=index;">
+                  <div class="grid grid-height" [formGroupName]="rowIdx">
+                    <div class="grid-cell fixed">
+                      <p>{{orderSku.colorCode}}</p>
+                    </div>
+                    <div class="grid-cell fixed">
+                      <p>{{orderSku.size}}</p>
+                    </div>
+                    <div class="grid-cell fixed text-right">
+                      <p *ngIf="deliveryPlan?.deliveryPlanDetails.length > 0">{{orderSku.deliverableLot}}</p>
+                    </div>
+                    <div class="grid-cell fixed">
+                      <input type="tel" class="form-control text-right" formControlName="distribution" maxlength="5">
+                    </div>
+                    <div class="grid-cell fixed text-right">
+                      <p>{{sumInputLotBySku(orderSku.colorCode, orderSku.size) | numberInput}}</p>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+
+            <!-- 分配先_納品場所以外(縫製検品、本社撮影のみ) -->
+            <div>
+              <div class="header allocation-header">
+                <ng-container *ngFor="let allocation of noDeliveryAllocationList; let xIdx=index;">
+                  <div class="allocation-block">
+                    <div class="grid-cell btn-cell text-center fixed">
+                      <!-- 納品場所以外は「各1」ボタン表示 -->
+                      <!-- xIdx === 0：縫製検品 -->
+                      <!-- xIdx === 1：本社撮影 -->
+                      <button class="btn btn-outline-secondary btn-sm btn-block"
+                        (click)="onClickOneEachBtn(allocation.code1)" type="button" [disabled]="mainForm.disabled
+                      || (xIdx === 0 && mainForm.get('sewingDeliveryAt').disabled)
+                      || (xIdx === 1 && mainForm.get('photoDeliveryAt').disabled)">
+                        各1
+                      </button>
+                    </div>
+                    <div class="grid-cell text-center fixed">
+                      <p>{{allocation.item1}}</p>
+                    </div>
+                    <div class="grid-cell text-right fixed cnt-cell">
+                      <p>{{sumInputLotByDivision(allocation.code1) | numberInput}}</p>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+
+              <div formArrayName="noDeliveryOrderSkuFormArray">
+                <!-- noDeliveryOrderSkuFormArrayは行(縦) -->
+                <ng-container *ngFor="let orderSku of fCtrlNoDeliveryOrderSkus; let yIdx=index;">
+                  <div class="grid grid-height" [formGroupName]="yIdx">
+                    <!-- orderSkuFormArrayのdeliverySkusは列(横) -->
+                    <ng-container formArrayName="deliverySkus"
+                      *ngFor="let deliverySku of orderSku.get('deliverySkus')['controls']; let xIdx=index;">
+                      <div class="grid-cell fixed" [formGroupName]="xIdx">
+                        <input type="tel" class="form-control text-right" formControlName="deliveryLot" maxlength="5"
+                          [ngClass]="{'is-invalid':submitted && deliverySku['controls']['deliveryLot']['errors']}">
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+
+            <!-- 分配先_納品場所(縫製検品、本社撮影以外) -->
+            <div class="orverflow-x">
+              <div class="header allocation-header">
+                <ng-container *ngFor="let allocation of deliveryAllocationList; let xIdx=index;">
+                  <div class="allocation-block">
+                    <div class="grid-cell fixed btn-cell">
+                      <!-- 納品場所は「各1」ボタン表示しない。 -->
+                    </div>
+                    <div class="grid-cell text-center fixed">
+                      <p>{{allocation.item1}}</p>
+                    </div>
+                    <div class="grid-cell text-right fixed cnt-cell">
+                      <p>{{sumInputLotByDivision(allocation.code1) | numberInput}}</p>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+
+              <div formArrayName="deliveryOrderSkuFormArray">
+                <!-- deliveryOrderSkuFormArrayは行(縦) -->
+                <ng-container *ngFor="let orderSku of fCtrlDeliveryOrderSkus; let yIdx=index;">
+                  <div class="grid grid-height" [formGroupName]="yIdx">
+                    <!-- orderSkuFormArrayのdeliverySkusは列(横) -->
+                    <ng-container formArrayName="deliverySkus"
+                      *ngFor="let deliverySku of orderSku.get('deliverySkus')['controls']; let xIdx=index;">
+                      <div class="grid-cell fixed" [formGroupName]="xIdx">
+                        <input type="tel" class="form-control text-right" formControlName="deliveryLot" maxlength="5"
+                          [ngClass]="{'is-invalid':submitted && deliverySku['controls']['deliveryLot']['errors']}">
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <ng-container *ngIf="isDeliveryAtLate()">
+        <div class="row d-flex align-items-center delivery-at-change-reason-block">
+          <div class="col-md-2">納期変更理由</div>
+          <div class="col-md-2 grid-input-cell">
+            <select class="custom-select" #deliveryDateChangeReasonId name="deliveryDateChangeReasonId"
+              formControlName="deliveryDateChangeReasonId">
+              <option *ngFor="let deliveryChangeReason of DELIVERY_CHANGE_REASON_LIST;"
+                value="{{deliveryChangeReason.id}}">
+                {{deliveryChangeReason.content}}</option>
+            </select>
+          </div>
+          <div class="col-md-8 grid-input-cell">
+            <input type="text" maxlength="600" class="form-control" name="deliveryDateChangeReasonDetail"
+              formControlName="deliveryDateChangeReasonDetail" />
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="">
+        <div class="col-md-2">メモ</div>
+        <textarea class="form-control" rows="5" cols="30" maxlength="600" name="memo" formControlName="memo"></textarea>
+      </div>
+
+      <app-delivery-request-history *ngIf="deliveryHistoryList!=null&&deliveryHistoryList.length!==0"
+        [deliveryHistoryList]="deliveryHistoryList" [orderSkuList]="orderSkuList" [nextUrl]="nextUrl">
+      </app-delivery-request-history>
+    </div>
+
+    <footer>
+      <!-- 左ボタンエリア -->
+      <div class="footer-left">
+        <ng-container *ngIf="AUTH_INTERNAL === affiliation && !isZeroFix">
+          <input type="button" (click)="movePagesToDeliveryStore()" class="btn btn-success mr-0" name="button_submit"
+            value="店舗配分" [disabled]="isBtnLock">
+        </ng-container>
+        <ng-container *ngIf="isShowEdiButton && path !== PATH.NEW && path !== PATH.CORRECT">
+          <input type="button" (click)="showNewRegistPage()" class="btn btn-success mr-0 ml-3" name="button_submit"
+            value="新規作成" [disabled]="isBtnLock">
+        </ng-container>
+        <ng-container *ngIf="isShowEdiButton && showDeleteBtn">
+          <input type="button" (click)="onDeleteConfirmModal()" class="btn btn-danger mr-0 ml-3" name="button_delete"
+            value="削除" [disabled]="isBtnLock">
+        </ng-container>
+      </div>
+
+      <!-- メッセージエリア -->
+      <div class="footer-center">
+        <!-- PRD_0044 mod SIT start -->
+        <!--<div class="alert-danger" translate='{{overallErrorMsgCode}}'
+          [translateParams]='{sqLockUserAccountName:sqLockUserAccountName}' *ngIf="overallErrorMsgCode.length">-->
+        <div class="alert-danger" translate='{{overallErrorMsgCode}}' *ngIf="overallErrorMsgCode.length">
+        <!-- PRD_0044 mod SIT end -->
+        </div>
+        <div class="alert-success" translate='{{overallSuccessMsgCode}}' *ngIf="overallSuccessMsgCode.length">
+        </div>
+      </div>
+
+      <ng-container *ngIf="isShowEdiButton">
+        <!-- 右ボタンエリア -->
+        <div class="footer-right">
+          <ng-container *ngIf="path === PATH.NEW">
+            <input type="button" (click)="onSubmitUpsert(SUBMIT_TYPE.ENTRY)" class="btn btn-success mr-0"
+              name="button_submit" value="登録" [disabled]="isBtnLock">
+          </ng-container>
+          <ng-container *ngIf="path === PATH.EDIT && deliveryApproveStatus !== APPROVAL_STATUS.ACCEPT">
+            <input type="button" (click)="onSubmitUpsert(SUBMIT_TYPE.UPDATE)" class="btn btn-success mr-0"
+              name="button_submit" value="更新" [disabled]="isBtnLock">
+            <ng-container *ngIf="AUTH_INTERNAL === affiliation">
+              <!-- 社内の場合、承認ボタンを表示 -->
+              <input type="button" (click)="onSubmitApproveDeliveryData()" class="btn btn-success mr-0 ml-3"
+                name="button_submit" value="承認" [disabled]="isBtnLock || !isApprovable || !isQualityApproved">
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="path === PATH.VIEW && deliveryApproveStatus === APPROVAL_STATUS.ACCEPT">
+            <!-- 未入荷 かつ 社内 -->
+            <ng-container *ngIf="nonArrived && AUTH_INTERNAL === affiliation">
+              <!-- 直送の場合 直送確定ボタンを表示 -->
+              <ng-container *ngIf="isShowDirectConfirmButton">
+                <button type="button" (click)="onSubmitDirectDeliveryData()" class="btn btn-success mr-3 ml-0">直送確定</button>
+              </ng-container>
+              <!-- 訂正ボタンを表示 -->
+              <!-- PRD_0044 mod SIT start -->
+              <!--<button type="button" (click)="openCorrectAlertModal()" class="btn btn-success mr-0" name="button_submit"
+                [disabled]="isBtnLock || isCorrectLock">
+                <ng-container>
+                  <fa-icon [icon]="['fas','lock']" *ngIf="sqLockUserAccountName != null" class="text-warning pr-2"
+                    placement="top" ngbTooltip="ログインID:{{sqLockUserAccountName}}がロック中です"></fa-icon>
+                </ng-container>訂正-->
+              <button type="button" (click)="openCorrectAlertModal()" class="btn btn-success mr-0" name="button_submit"
+                [disabled]="isBtnLock">訂正
+              <!-- PRD_0044 mod SIT end -->
+              </button>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="path === PATH.CORRECT && deliveryApproveStatus === APPROVAL_STATUS.ACCEPT">
+            <!-- 社内の場合、訂正保存ボタンを表示 -->
+            <ng-container *ngIf="AUTH_INTERNAL === affiliation">
+              <input type="button" (click)="onSubmitUpsert(SUBMIT_TYPE.CORRECT)" class="btn btn-success mr-0"
+                name="button_submit" value="訂正保存" [disabled]="isBtnLock">
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-container>
+    </footer>
+  </form>
+</div>

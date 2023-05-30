@@ -1,0 +1,97 @@
+<!--PRD_0133 #10181 add JFE start -->
+<!-- <form *ngIf="resultForm$ | async as resultForm" [formGroup]="resultForm"> -->
+<form *ngIf="resultForm$ | async as resultForm" [formGroup]="resultForm">
+  <!-- メッセージエリア -->
+<div *ngIf="fileDLErrorMessageCode != null" class="file-dl-error-message-area" translate='{{fileDLErrorMessageCode}}'>
+</div>
+  <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+    <table class="sticky-table">
+
+      <thead>
+        <tr>
+          <th scope="col" class="width-280">仕入先</th>
+          <th scope="col" class="width-150">入荷場所</th>
+          <th scope="col" class="width-100">計上日</th>
+          <th scope="col" class="width-100">伝票No</th>
+          <th scope="col" class="width-90">伝区</th>
+          <th scope="col" class="width-150">品番</th>
+          <th scope="col" class="width-68">数量</th>
+          <th scope="col" class="width-80">m数</th>
+          <th scope="col" class="width-98">単価</th>
+          <th scope="col" class="width-98">金額</th>
+        </tr>
+      </thead>
+
+      <tbody formArrayName="purchasesRecord">
+        <tr *ngFor="let purchase of resultForm.get('purchasesRecord')['controls']; index as idx;" [formGroupName]="idx">
+          <td>
+            <div class="ellipsis" placement="top" ngbTooltip="{{purchase.value.supplierName}}">
+              {{purchase.value.supplierCode}}
+              <span class="ml-1">{{purchase.value.supplierName}}</span>
+            </div>
+          </td>
+          <td>
+            {{purchase.value.arrivalPlace}}
+          </td>
+          <td class="text-center">
+            {{purchase.value.recordAt | date: "yyyy/MM/dd"}}
+          </td>
+          <td class="text-center">
+            <!-- // PRD_0196 jfe add start -->
+            <ng-container *ngIf="purchase.value.fileInfoId!=null">
+            <!-- // PRD_0196 jfe add end -->
+            <!-- // PRD_0164 #10181 jfe mod start -->
+            <!-- // PRD_0162 #10181 jfe mod start -->
+            <!-- <a href="javascript:void(0)" (click)="onClickVoucherNumBerLink(purchase.value.purchaseVoucherNumber)"> -->
+            <!-- <a href="javascript:void(0)" (click)="onClickVoucherNumBerLink(purchase.value.fileInfoId)"> -->
+            <!-- // PRD_0162 #10181 jfe mod end -->
+            <!-- // 20230421 jfe mod start -->            
+            <!-- <a href="javascript:void(0)" (click)="onClickVoucherNumBerLink(purchase.value.purchaseVoucherNumber)"> -->
+            <a href="javascript:void(0)" (click)="onClickVoucherNumBerLink(purchase.value.fileInfoId)">
+            <!-- // 20230421 jfe mod end -->
+            <!-- // PRD_0164 #10181 jfe mod end -->
+            <fa-icon *ngIf="purchase.value.purchaseVoucherNumber!=null" [icon]="['fas','file-pdf']" size="1x" [fixedWidth]="false"></fa-icon>
+              {{purchase.value.purchaseVoucherNumber}}
+            </a>
+            <!-- // PRD_0196 jfe add start -->
+            </ng-container>
+            <ng-container *ngIf="purchase.value.fileInfoId==null">
+              {{purchase.value.purchaseVoucherNumber}}
+            </ng-container>
+            <!-- // PRD_0196 jfe add end -->
+          </td>
+          <td>
+            <!-- {{purchase.value | purchaseRecordStatus}} -->
+            {{purchase.value.purchaseType}}
+          </td>
+          <td>
+            {{purchase.value.partNo}}
+          </td>
+          <!-- PRD_0198 JFE mod start-->
+          <!-- <td> -->
+          <td class="text-right">
+          <!-- PRD_0198 JFE mod end-->
+            {{purchase.value.fixArrivalCount}}
+          </td>
+          <!-- PRD_0198 JFE mod start-->
+          <!-- <td> -->
+          <td class="text-right">
+          <!-- PRD_0198 JFE mod end-->
+            {{purchase.value.mkyu}}
+          </td>
+          <!-- PRD_0198 JFE mod start-->
+          <!-- <td> -->
+          <td class="text-right">
+          <!-- PRD_0198 JFE mod end-->
+            {{purchase.value.purchaseUnitPrice | numberInput}}
+          </td>
+          <td class="text-right">
+            {{purchase.value.unitPriceSum | numberInput}}
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+</form>
+<!--PRD_0133 #10181 add JFE end -->

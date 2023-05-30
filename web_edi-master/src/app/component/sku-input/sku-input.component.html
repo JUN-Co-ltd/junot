@@ -1,0 +1,64 @@
+<!-- サイズマスタを取得できない場合はエラーメッセージ -->
+<div *ngIf="noSizeMstMsg != null; else existsSizeMst;">{{noSizeMstMsg}}</div>
+<ng-template #existsSizeMst>
+  <div class="main-container" [formGroup]="parentForm" *ngIf="parentForm">
+    <!-- 左側の見出し -->
+    <div class="left-block">
+      <!-- 一番上のヘッダ -->
+      <div class="header d-flex">
+        <div class="grid-cell fixed-color text-center">
+          <span>カラー</span>
+        </div>
+        <div class="grid-cell fixed-w-grid">
+          <div class="text-center">
+            <span>合計</span>
+          </div>
+          <div class="text-right mt-3">
+            <span>{{sumAllQuantity() | number}}</span>
+          </div>
+        </div>
+      </div>
+      <ng-container formArrayName="orderSkus">
+        <ng-container *ngFor="let colorItem of orderSkuFormArrayControl; let iIdx=index;">
+          <div class="d-flex" [formGroupName]="iIdx">
+            <div class="grid-cell fixed-color grid-height v-middle">
+              <p>{{colorItem.get('colorCode').value}}<span class="color-name">&nbsp;{{colorItem.get('colorName').value}}
+                </span></p>
+            </div>
+            <div class="grid-cell fixed-w-grid text-right grid-height v-middle block-right">
+              <p>{{sumQuantityByColor(colorItem.get('colorCode').value) | number}}</p>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div class="overflow-x">
+      <div class="header d-flex">
+        <ng-container *ngFor="let size of sizeMasterList;">
+          <div class="grid-cell fixed-w-grid">
+            <div class="text-center">
+              <span>{{size.szkg}}</span>
+            </div>
+            <div class="text-right mt-3">
+              <span>{{sumQuantityBySize(size.szkg) | number}}</span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <ng-container formArrayName="orderSkus">
+        <ng-container *ngFor="let colorItem of orderSkuFormArrayControl; let iIdx=index;">
+          <div class="d-flex" [formGroupName]="iIdx">
+            <ng-container formArrayName="sizeList" *ngFor="let sku of colorItem.get('sizeList').controls; let vIdx=index;">
+              <div class="grid-cell fixed-w-grid grid-height" [formGroupName]="vIdx">
+                <input type="tel" class="form-control text-right" appNumberInput formControlName="productOrderLot"
+                  maxlength="5" [ngClass]="{'is-invalid':submitted && (parentForm.touched || parentForm.dirty) &&
+                  sku['controls']['productOrderLot']['errors']?.pattern}">
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
+

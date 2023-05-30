@@ -1,0 +1,89 @@
+@import 'mixins';
+
+div.modal-header {
+  @include modal-header;
+}
+
+div.modal-body {
+  height: 720px;
+
+  form {
+    .form-label {
+      white-space: nowrap;
+      font-size: 14px;
+      justify-content: start;
+    }
+
+    .form-inline {
+      padding: 0;
+    }
+
+    div.explain {
+      font-size: 12px;
+    }
+  }
+
+  div.table-wrapper {
+    overflow-y: scroll;
+    width: auto;
+    height: 530px;
+    border-bottom: $border;
+
+    table.sticky-table {
+      border: $border;
+      border-spacing: 0;
+      border-collapse: separate;
+
+      thead th {
+        @include fix-thead-tr;
+
+        div.address-caption {
+          margin-top: -22px;
+        }
+      }
+
+      td div {
+        min-height: 23px;
+      }
+
+      th,
+      td {
+        font-size: 14px;
+        font-weight: normal;
+        padding: 2px 5px;
+        border: $border;
+        word-break: break-all;
+
+        &.width-230 {
+          max-width: 230px;
+          min-width: 230px;
+        }
+
+        &.width-335 {
+          max-width: 335px;
+          min-width: 335px;
+        }
+
+        &.width-135 {
+          max-width: 135px;
+          min-width: 135px;
+        }
+
+        &.width-95 {
+          max-width: 95px;
+          min-width: 95px;
+        }
+
+        div.ellipsis {
+          @include ellipsis;
+          width: 220px;
+        }
+
+      }
+
+      tbody {
+        @include select-tr;
+      }
+    }
+  }
+}

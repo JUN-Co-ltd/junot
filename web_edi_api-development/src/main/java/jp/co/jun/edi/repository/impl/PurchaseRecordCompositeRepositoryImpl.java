@@ -451,8 +451,16 @@ public class PurchaseRecordCompositeRepositoryImpl implements PurchaseRecordComp
 		sqlColumns.add(" 0 AS m_kyu_sum");
 		sqlColumns.add(" 0 AS unit_price_sum_total");
 	    // PRD_0162 #10181 jfe add start
-		sqlColumns.add(" f.id AS file_info_id");
-	    // PRD_0162 #10181 jfe add end
+
+		// 2023/05/26 H.Saito update start
+//		sqlColumns.add(" f.id AS file_info_id");
+		// 2023/05/26 H.Saito update end
+
+		// 2023/05/26 H.Saito add start
+		sqlColumns.add(" COALESCE(f.id, f2.id) AS file_info_id");
+		// 2023/05/26 H.Saito add end
+
+		// PRD_0162 #10181 jfe add end
 		sql.append("SELECT ").append(StringUtils.join(sqlColumns, ", "));
 	}
 
@@ -626,11 +634,22 @@ public class PurchaseRecordCompositeRepositoryImpl implements PurchaseRecordComp
 	    sql.append(" ON fi.purchase_voucher_number = p.purchase_voucher_number");
 	    sql.append(" AND fi.deleted_at IS NULL");
 
-	    sql.append(" LEFT OUTER JOIN t_file f");
+		sql.append(" LEFT OUTER JOIN t_file f");
 	    sql.append(" ON f.id = fi.file_no_id");
 	    sql.append(" AND f.deleted_at IS NULL");
 	    // PRD_0162 #10181 jfe add end
-	    // PRD_0189 #10181 jfe add start
+
+		// 2023/05/26 H.Saito Add start
+	    sql.append(" LEFT OUTER JOIN t_maker_return_file_info rfi");
+	    sql.append(" ON rfi.voucher_number = p.purchase_voucher_number");
+	    sql.append(" AND rfi.deleted_at IS NULL");
+
+		sql.append(" LEFT OUTER JOIN t_file f2");
+	    sql.append(" ON f2.id = rfi.file_no_id");
+	    sql.append(" AND f2.deleted_at IS NULL");
+		// 2023/05/26 H.Saito Add end
+
+		// PRD_0189 #10181 jfe add start
         //仕入先表示用
        sql.append(" LEFT OUTER JOIN m_sirmst sir");
        sql.append(" ON p.supplier_code = sir.sire");

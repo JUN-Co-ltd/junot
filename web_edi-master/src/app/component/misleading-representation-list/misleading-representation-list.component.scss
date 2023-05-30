@@ -1,0 +1,109 @@
+@import 'mixins';
+@import "variables";
+
+.font-color-red {
+  color: red !important;
+}
+
+.font-color-green {
+  color: green !important;
+}
+
+.font-color-blue {
+  color: blue !important;
+}
+
+.table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.form-group {
+  span {
+    &.label {
+      min-width: 80px;
+      margin-right: 10px;
+    }
+    &.label-short {
+      @extend .label;
+      min-width: 50px;
+    }
+  }
+}
+
+span {
+  &.ellipsis-no-cursor {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &.ellipsis {
+    @extend .ellipsis-no-cursor;
+    cursor: pointer;
+  }
+}
+
+div.table-wrapper {
+  overflow: scroll;
+  width: auto;
+  max-height: 560px;
+
+  table.sticky-table {
+    border-spacing: 0;
+    border-collapse: separate;
+
+    thead th {
+      font-weight: bold;
+      background-color: $thead-background-color;
+      /* 縦スクロール時に固定する */
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      /* tbody内のセルより手前に表示する */
+      z-index: 1;
+
+      &.product-name {
+        width: 300px;
+      }
+
+      &.mdf-staff-name {
+        width: 100px;
+      }
+
+      &.quality-harmful-statuse {
+        width: 70px;
+      }
+
+      &.width-85 {
+        width: 85px;
+        min-width: 85px;
+      }
+
+      &.width-95 {
+        width: 95px;
+        min-width: 95px;
+      }
+
+      &.width-105 {
+        width: 105px;
+        min-width: 105px;
+      }
+
+      &.width-150 {
+        width: 150px;
+        min-width: 150px;
+      }
+    }
+
+    th,
+    td {
+      font-size: 14px;
+      font-weight: normal;
+      padding: 5px;
+      border: 1px solid gray;
+      vertical-align: top;
+    }
+  }
+}

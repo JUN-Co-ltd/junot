@@ -1,0 +1,67 @@
+@import 'mixins';
+@import "variables";
+input[type=checkbox] {
+  @include checkbox;
+}
+
+div.table-wrapper {
+  overflow-y: scroll;
+  width: auto;
+  max-height: 400px;
+
+  table.sticky-table {
+    border: $border;
+    border-spacing: 0;
+    border-collapse: separate;
+    thead th {
+      @include fix-thead-tr;
+    }
+
+    th,
+    td {
+      font-size: 14px;
+      font-weight: normal;
+      height: 30px;
+      padding: 2px 5px;
+      border: $border;
+
+      &.width-36 {
+        max-width: 36px;
+        min-width: 36px;
+      }
+      &.width-40 {
+        max-width: 40px;
+        min-width: 40px;
+      }
+      &.width-70 {
+        max-width: 70px;
+        min-width: 70px;
+      }
+      &.width-105 {
+        max-width: 105px;
+        min-width: 105px;
+      }
+      &.width-300 {
+        max-width: 300px;
+        min-width: 300px;
+      }
+
+      a {
+        text-decoration: underline;
+      }
+
+      div.ellipsis {
+        width: 280px;
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.font-color-red {
+  color: $red;
+}

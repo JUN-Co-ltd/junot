@@ -1,0 +1,219 @@
+<form [formGroup]="mainForm" *ngIf="!invisibled">
+  <div class="container-fluid">
+    <!-- 品番情報 -->
+    <div class="row">
+      <label class="title">
+        {{misleadingRepresentation.partNo | partNoInput}}&nbsp;&nbsp;{{misleadingRepresentation.productName}}
+      </label>
+      <button type="button" (click)="onFileDownlad(misleadingRepresentation.tanzakuItemFileInfo.fileNoId)"
+        class="btn btn-link p-0 mb-2" *ngIf="misleadingRepresentation.tanzakuItemFileInfo != null">
+        <fa-icon [icon]="['fas','file-download']" [fixedWidth]="false"></fa-icon>
+        タンザク画像
+      </button>
+    </div>
+    <!-- 上代、発注No.、発注数、原産国、製造担当 -->
+    <div class="d-flex no-gutters">
+      <div class="col-sm-4 col-lg-1">上代(税無)</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.retailPrice | number}}</div>
+      <div class="col-sm-4 col-lg-1">発注No.</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.orderNumber}}</div>
+      <div class="col-sm-4 col-lg-1">発注数</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.quantity | number}}</div>
+      <div class="col-sm-4 col-lg-1">原産国</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.cooName}}
+      </div>
+    </div>
+    <!-- ブランド名、アイテム名、年度、企画担当 -->
+    <div class="d-flex no-gutters">
+      <div class="col-sm-4 col-lg-1">ブランド</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.brandName}}</div>
+      <div class="col-sm-4 col-lg-1">アイテム</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.itemName}}</div>
+      <div class="col-sm-4 col-lg-1">年度</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.year}}</div>
+      <div class="col-sm-4 col-lg-1">製造担当</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.mdfStaffName}}</div>
+    </div>
+    <!-- 生産メーカー、シーズン、パタンナー -->
+    <div class="d-flex no-gutters">
+      <div class="col-sm-4 col-lg-1">生産メーカー</div>
+      <div class="col-sm-8 col-lg-5" [ngClass]="{'alert-font': UNSUBMITTED === misleadingRepresentation.hazardousSubstanceResponseType}">
+        {{misleadingRepresentation.mdfMakerCode}}&nbsp;{{misleadingRepresentation.mdfMakerName}}</div>
+      <div class="col-sm-4 col-lg-1">企画担当</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.plannerName}}</div>
+      <div class="col-sm-4 col-lg-1">シーズン</div>
+      <div class="col-sm-8 col-lg-2">{{SEASON[misleadingRepresentation.seasonCode]}}</div>
+    </div>
+    <!-- 原価、投入日・週、素材 -->
+    <div class="d-flex no-gutters">
+      <div class="col-sm-4 col-lg-1">原価</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.otherCost | number}}</div>
+      <div class="col-sm-4 col-lg-1">投入日・週</div>
+      <div class="col-sm-8 col-lg-2">
+        {{misleadingRepresentation.deploymentDate}}({{misleadingRepresentation.deploymentWeek}})</div>
+      <div class="col-sm-4 col-lg-1">素材</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.materialName}}</div>
+      <div class="col-sm-4 col-lg-1">パタンナー</div>
+      <div class="col-sm-8 col-lg-2">{{misleadingRepresentation.patanerName}}</div>
+    </div>
+
+    <!-- 原産国検査 -->
+    <div class="row mt-3">
+      <label class="title">原産国検査</label>
+    </div>
+    <div class="row coo">
+      <!-- 原産国 -->
+      <div class="col-sm-12 col-lg-7">
+        <div class="d-flex no-gutters mt-4">
+          <div class="col-sm-4 col-lg-2">原産国</div>
+          <div class="col-sm-8 col-lg-10">{{misleadingRepresentation.cooName}}
+          </div>
+        </div>
+      </div>
+
+      <app-misleading-approve-form *ngIf="!isQualityStatusNonTarget.coo"
+        (check)="onCheck($event, mainForm.get('cooInspectionGp'))" [isDisable]="disabled || notQaAuthority"
+        class="col-sm-12 col-lg-5" [group]="mainForm.get('cooInspectionGp')">
+      </app-misleading-approve-form>
+    </div>
+
+    <!-- 組成検査 -->
+    <div class="row mt-3">
+      <label class="title">組成検査 ※色別</label>
+    </div>
+    <div class="mb-3">
+      <div class="row" *ngFor="let file of misleadingRepresentation.misleadingRepresentationFiles">
+        <div class="col-sm-6 col-lg-4">
+          <button type="button" class="btn btn-link p-0 mb-2" (click)="onFileDownlad(file.file.id)">
+            <fa-icon [icon]="['fas','file-download']" [fixedWidth]="true"></fa-icon>
+            {{file.file.fileName}}
+          </button>
+        </div>
+        <div class="col-sm-6 col-lg-8">{{file.file.memo}}</div>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-12 col-lg-6">
+        <div class="row">
+          <div class="col-lg-4">
+            <ul class="nav tab-group-vertical nav-stacked">
+              <li [class.active]="sku===selectedSku" *ngFor="let sku of distinctColorSkus;"
+                (click)="onSelectSkuTab(sku)">
+                <button type="button"
+                  class="btn btn-block btn-outline-primary text-left">{{sku.colorCode}}&nbsp;{{sku.colorName}}</button>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-8">
+            <div>
+              <label class="color-title">
+                {{selectedSku.colorCode}}&nbsp;{{selectedSku.colorName}}
+              </label>
+              <table class="table table-sm">
+                <tr>
+                  <th>メイン</th>
+                  <th>組成</th>
+                  <th>率</th>
+                </tr>
+                <tr *ngFor="let composition of selectedCompositions">
+                  <td>{{composition.partsName}}</td>
+                  <td>{{composition.compositionName}}</td>
+                  <td>{{composition.percent}}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-lg-6" *ngIf="!isQualityStatusNonTarget.composition">
+        <div class="row no-gutters mb-3">
+          <div class="col-lg-1">
+            <label class="checkbox">
+              <input type="checkbox" (change)="onCheckAllColor($event.target.checked)" formControlName="checkAllColor"
+                [attr.disabled]="disabled || notQaAuthority ? true : null">
+            </label>
+          </div>
+          <div class="col-sm-3 col-lg-3">カラー</div>
+          <div class="col-sm-3 col-lg-2">検査承認者</div>
+          <div class="col-sm-3 col-lg-2">検査承認日</div>
+          <div class="col-sm-4 col-lg-3">備考</div>
+        </div>
+
+        <ng-container formArrayName="compositionInspections">
+          <ng-container *ngFor="let composition of fCtrlCompositionInspections; let idx=index;">
+            <div class="row no-gutters" [formGroupName]="idx">
+              <div class="col-sm-2 col-lg-1">
+                <label class="checkbox">
+                  <input type="checkbox" (change)="onCheck($event.target.checked, composition)" formControlName="check"
+                    [attr.disabled]="disabled || notQaAuthority ? true : null">
+                </label>
+              </div>
+              <div class="col-sm-3 col-lg-3">
+                {{composition.get('colorCode').value}}&nbsp;{{composition.get('colorName').value}}</div>
+              <div class="col-sm-3 col-lg-2">{{composition.get('approvalUserName').value}}</div>
+              <div class="col-sm-3 col-lg-2">{{composition.get('approvalAt').value}}</div>
+              <div class="col-sm-4 col-lg-4 form-group">
+                <input type="text" class="form-control" formControlName="memo"
+                  [attr.disabled]="disabled || notQaAuthority ? true : null">
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+
+    </div>
+
+    <div class="row mt-3">
+      <label class="title">備考</label>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-lg-12 memo-area" [innerHTML]="misleadingRepresentation.memo">
+      </div>
+    </div>
+    <div class="row mt-3">
+      <label class="title">染料有害検査</label>
+    </div>
+
+    <!-- 生産メーカー、提出日、提出状況 -->
+    <div class="d-flex">
+      <div class="col-sm-12 col-lg-7">
+        <div class="row">&nbsp;</div>
+        <div class="row no-gutters">
+          <div class="col-sm-4 col-lg-3">生産メーカー</div>
+          <div class="col-sm-3 col-lg-4">
+            提出状況：{{YUGAI_KBN[misleadingRepresentation.hazardousSubstanceResponseType]}}
+          </div>
+          <div class="col-sm-2 col-lg-3">
+            提出日：{{misleadingRepresentation.hazardousSubstanceResponseAt}}
+          </div>
+        </div>
+      </div>
+
+      <app-misleading-approve-form *ngIf="!isQualityStatusNonTarget.harmful"
+        (check)="onCheck($event, mainForm.get('harmfulInspectionGp'))" [isDisable]="disabled || notQaAuthority"
+        class="col-sm-12 col-lg-5" [group]="mainForm.get('harmfulInspectionGp')">
+      </app-misleading-approve-form>
+    </div>
+  </div>
+
+  <footer>
+    <!-- メッセージエリア -->
+    <div class="footer-center">
+      <div class="alert-success mr-2" [translate]="message.footer.success.code"
+        [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length"></div>
+      <div class="alert-danger mr-2" [translate]="message.footer.error.code"
+        [translateParams]="message.footer.error.param" *ngIf="message.footer.error.code.length"></div>
+    </div>
+
+    <!-- 右ボタンエリア -->
+    <div class="footer-right">
+      <ng-container>
+        <button type="button" class="btn btn-success mr-0" [attr.disabled]="isDisableUpdateBtn()"
+          (click)="onSubmit()">更新</button>
+      </ng-container>
+    </div>
+  </footer>
+</form>

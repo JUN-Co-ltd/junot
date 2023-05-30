@@ -1,0 +1,162 @@
+$widthDirdect: 60px;
+$widthSname: 240px;
+$widthNum: 75px;
+// PRD_0033 mod SIT start
+//$heightDisribution: calc(2.25rem + 2px);
+$lineHeightDisribution: calc(1.3rem);
+$heightDisribution: calc(1.75rem + 2px);
+// PRD_0033 mod SIT end
+$lastDivisionCodeColor:rgb(255, 242, 204);
+$red:#ff0000;
+$white:#ffffff;
+
+.table-content {
+  overflow: scroll;
+  width: auto;
+  // PRD_0033 mod SIT start
+  //height: 560px;
+  height: 600px;
+  font-size: 12px;
+  // PRD_0033 mod SIT end
+  margin-bottom: 5rem;
+
+  .red {
+    color: $red;
+  }
+
+  .store-common-error-block {
+    height: 50px;
+    margin-bottom: -50px;
+  }
+
+  .table-head-row {
+    background-color: $white;
+    /* 縦スクロール時に固定する */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    /* tbody内のセルより手前に表示する */
+    z-index: 1;
+
+    .fix-col {
+      /* ヘッダー行内の他のセルより手前に表示する */
+      z-index: 2;
+    }
+  }
+
+  .fix-col {
+    background-color: $white;
+    /* 横スクロール時に固定する */
+    position: -webkit-sticky;
+    position: sticky;
+  }
+
+  .fix-col:nth-child(1) {
+    left: 0;
+  }
+
+  .fix-col:nth-child(2) {
+    // PRD_0033 mod SIT start
+    //left: $widthDirdect + $widthSname + $widthNum;
+    left: $widthDirdect + $widthSname + $widthNum + $widthNum;
+    // PRD_0033 mod SIT end
+  }
+
+  .table-head-row {
+    width: max-content;
+  }
+
+  .sku-content,
+  .store-content {
+    width: fit-content;
+    // PRD_0033 add SIT start
+    input {
+      font-size : 12px;
+      height    : calc(1.5rem)
+    }
+    // PRD_0033 add SIT end
+  }
+
+  .store-heading {
+    background-color: $white;
+    // PRD_0033 mod SIT start
+    //width: $widthDirdect + $widthSname + $widthNum;
+    width: $widthDirdect + $widthSname + $widthNum + $widthNum;
+    // PRD_0033 mod SIT end
+
+    .store-heading-contents {
+      // PRD_0033 mod SIT start
+      //margin-top: 95px;
+      margin-top: 83px;
+      // PRD_0033 mod SIT end
+      display: flex;
+    }
+  }
+
+  .sku-heading {
+    width: $widthNum;
+
+    .distribution-heading {
+      height: $heightDisribution;
+      line-height: $heightDisribution;
+    }
+
+  }
+
+  .storeDistributionRatio-cell,
+  .store-sum-cell,
+  .store-sku {
+    width: $widthNum;
+    //PRD_0033 add SIT start
+    height: $lineHeightDisribution;
+    line-height: $lineHeightDisribution;
+    //PRD_0033 add SIT end
+  }
+
+  // PRD_0033 add SIT start
+  .store-sku-lot {
+    height: $lineHeightDisribution + $lineHeightDisribution + $lineHeightDisribution;
+    line-height: $lineHeightDisribution + $lineHeightDisribution + $lineHeightDisribution;
+    width: $widthNum;
+  }
+  // PRD_0033 add SIT end
+
+  .direct-cell {
+    width: $widthDirdect;
+
+    label,
+    input:not(:disabled) {
+      cursor: pointer;
+    }
+
+  }
+
+  .store-name-cell {
+    width: $widthSname;
+  }
+
+  .last-division-code {
+    background-color: $lastDivisionCodeColor;
+
+    input:not(:disabled) {
+      background-color: $lastDivisionCodeColor;
+    }
+
+    .fix-col {
+      background-color: $lastDivisionCodeColor;
+    }
+  }
+}
+
+
+.btn {
+  margin-right: 12px;
+}
+
+footer {
+
+  // 右の固定幅
+  .footer-right {
+    max-width: 190px;
+  }
+}

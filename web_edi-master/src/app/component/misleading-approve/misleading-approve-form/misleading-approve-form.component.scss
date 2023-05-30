@@ -1,0 +1,12 @@
+@import 'mixins';
+
+input[type="text"] {
+  height: 80%;
+}
+
+input[type=checkbox] {
+  top: 9px;
+  right: 10px;
+  position: absolute;
+  @include checkbox;
+}

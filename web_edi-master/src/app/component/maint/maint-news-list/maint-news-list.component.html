@@ -1,0 +1,37 @@
+<ng-container *ngIf="!invisibled">
+<div class="container-fluid">
+  <!-- エラーメッセージ -->
+  <div class="row" *ngIf="message.body.error.code.length">
+    <div class="col-md-5 col-lg-7 col-xl-8 overall_msg_left d-flex align-items-center">
+      <div class="invalid-feedback custom_error_msg" translate id="defaultErrorInfo" name="errorInfo"></div>
+      <div class="alert alert-danger p-1">
+        <div [translate]="message.body.error.code" [translateParams]="message.body.error.param"></div>
+      </div>
+    </div>
+  </div>
+  <div class="search-result">
+    <table *ngIf="searchResultItems.length > 0">
+      <tbody detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+        <tr *ngFor="let item of searchResultItems">
+          <td class="column-1">
+            <div class="title"><span *ngIf="({ news: item, today: null } | isNewNews)" class="new-mark">New</span>{{item.title}}</div>
+            <div class="contents">
+              <div class="status">ステータス : {{item.openStartAt | maintNewsStatus: item.openEndAt }}</div>
+              <div class="openStartEnd">公開期間 : {{item.openStartAt | date: "yyyy/MM/dd HH:mm"}} ～ {{item.openEndAt | date: "yyyy/MM/dd HH:mm"}}</div>
+            </div>
+          </td>
+          <td class="column-2">
+            <button type="button" class="btn btn-info" [disabled]="disabled" [routerLink]="['/maint/news', item.id, PATH.EDIT]">編集</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<footer>
+  <!-- 左ボタンエリア -->
+  <div class="footer-left">
+    <button type="button" class="btn btn-info mr-0 ml-3" [disabled]="disabled" [routerLink]="['/maint/news/new']">新規登録</button>
+  </div>
+</footer>
+</ng-container>

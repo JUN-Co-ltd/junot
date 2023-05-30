@@ -1,0 +1,70 @@
+.col-container {
+  margin: auto;
+  padding: 0;
+}
+
+.size-contenar {
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.grid {
+  margin: 0;
+  padding: 0;
+  display: -webkit-flex;
+  display: flex;
+  list-style: none;
+}
+
+.grid-cell {
+  margin: 2px;
+  padding: 0px;
+  border-radius: 2px;
+  line-height: 1;
+  color: #000;
+  background: #fff;
+}
+
+.flexible {
+  flex: 1;
+  min-width: 50px;
+}
+
+.flexible-search {
+  flex: inherit;
+}
+
+.fixed {
+  width: 190px;
+  min-width: 190px;
+}
+
+.grid-cell p {
+  display: block;
+  margin: 0;
+  padding: 2px;
+  color: #000;
+  text-decoration: none;
+}
+
+div.input-group {
+  p.color-name {
+    max-width: 164px;
+    padding-right: 0;
+    padding-left:5px;
+    line-height: 28px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.color-code-error {
+      color: red;
+      font-size: 14px;
+    }
+  }
+}
+
+.no-sku-no-order {
+  font-size: 80%;
+  color: #dc3545;
+}

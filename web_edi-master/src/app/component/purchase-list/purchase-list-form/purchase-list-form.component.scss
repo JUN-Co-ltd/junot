@@ -1,0 +1,13 @@
+label {
+  &.caption {
+    min-width: 65px;
+    margin-right: 10px;
+    justify-content: start;
+  }
+  &.caption-short {
+    @extend .caption;
+    min-width: 50px;
+  }
+  white-space: nowrap;
+
+}

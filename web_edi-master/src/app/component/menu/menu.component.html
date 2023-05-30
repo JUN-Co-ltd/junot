@@ -1,0 +1,78 @@
+<!-- WEB-EDIメニュー -->
+<ul class="mb-2">
+  <li *ngIf="auth.edi || auth.maker">
+    <a [routerLink]="['/items/new']" role="button">商品登録</a>
+  </li>
+  <li *ngIf="auth.edi || auth.maker">
+    <!-- <a [routerLink]="['/fabricInspectionResults/new']" role="button">生地検査結果登録</a> -->
+    <a role="button" class="text-black-50">生地検査結果登録<span class="preparing">[準備中]</span></a>
+  </li>
+  <li>
+    <a href="javascript:void(0)" (click)="onListPageClick('items', TAB_NAME.ITEM_LIST)" role="button">品番一覧</a>
+  </li>
+  <li>
+    <a href="javascript:void(0)" (click)="onListPageClick('orders', TAB_NAME.ORDER_LIST)" role="button">発注一覧</a>
+  </li>
+  <li>
+    <a [routerLink]="['/deliverySearchList']" role="button">配分一覧</a>
+  </li>
+  <li *ngIf="auth.jun">
+    <a [routerLink]="['/misleadingRepresentations']" role="button">優良誤認検査一覧</a>
+  </li>
+  <li *ngIf="auth.jun">
+    <a [routerLink]="['/delische']" role="button">WEBデリスケ</a>
+  </li>
+  <li *ngIf="auth.edi">
+    <a [routerLink]="['/bulkRegistItems']" role="button">商品・品番一括登録</a>
+  </li>
+</ul>
+<!-- 出荷メニュー -->
+<ul class="mb-2">
+  <li *ngIf="auth.dista">
+    <a [routerLink]="['/purchases']" role="button">仕入一覧</a>
+  </li>
+  <li *ngIf="auth.dista">
+    <a [routerLink]="['/distributionShipments']" role="button">配分出荷指示一覧</a>
+  </li>
+  <li *ngIf="auth.makerReturn">
+    <a [routerLink]="['/makerReturns']" role="button">メーカー返品一覧</a>
+  </li>
+    <!--PRD_0133 #10181 add JFE start -->
+    <li *ngIf="auth.jun">
+      <a [routerLink]="['/purchasesRecord']" role="button">仕入実績一覧</a>
+    </li>
+    <!--PRD_0133 #10181 add JFE end -->
+  <!-- PRD_0061 del SIT start -->
+  <!--<li *ngIf="auth.dista">
+    <a [routerLink]="['/inventoryShipment']" role="button">在庫出荷一覧</a>
+  </li>-->
+  <!-- PRD_0061 del SIT end -->
+</ul>
+<!-- マスタメンテメニュー -->
+<ul class="mb-3">
+  <li *ngIf="auth.edi">
+    <a [routerLink]="['/maint']" role="button">マスタメンテナンス</a>
+  </li>
+</ul>
+<!-- DLメニュー -->
+<ul>
+  <li>
+    <button type="button" class="btn btn-link" (click)="onShareFileDownLoad('操作マニュアル.pdf')">
+      <fa-icon [icon]="['fas','file-pdf']" [fixedWidth]="true"></fa-icon>
+      <span>操作マニュアル</span>
+    </button>
+  </li>
+  <li *ngIf="auth.jun">
+    <button type="button" class="btn btn-link" (click)="onJunFileDownLoad('JUNoT仕入先登録一覧.pdf')">
+      <fa-icon [icon]="['fas','file-pdf']" [fixedWidth]="true"></fa-icon>
+      <span>仕入先登録一覧</span>
+    </button>
+  </li>
+  <li *ngIf="auth.jun">
+    <button type="button" class="btn btn-link" (click)="onJunFileDownLoad('JUNoT追加要望一覧.pdf')">
+      <fa-icon [icon]="['fas','file-pdf']" [fixedWidth]="true"></fa-icon>
+      <span>追加要望一覧</span>
+    </button>
+  </li>
+  <div *ngIf="errorMsgCode.length" class="no-data-message" translate='{{errorMsgCode}}'></div>
+</ul>

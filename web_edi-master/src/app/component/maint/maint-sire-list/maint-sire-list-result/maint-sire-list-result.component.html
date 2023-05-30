@@ -1,0 +1,118 @@
+<form *ngIf="resultForm$ | async as resultForm" [formGroup]="resultForm">
+  <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200"
+    [topOffset]="200">
+    <table class="sticky-table">
+      <thead>
+        <tr>
+          <th scope="col" class="width-100 text-center">区分</th>
+          <th colspan="2" class="width-250 text-center">仕入先</th>
+          <th colspan="2" class="width-250 text-center">工場／SPOT</th>
+          <th scope="col" class="width-25 text-center">生</th>
+          <th scope="col" class="width-25 text-center">製</th>
+          <th scope="col" class="width-25 text-center">値</th>
+          <th scope="col" class="width-25 text-center">附</th>
+          <th scope="col" class="width-100 text-center">ブランド</th>
+          <th scope="col" class="width-100 text-center">発注書</th>
+          <th scope="col" class="width-100 text-center">納品依頼</th>
+          <th scope="col" class="width-100 text-center">予備</th>
+        </tr>
+      </thead>
+      <tbody formArrayName="maintSireConfirms">
+        <tr *ngFor="let maintSire of resultForm.get('maintSireConfirms')['controls']; index as idx;" [formGroupName]="idx">
+          <!-- 区分 -->
+          <td class="text-center">
+            <ng-container [ngSwitch]="maintSire.value.reckbn">
+              <ng-container *ngSwitchCase=1>仕入先</ng-container>
+              <ng-container *ngSwitchCase=2>工場</ng-container>
+              <ng-container *ngSwitchCase=3>SPOT</ng-container>
+            </ng-container>
+          </td>
+          <!-- 仕入先コード -->
+          <td class="text-center width-65">
+            <button type="button" class="btn btn-link p-0" (click)="onClickDetailScreenInitLink(maintSire.value)"
+              [ngClass]="fontColorStatus(maintSire.value.yugaikbn)">
+              {{maintSire.value.sireCode}}
+            </button>
+          </td>
+          <!-- 仕入先名 -->
+          <td class="text-left">
+            {{maintSire.value.sireName}}
+          </td>
+          <!-- 工場／SPOTコード -->
+          <td class="text-center width-65">
+            {{maintSire.value.kojCode}}
+          </td>
+          <!-- 工場／SPOT名 -->
+          <td class="text-left">
+            {{maintSire.value.kojName}}
+          </td>
+          <!-- 生 -->
+          <td class="text-center">
+            <ng-container [ngSwitch]="maintSire.value.hkiji">
+              <ng-container *ngSwitchCase=0>-</ng-container>
+              <ng-container *ngSwitchCase=1>○</ng-container>
+            </ng-container>
+          </td>
+          <!-- 製 -->
+          <td class="text-center">
+            <ng-container [ngSwitch]="maintSire.value.hseihin">
+              <ng-container *ngSwitchCase=0>-</ng-container>
+              <ng-container *ngSwitchCase=1>○</ng-container>
+            </ng-container>
+          </td>
+          <!-- 値 -->
+          <td class="text-center">
+            <ng-container [ngSwitch]="maintSire.value.hnefuda">
+              <ng-container *ngSwitchCase=0>-</ng-container>
+              <ng-container *ngSwitchCase=1>○</ng-container>
+            </ng-container>
+          </td>
+          <!-- 附 -->
+          <td class="text-center">
+            <ng-container [ngSwitch]="maintSire.value.hfuzoku">
+              <ng-container *ngSwitchCase=0>-</ng-container>
+              <ng-container *ngSwitchCase=1>○</ng-container>
+            </ng-container>
+          </td>
+          <!-- ブランド -->
+          <td class="text-center">
+            {{maintSire.value.brandCode}}
+          </td>
+          <!-- 発注書 -->
+          <td class="text-left">
+            <ng-container [ngSwitch]="maintSire.value.hsofkbn">
+              <ng-container *ngSwitchCase=0></ng-container>
+              <ng-container *ngSwitchCase=1>FAX</ng-container>
+              <ng-container *ngSwitchCase=2>PDF/DL</ng-container>
+              <ng-container *ngSwitchCase=3>PDFメール</ng-container>
+              <ng-container *ngSwitchCase=7>FAX+PDF/DL</ng-container>
+              <ng-container *ngSwitchCase=8>FAX+PDFメール</ng-container>
+            </ng-container>
+          </td>
+          <!-- 納品依頼 -->
+          <td class="text-left">
+            <ng-container [ngSwitch]="maintSire.value.nsofkbn">
+              <ng-container *ngSwitchCase=0></ng-container>
+              <ng-container *ngSwitchCase=1>FAX</ng-container>
+              <ng-container *ngSwitchCase=2>PDF/DL</ng-container>
+              <ng-container *ngSwitchCase=3>PDFメール</ng-container>
+              <ng-container *ngSwitchCase=7>FAX+PDF/DL</ng-container>
+              <ng-container *ngSwitchCase=8>FAX+PDFメール</ng-container>
+            </ng-container>
+          </td>
+          <!-- 予備 -->
+          <td class="text-left">
+            <ng-container [ngSwitch]="maintSire.value.ysofkbn">
+              <ng-container *ngSwitchCase=0></ng-container>
+              <ng-container *ngSwitchCase=1>FAX</ng-container>
+              <ng-container *ngSwitchCase=2>PDF/DL</ng-container>
+              <ng-container *ngSwitchCase=3>PDFメール</ng-container>
+              <ng-container *ngSwitchCase=7>FAX+PDF/DL</ng-container>
+              <ng-container *ngSwitchCase=8>FAX+PDFメール</ng-container>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</form>

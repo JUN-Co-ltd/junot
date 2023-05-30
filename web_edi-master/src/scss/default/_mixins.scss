@@ -1,0 +1,91 @@
+@import "variables";
+
+/** テーブルのヘッダー固定 */
+@mixin fix-thead-tr {
+  background-color: $thead-background-color;
+  /* 縦スクロール時に固定する */
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  /* tbody内のセルより手前に表示する */
+  z-index: 1;
+  font-weight:bold;
+  text-align: center;
+}
+
+/** テーブルのフッター固定 */
+@mixin fix-tfoot-tr {
+  background-color: $tfoot-background-color;
+  /* 縦スクロール時に固定する */
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  /* tbody内のセルより手前に表示する */
+  z-index: 1;
+}
+
+/** 選択行 */
+@mixin select-tr {
+  tr {
+    cursor: pointer;
+
+    &.selected {
+      background-color: $select-tr-bg-color;
+      color: $wihte;
+    }
+
+    &:hover {
+      background-color: #e2e6ea;
+      color: #212529;
+
+      &.selected {
+        background-color: $select-tr-bg-color;
+        color: $wihte;
+      }
+
+    }
+  }
+}
+
+@mixin checkbox($scale: 2) {
+  transform: scale($scale);
+  cursor: pointer;
+}
+
+/** はみ出たテキストの吹き出し */
+@mixin ellipsis {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+/** 必須マーク */
+@mixin required-form {
+
+  /** 子要素のcontrol-labelクラスの前にマーク表示 */
+  .control-label::before {
+    @include required-mark;
+  }
+}
+
+/** 必須マーク */
+@mixin required-mark {
+  color: $required-color;
+  content: "*";
+  margin-left: -10px;
+}
+
+/** モーダルのヘッダー */
+@mixin modal-header {
+  div.modal-title {
+    color: #9e9e9e;
+  }
+
+  button.close {
+    color: #9e9e9e;
+    font-weight: 500;
+    font-size: 1.3rem;
+  }
+}

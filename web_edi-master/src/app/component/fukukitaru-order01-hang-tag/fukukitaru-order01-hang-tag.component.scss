@@ -1,0 +1,84 @@
+div.headline {
+  font-weight: 550;
+  font-size: 18px;
+}
+
+div.composition-list-block {
+  margin-top: -15px;
+}
+
+.btn {
+  margin-right: 12px;
+}
+
+.calBtn {
+  height: fit-content;
+}
+
+select {
+  max-width: 170px;
+}
+
+div.notes label {
+  font-size: 80%;
+  color: #dc3545;
+  margin: 0;
+}
+
+div.status-area-block {
+  display: inline-block;
+  border-left: 1px solid black;
+  width: 110px;
+  min-width: fit-content;
+
+  div {
+    border-top: 1px solid black;
+  }
+
+  div:last-child {
+    border-bottom: 1px solid black;
+  }
+}
+
+div.status-area-block:last-child {
+  border-right: 1px solid black;
+}
+
+input.address {
+  width: inherit;
+}
+
+div.attention-bottom-bill {
+  flex-wrap: wrap;
+}
+
+.parts-name-form {
+  width: 35%;
+}
+
+.composition-name-form {
+  width: 40%;
+}
+
+div.past-order-area {
+  overflow-x: scroll;
+  width: auto;
+}
+
+div.sameCommonMsg {
+  font-size: 80%;
+  color: #dc3545;
+}
+
+footer {
+
+  // 左の固定幅
+  .footer-left {
+    max-width: 400px;
+  }
+
+  // 右の固定幅
+  .footer-right {
+    max-width: 230px;
+  }
+}

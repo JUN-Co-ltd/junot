@@ -1,0 +1,70 @@
+.check-row {
+  margin-top: 10px;
+}
+
+.enabled {
+  text-align: center;
+  font-weight: bold;
+}
+
+.container-fluid {
+  margin-top: 30px;
+}
+
+div.search-result {
+  height: 50vh;
+
+  table {
+    width: 100%;
+
+    tbody {
+      display: block;
+      overflow-y: scroll;
+      height: 50vh;
+
+      tr {
+        border-bottom: 1px solid rgba(171, 171, 171, 0.664);
+
+        &:hover {
+          background-color: #e2e6ea;
+        }
+
+        td {
+          &.column-1 {
+            width: 1200px;
+            height: 65px;
+
+            div.contents {
+              display: flex;
+
+              div.status {
+                width: 250px;
+              }
+            }
+          }
+
+          &.column-2 {
+            width: 100px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.mailAddress{
+  display: f;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+.name{
+  word-wrap: break-word;
+  word-break: break-all;
+}
+.accountName{
+  word-wrap: break-word;
+  word-break: break-all;
+}
+.authoritiesData{
+  margin-right : 10px;
+}

@@ -1,0 +1,12 @@
+<div class="tab-area-base">
+  <ul class="tab-menu-base">
+    <ng-container *ngFor="let tab of tabs">
+      <li [class.current]="tab.current" (click)="onTabClick($event.target.innerHTML)">{{tab.name}}</li>
+    </ng-container>
+  </ul>
+
+  <!-- ngComponentOutlet で動的にコンポーネントを読み込む -->
+  <div class="mb-4">
+    <ng-container *ngComponentOutlet="currentTab"></ng-container>
+  </div>
+</div>

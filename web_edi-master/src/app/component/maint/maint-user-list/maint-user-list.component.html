@@ -1,0 +1,143 @@
+<ng-container *ngIf="!invisibled">
+  <!-- 検索条件入力項目 -->
+  <form class="form-group" [formGroup]="mainForm">
+    <div class="container-fluid">
+      <div class="row search-row">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <select class="custom-select" formControlName="keywordType" name="keywordType" aria-label="">
+              <option [value]="KEYWORD_TYPES.NO_SELECT" [selected]="true">キーワード</option>
+              <option [value]="KEYWORD_TYPES.LOGIN_ID">ログインID</option>
+              <option [value]="KEYWORD_TYPES.COMPANY_CODE">会社コード</option>
+              <option [value]="KEYWORD_TYPES.MAKER">メーカー</option>
+              <option [value]="KEYWORD_TYPES.NAME">名前</option>
+              <option [value]="KEYWORD_TYPES.MAIL_ADDRESS">メールアドレス</option>
+            </select>
+          </div>
+          <input type="text" class="form-control" formControlName="keyword" name="keyword" aria-label="..."
+            maxlength="200">
+        </div>
+      </div>
+      <div class="row check-row">
+        <div class="col-sd-2 col-md-2 cl-xl-2">
+          <label>権限 :</label>
+        </div>
+        <div class="col-sd-2 col-md-2 cl-xl-2">
+          <label class="checkbox-label">
+            <input type="checkbox" class="btn btn-info" name="authorityAdminSelected"
+              formControlName="authorityAdminSelected" value="authorityAdminSelected">&nbsp;{{ 'AUTHORITY.' + AUTHORITY.ROLE_ADMIN | translate }}
+          </label>
+        </div>
+        <div class="col-sd-2 col-md-2 cl-xl-2">
+          <label class="checkbox-label">
+            <input type="checkbox" class="btn btn-info" name="authorityJunSelected"
+              formControlName="authorityJunSelected" value="authorityJunSelected">&nbsp;{{ 'AUTHORITY.' + AUTHORITY.ROLE_JUN | translate }}
+          </label>
+        </div>
+        <div class="col-sd-2 col-md-2 cl-xl-2">
+          <label class="checkbox-label">
+            <input type="checkbox" class="btn btn-info" name="authorityMakerSelected"
+              formControlName="authorityMakerSelected" value="authorityMakerSelected">&nbsp;{{ 'AUTHORITY.' + AUTHORITY.ROLE_MAKER | translate }}
+          </label>
+        </div>
+        <div class="col-sd-2 col-md-2 cl-xl-2">
+          <label class="checkbox-label">
+            <input type="checkbox" class="btn btn-info" name="authorityDistaSelected"
+              formControlName="authorityDistaSelected" value="authorityDistarSelected">&nbsp;{{ 'AUTHORITY.' + AUTHORITY.ROLE_DISTA | translate }}
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sd-2 col-md-2 cl-xl-2">
+          <label>ログイン :</label>
+        </div>
+        <div class="col-sd-2 col-md-2 cl-xl-2">
+          <label class="checkbox-label">
+            <input type="checkbox" class="btn btn-info" name="loginEnableSelected" formControlName="loginEnableSelected"
+              value="loginEnableSelected">&nbsp;有効
+          </label>
+        </div>
+        <div class="col-sd-2 col-md-2 cl-xl-2">
+          <label class="checkbox-label">
+            <input type="checkbox" class="btn btn-info" name="loginDisableSelected"
+              formControlName="loginDisableSelected" value="loginDisableSelected">&nbsp;無効
+          </label>
+        </div>
+        <div class="col-sd-6 col-md-6 cl-xl-6 right">
+          <button type='submit' class="btn btn-info" [disabled]="disabled" (click)="onSearch()">検索</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="container-fluid">
+    <!-- エラーメッセージ -->
+    <div class="row" *ngIf="message.body.error.code.length">
+      <div class="col-md-5 col-lg-7 col-xl-8 overall_msg_left d-flex align-items-center">
+        <div class="invalid-feedback custom_error_msg" translate id="defaultErrorInfo" name="errorInfo"></div>
+        <div class="alert alert-danger p-1">
+          <div [translate]="message.body.error.code" [translateParams]="message.body.error.param"></div>
+        </div>
+      </div>
+    </div>
+    <div class="search-result">
+      <table *ngIf="searchResultItems.length > 0">
+        <tbody detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+          <tr *ngFor="let item of searchResultItems">
+            <td class="column-1">
+              <div class="row">
+                <div class="col-sd-12 col-md-3 cl-xl-3">
+                  <div class="company">会社コード：{{item.company}}</div>
+                </div>
+                <div class="col-sd-12 col-md-4 cl-xl-4">
+                  <div class="accountName">ログインID：{{item.accountName}}</div>
+                </div>
+                <div class="col-sd-12 col-md-4 cl-xl-4">
+                  <div class="name">名前：{{item.name}}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sd-12 col-md-7 cl-xl-7">
+                  <div class="authorities">権限：
+                    <ng-container *ngFor="let authority of item.authorities">
+                      <span class="authoritiesData" *ngIf="(authority !== AUTHORITY.ROLE_USER && authority !== AUTHORITY.ROLE_EDI)"
+                        [translate]="'AUTHORITY.' + authority"></span>
+                    </ng-container>
+                  </div>
+                </div>
+                <div class="col-sd-12 col-md-2 cl-xl-2">
+                  <div *ngIf="(!item.enabled)">
+                    <div class="enabled badge badge-danger">ログイン無効</div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sd-12 col-md-12 cl-xl-12">
+                  <div class="mailAddress">メールアドレス：{{item.mailAddress}}</div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sd-12 col-md-12 cl-xl-12">
+                  <ng-container *ngIf="item.makerName">
+                    <div class="makerName">メーカー : {{item.makerName}}</div>
+                  </ng-container>
+                </div>
+              </div>
+            </td>
+            <td class="column-2">
+              <button type='button' class="btn btn-info" [disabled]="disabled"
+                [routerLink]="['/maint/users', item.id, PATH.EDIT]">編集</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- フッター -->
+  <footer>
+    <!-- 左ボタンエリア -->
+    <div class="footer-left">
+      <button type='button' class="btn btn-info mr-0 ml-3" [disabled]="disabled"
+        [routerLink]="['/maint/users/new']">新規登録</button>
+    </div>
+  </footer>
+</ng-container>

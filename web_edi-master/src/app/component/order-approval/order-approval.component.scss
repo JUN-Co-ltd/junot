@@ -1,0 +1,66 @@
+
+span.red-font {
+  color: #ff0000;
+}
+
+span.percentage {
+  font-size: 13px;
+}
+
+button {
+  cursor: pointer;
+
+  &.file-dl-btn {
+    position: relative;
+    top: -3px;
+  }
+}
+
+span {
+  &.title {
+    font-weight: 550;
+    font-size: 18px;
+  }
+}
+
+div {
+  &.title {
+    word-break: break-all;
+  }
+  &.red-font {
+    color: #ff0000;
+  }
+  &.money,
+  &.remaining-order {
+    display: contents;
+    span {
+      width: 120px;
+      // PRD_0023 mod JFE start
+      // display: inline-block;
+      // PRD_0023 add JFE end
+    }
+  }
+}
+
+.order-number-position {
+  padding-right: 7%;
+  margin-top: 15px;
+  margin-bottom: 8px;
+}
+
+.file-dl-error-message-area {
+  color: red;
+  margin: 5px;
+}
+
+footer {
+  // 左の固定
+  .footer-left {
+    max-width: 100px;
+  }
+
+  // 右の固定幅
+  .footer-right {
+    max-width: 140px;
+  }
+}

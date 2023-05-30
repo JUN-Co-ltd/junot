@@ -1,0 +1,20 @@
+.text-height {
+  height: 30vh;
+  size: 30vh;
+}
+
+.placeholder-default::placeholder {
+  color: #B0C4DE;
+}
+
+.placeholder-default::-webkit-input-placeholder {
+  color: #B0C4DE;
+}
+
+.placeholder-default:-ms-input-placeholder {
+  color: #B0C4DE;
+}
+
+span.makerName {
+  padding-left: 10px;
+}

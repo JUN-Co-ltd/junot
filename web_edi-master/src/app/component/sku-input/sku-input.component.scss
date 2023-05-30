@@ -1,0 +1,74 @@
+@media screen and (min-width:320px) and (max-width:480px) {
+  .fixed-color {
+    width: 60px;
+  }
+
+  .color-name {
+    display: none;
+  }
+}
+
+@media screen and (min-width:480px) {
+  .fixed-color {
+    width: 143px;
+  }
+}
+
+/**
+ * 横幅固定.
+ */
+.fixed-w-grid {
+  width: 90px;
+  input {
+    width: inherit;
+  }
+  div {
+    width: inherit;
+  }
+}
+
+div.left-block {
+  width: 250;
+}
+
+div.header {
+  margin: 0px;
+  height: 65px;
+}
+
+div.overflow-x {
+  overflow-x: scroll;
+}
+
+div.main-container {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+}
+
+.grid-cell {
+  margin: 3px 2px;
+  padding: 0px;
+  border-radius: 5px;
+  line-height: 1;
+  color: #000;
+  background: #fff;
+}
+
+div.grid-height {
+  height: 40px;
+}
+
+/**
+ * 高さ中央.
+ */
+div.v-middle {
+  display: flex;
+  align-items: flex-end;
+}
+
+div.block-right {
+  justify-content: flex-end;
+}

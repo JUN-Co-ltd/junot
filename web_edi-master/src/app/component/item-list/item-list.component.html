@@ -1,0 +1,172 @@
+<!-- 検索条件入力項目 -->
+<form #searchForm="ngForm">
+  <div class="row mt-3">
+    <div class="col-sd-12 col-md-8 cl-xl-6 form-group">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <select class="custom-select" name="keywordType" [(ngModel)]="itemListSearchFormConditions.keywordType"
+            #keywordType="ngModel" maxlenght="200" aria-label="">
+            <option [ngValue]="KEYWORD_TYPE.NO_SELECT" [selected]="true">キーワード</option>
+            <option [ngValue]="KEYWORD_TYPE.ITEM_NO">品番</option>
+            <option [ngValue]="KEYWORD_TYPE.ITEM_NAME">品名</option>
+            <option [ngValue]="KEYWORD_TYPE.BRAND">ブランドコード</option>
+            <option [ngValue]="KEYWORD_TYPE.ITEM_CODE">アイテムコード</option>
+          </select>
+        </div>
+        <input type="text" class="form-control" [(ngModel)]="itemListSearchFormConditions.keyword" #keyword="ngModel"
+          name="keyword" aria-label="..." maxlength="200">
+      </div>
+    </div>
+    <div class="col-sd-12 col-md-4 cl-xl-6">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <select class="custom-select" name="staffType" [(ngModel)]="itemListSearchFormConditions.staffType"
+            #staffType="ngModel" aria-label="">
+            <option [ngValue]="STAFF_TYPE.NO_SELECT" selected>担当</option>
+            <option [ngValue]="STAFF_TYPE.PLANNING">企画</option>
+            <option [ngValue]="STAFF_TYPE.PRODUCTION">製造</option>
+            <option [ngValue]="STAFF_TYPE.PATANER">パターンナー</option>
+            <option [ngValue]="STAFF_TYPE.MAKER">メーカー担当</option>
+          </select>
+        </div>
+        <input type="text" class="form-control" name="staffName" [(ngModel)]="itemListSearchFormConditions.staffName"
+          #inputStaffName="ngModel" aria-label="..." maxlength="20">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sd-12 col-md-2 cl-xl-1 form-group">
+      <div class="form-group form-inline">
+        <label class="tilte">シーズン</label>
+        <select class="custom-select form-control" name="subSeason" [(ngModel)]="itemListSearchFormConditions.subSeason"
+          #inputSubSeason="ngModel" aria-label="">
+          <option selected></option>
+          <option *ngFor="let season of seasonMasterList" [value]="season.id">{{season.value}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-sd-12 col-md-8 cl-xl-1">
+      <div class="form-group form-inline">
+        <label class="tilte">年度</label>
+        <input type="tel" class="form-control code_6" name="year" [(ngModel)]="itemListSearchFormConditions.year"
+          #inputYear="ngModel" aria-label="" maxlength="4" pattern="^2[0-9]{3}$">
+        <div *ngIf="inputYear['errors']?.pattern" class="invalid-feedback d-block">
+          <div [translate]="'ERRORS.VALIDATE.YEAR_FORMAT'"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sd-12 col-md-2 cl-xl-10 right">
+      <input type="button" (click)="onClickSearchBtn(itemListSearchFormConditions,searchForm)" class="btn btn-info" name="button_submit"
+        value="検索">
+    </div>
+  </div>
+</form>
+<!-- エラーメッセージ -->
+<div class="row">
+  <div class="col-md-5 col-lg-7 col-xl-8 overall_msg_left d-flex align-items-center">
+    <div class="invalid-feedback custom_error_msg" translate id="defaultErrorInfo" name="errorInfo"></div>
+    <div *ngIf="overall_msg_code.length > 0">
+      <div class="alert alert-danger p-1">
+        <div translate='{{overall_msg_code}}'></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 品番リスト -->
+<div>
+  <ngb-tabset #tabSet="ngbTabset"  (tabChange)="onItemListTabChange($event)">
+    <ngb-tab id="makerRegisteredItem">
+      <ng-template ngbTabTitle>メーカー登録済({{makerRegisteredList.length}})</ng-template>
+      <ng-template ngbTabContent>
+        <div class="container table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+          <div class="row under_boder" *ngFor="let item of makerRegisteredList; let i=index">
+            <div class="col-sd-12 col-md-11 cl-xl-11">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sd-12 col-md-12 cl-xl-12">
+                    <p class="title">{{item.partNo | partNoInput}}&nbsp;{{item.productName}}
+                    </p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sd-12 col-md-2 cl-xl-2">品番年度：{{item.year}}</div>
+                  <div class="col-sd-12 col-md-3 cl-xl-3">仮発注日：{{item.proviOrderDate | date: 'yyyy/MM/dd'}}</div>
+                  <div class="col-sd-12 col-md-3 cl-xl-3">納品日：{{item.preferredDeliveryDate | date: 'yyyy/MM/dd'}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sd-12 col-md-8 cl-xl-8">生産メーカー：{{item.mdfMakerName}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sd-12 col-md-1 cl-xl-1 center">
+              <a class="btn btn-info" routerLink="/items/{{item.id}}/edit" [queryParams]='{viewMode:VIEW_MODE.ITEM_EDIT}'
+                role="button">品番情報</a>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="registeredPartNoItem">
+      <ng-template ngbTabTitle>品番登録済({{registeredPartNoList.length}})</ng-template>
+      <ng-template ngbTabContent>
+        <div class="container table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+          <div class="row under_boder" *ngFor="let item of registeredPartNoList; let i=index">
+            <div class="col-sd-12 col-md-11 cl-xl-11">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sd-12 col-md-12 cl-xl-12">
+                    <p class="title">{{item.partNo | partNoInput}}&nbsp;{{item.productName}}
+                    </p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sd-12 col-md-2 cl-xl-2">品番年度：{{item.year}}</div>
+                  <div class="col-sd-12 col-md-3 cl-xl-3">仮発注日：{{item.proviOrderDate | date: 'yyyy/MM/dd'}}</div>
+                  <div class="col-sd-12 col-md-3 cl-xl-3">納品日：{{item.preferredDeliveryDate | date: 'yyyy/MM/dd'}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sd-12 col-md-8 cl-xl-8">生産メーカー：{{item.mdfMakerName}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sd-12 col-md-1 cl-xl-1 center">
+              <a class="btn btn-info" routerLink="/items/{{item.id}}/edit"
+                [queryParams]='{viewMode:affiliation==AUTH_INTERNAL?VIEW_MODE.PART_EDIT:VIEW_MODE.ITEM_EDIT}' role="button">品番情報</a>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab id="allItem">
+      <ng-template ngbTabTitle>全て({{allItemList.length}})</ng-template>
+      <ng-template ngbTabContent>
+        <div class="container table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+          <div class="row under_boder" *ngFor="let item of allItemList; let i=index">
+            <div class="col-sd-12 col-md-11 cl-xl-11">
+              <div class="container">
+                <div class="row">
+                  <div class="col-sd-12 col-md-12 cl-xl-12">
+                    <p class="title">{{item.partNo | partNoInput}}&nbsp;{{item.productName}}
+                    </p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sd-12 col-md-2 cl-xl-2">品番年度：{{item.year}}</div>
+                  <div class="col-sd-12 col-md-3 cl-xl-3">仮発注日：{{item.proviOrderDate | date: 'yyyy/MM/dd'}}</div>
+                  <div class="col-sd-12 col-md-3 cl-xl-3">納品日：{{item.preferredDeliveryDate | date: 'yyyy/MM/dd'}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sd-12 col-md-8 cl-xl-8">生産メーカー：{{item.mdfMakerName}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sd-12 col-md-1 cl-xl-1 center">
+              <a class="btn btn-info" routerLink="/items/{{item.id}}/edit"
+                [queryParams]='{viewMode:affiliation==AUTH_INTERNAL?VIEW_MODE.PART_EDIT:VIEW_MODE.ITEM_EDIT}' role="button">品番情報</a>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>

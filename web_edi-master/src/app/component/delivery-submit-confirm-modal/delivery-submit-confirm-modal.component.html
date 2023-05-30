@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-basic-title">登録確認</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form [formGroup]="confirmFormGroup">
+  <div class="modal-body">
+    <div *ngIf="isOverLot" class="confirm-message">
+      <p>
+        <span class="exclamation">！</span>この納品依頼を行うと、発注数より納品数が多くなります。
+      </p>
+      <p>納品数を修正する場合は、「キャンセル」を押してこの画面を閉じてください。</p>
+    </div>
+    <div *ngIf="isLowerLot" class="confirm-message">
+      <p>
+        配分数よりも店舗配分数が少ない数量で配分されます。
+      </p>
+      <p>
+        このまま登録してよろしいですか。
+      </p>
+    </div>
+    <!-- PRD_0125 #9079 add JFE start -->
+    <div *ngIf="isDRUpDate" class="confirm-message">
+      <p>
+        <span class="exclamation">各店配分がすでに登録されています。<br>各店配分がクリアされますが、処理を続けますか？</span>
+      </p>
+    </div>
+    <!-- PRD_0125 #9079 add JFE end -->
+    <div *ngIf="!isLastDeliveryRegistered" class="check-box-row">
+      <label>
+        <input type="checkbox" formControlName="isLastDelivery">最終納品として登録する
+      </label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="btn-row">
+      <div class="">
+        <button type="button" class="btn btn-outline-dark btn-submit" (click)="onSubmit()">{{submitBtnName}}</button>
+      </div>
+      <div class="">
+        <button type="button" class="btn btn-outline-dark btn-cancel" (click)="onCancel()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+</form>

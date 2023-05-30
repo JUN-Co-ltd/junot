@@ -1,0 +1,294 @@
+<div [formGroup]="mainForm" class="container-fluid mb-3">
+  <div class="row title align-items-center">
+    <div class="col-xl-9 col-sm-12">
+      <p>{{itemData.partNo | partNoInput}}-{{subSeasonName}}-{{itemData.productName}}</p>
+    </div>
+    <div class="col-xl-1 col-sm-12">
+      <!-- 直送の場合のみ表示 -->
+      <div class="confirm-approve-lable flex-fill" *ngIf="isDirectDelivery">
+        <span>直送</span>
+      </div>
+    </div>
+    <div class="col-xl-2 col-sm-12 d-flex">
+      <div class="confirm-approve-lable flex-fill">
+        <span>{{leftLabel}}</span>
+      </div>
+      <div *ngIf="rightLabel !== ''" class="confirm-approve-lable flex-fill ml-2">
+        <span [ngClass]="{'badge-danger': rightLabel === '要再配分'}">{{rightLabel}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-12 col-sm-12 mb-3" *ngIf="overPerchase">
+    <div class="invalid-feedback d-block" translate='{{"INFO.DELIVERY_LOT_OVER_PURCASE"}}'></div>
+  </div>
+  <!-- 納期共通エラーメッセージ -->
+  <div *ngIf="submitted">
+    <div *ngIf="showDeliveryAtLotRequiredErrorMessage()" class="invalid-feedback d-block"
+      translate='{{"ERRORS.VALIDATE.DELIVERY_AT_EMPTY"}}'></div>
+  </div>
+
+  <!-- PRD_0031 add SIT start -->
+  <div id="collapseAnchorSearchItems" [ngbCollapse]="isSearchItemsCollapsed">
+  <!-- PRD_0031 add SIT end -->
+
+    <div class="row mb-3">
+      <div class="col-md-7">
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-md-3">生産メーカー</div>
+          <div class="col-md-6 align-items-center">{{orderData?.mdfMakerName}}</div>
+        </div>
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-md-3">発注No</div>
+          <div class="col-md-3 align-items-center">{{orderData?.orderNumber}}</div>
+          <div class="col-md-2">縫検納期</div>
+          <div class="col-md-4 input-group">
+            <input (blur)="onBlurDate($event.target.value, 'sewingDeliveryAt'); onInputDeliveryAt()"
+              (dateSelect)="onInputDeliveryAt()" class="form-control length_10" placeholder="" type="text"
+              formControlName="sewingDeliveryAt" name="sewingDeliveryAt" appDateInput ngbDatepicker
+              #sewingDeliveryAt="ngbDatepicker" [minDate]="minDeliveryAt" [maxDate]="maxDeliveryAt"
+              [showWeekNumbers]="true" maxlength="10"
+              [ngClass]="{'is-invalid':submitted && ((fErr && fErr['sewingDeliveryAtRequired']) || fCtrl['sewingDeliveryAt'].errors)}">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" (click)="sewingDeliveryAt.toggle()" type="button"
+                [disabled]="mainForm.disabled || sewingDeliveryAt.disabled">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+            <ng-container *ngIf="submitted">
+              <div *ngIf="fErr && fErr['sewingDeliveryAtRequired']" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.SEWING_DELIVERY_AT_EMPTY"}}'>
+              </div>
+              <div *ngIf="fCtrl['sewingDeliveryAt'].errors?.forbiddenSunday" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.DELIVERY_AT_SUNDAY"}}'>
+              </div>
+              <div *ngIf="fCtrl['sewingDeliveryAt'].errors?.ngbDate?.requiredBefore
+                || fCtrl['sewingDeliveryAt'].errors?.ngbDate?.requiredAfter;
+                then thenBlock; else elseBlock"></div>
+              <ng-template #thenBlock>
+                <div class="invalid-feedback d-block" translate='{{"ERRORS.VALIDATE.DELIVERY_NOT_RANGE"}}'></div>
+              </ng-template>
+              <ng-template #elseBlock>
+                <div *ngIf="fCtrl['sewingDeliveryAt'].errors?.ngbDate" class="invalid-feedback d-block"
+                  translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'>
+                </div>
+              </ng-template>
+            </ng-container>
+          </div>
+        </div>
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-md-3">年度</div>
+          <div class="col-md-3">{{itemData?.year}}</div>
+          <div class="col-md-2">撮影納期</div>
+          <div class="col-md-4 input-group">
+            <input (blur)="onBlurDate($event.target.value, 'photoDeliveryAt'); onInputDeliveryAt()"
+              (dateSelect)="onInputDeliveryAt()" class="form-control length_10" placeholder="" type="text"
+              formControlName="photoDeliveryAt" name="photoDeliveryAt" appDateInput ngbDatepicker
+              #photoDeliveryAt="ngbDatepicker" [minDate]="minDeliveryAt" [maxDate]="maxDeliveryAt"
+              [showWeekNumbers]="true" maxlength="10"
+              [ngClass]="{'is-invalid':submitted && ((fErr && fErr['photoDeliveryAtRequired']) || fCtrl['photoDeliveryAt'].errors)}">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" (click)="photoDeliveryAt.toggle()" type="button"
+                [disabled]="mainForm.disabled || photoDeliveryAt.disabled">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+            <ng-container *ngIf="submitted">
+              <div *ngIf="fErr && fErr['photoDeliveryAtRequired']" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.PHOTO_DELIVERY_AT_EMPTY"}}'>
+              </div>
+              <div *ngIf="fCtrl['photoDeliveryAt'].errors?.forbiddenSunday" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.DELIVERY_AT_SUNDAY"}}'>
+              </div>
+              <div *ngIf="fCtrl['photoDeliveryAt'].errors?.ngbDate?.requiredBefore
+                || fCtrl['photoDeliveryAt'].errors?.ngbDate?.requiredAfter;
+                then thenBlock; else elseBlock"></div>
+              <ng-template #thenBlock>
+                <div class="invalid-feedback d-block" translate='{{"ERRORS.VALIDATE.DELIVERY_NOT_RANGE"}}'></div>
+              </ng-template>
+              <ng-template #elseBlock>
+                <div *ngIf="fCtrl['photoDeliveryAt'].errors?.ngbDate" class="invalid-feedback d-block"
+                  translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'>
+                </div>
+              </ng-template>
+            </ng-container>
+          </div>
+        </div>
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-md-3">発注時納期</div>
+          <div class="col-md-3">{{orderData?.productCorrectionDeliveryAt}}</div>
+          <div class="col-md-2">製品納期</div>
+          <div class="col-md-4 input-group">
+            <input (blur)="onBlurDate($event.target.value, 'deliveryAt'); onInputDeliveryAt()"
+              (dateSelect)="onInputDeliveryAt()" class="form-control length_10" placeholder="" type="text"
+              formControlName="deliveryAt" name="deliveryAt" appDateInput ngbDatepicker #deliveryAt="ngbDatepicker"
+              [minDate]="minDeliveryAt" [maxDate]="maxDeliveryAt" [showWeekNumbers]="true" maxlength="10"
+              [ngClass]="{'is-invalid':submitted && ((fErr && fErr['deliveryAtRequired']) || fCtrl['deliveryAt'].errors)}">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" (click)="deliveryAt.toggle()" type="button"
+                [disabled]="mainForm.disabled || deliveryAt.disabled">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+            <ng-container *ngIf="submitted">
+              <div *ngIf="fErr && fErr['deliveryAtRequired']" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.PRODUCT_DELIVERY_AT_EMPTY"}}'>
+              </div>
+              <div *ngIf="fCtrl['deliveryAt'].errors?.forbiddenSunday" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.DELIVERY_AT_SUNDAY"}}'>
+              </div>
+              <div *ngIf="fCtrl['deliveryAt'].errors?.ngbDate?.requiredBefore
+                || fCtrl['deliveryAt'].errors?.ngbDate?.requiredAfter;
+                then thenBlock; else elseBlock"></div>
+              <ng-template #thenBlock>
+                <div class="invalid-feedback d-block" translate='{{"ERRORS.VALIDATE.DELIVERY_NOT_RANGE"}}'></div>
+              </ng-template>
+              <ng-template #elseBlock>
+                <div *ngIf="fCtrl['deliveryAt'].errors?.ngbDate" class="invalid-feedback d-block"
+                  translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'>
+                </div>
+              </ng-template>
+            </ng-container>
+          </div>
+        </div>
+        <div class="row base-data-row form-group d-flex align-items-center">
+          <div class="col-md-2">原価</div>
+          <div class="col-md-4 text-right">{{orderData?.productCost | number}}</div>
+          <div class="col-md-2">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="nonConformingProductType">&nbsp;B級品
+            </label>
+          </div>
+          <div class="col-md-3 input-group b-unit-price">
+            <span class="b-unit-price-label">単価</span>
+            <input type="tel" class="form-control length_10 text-right" appNumberInput
+              formControlName="nonConformingProductUnitPrice" name="nonConformingProductUnitPrice" maxlength="9"
+              [ngClass]="{'is-invalid':submitted && fCtrl['nonConformingProductUnitPrice'].errors}" />
+            <ng-container *ngIf="submitted">
+              <div *ngIf="fCtrl['nonConformingProductUnitPrice'].errors" class="invalid-feedback d-block">
+                <div *ngIf="fCtrl['nonConformingProductUnitPrice'].errors.required"
+                  [translate]="'ERRORS.VALIDATE.NON_CONFORMING_PRODUCTION_PRICE_EMPTY'"></div>
+                <div *ngIf="fCtrl['nonConformingProductUnitPrice'].errors.pattern"
+                  [translate]="'ERRORS.400_D_07'"></div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-5 align-items-center">
+        <table class="table table-bordered table-sm">
+          <tbody>
+            <tr>
+              <td>発注数</td>
+              <td class="text-right">{{orderData.quantity | numberInput}}</td>
+              <td>発注残数</td>
+              <td class="text-right">{{(orderData.quantity - allDeliveredLot) | numberInput}}</td>
+            </tr>
+            <tr>
+              <td>納品済数</td>
+              <td class="text-right">{{allDeliveredLot | numberInput}}</td>
+              <td>納品残数</td>
+              <td class="text-right">{{remainingLot | numberInput}}</td>
+            </tr>
+            <tr>
+              <td>増減産数</td>
+              <td class="text-right">{{changesInLot | numberInput}}</td>
+              <td>増減産率</td>
+              <td class="text-right">
+                {{changesInLot>0?'+':''}}{{changesInLotRatio}}％</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row align-items-center">
+          <div class="col-md-4">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="faxSend">&nbsp;通知メール送信
+            </label>
+          </div>
+          <div class="col-md-4" *ngIf="shippingDistributionVoucher != null">
+            <button type="button" (click)="onDeliveryVoucherFileDownLoad(shippingDistributionVoucher.fileNoId)" class="btn btn-link">
+              <fa-icon [icon]="['fas','file-pdf']" size="1x" [fixedWidth]="false"></fa-icon>
+              配分出荷伝票
+            </button>
+          </div>
+          <div class="col-md-4" *ngIf="pickingList != null">
+            <button type="button" (click)="onDeliveryVoucherFileDownLoad(pickingList.fileNoId)" class="btn btn-link">
+              <fa-icon [icon]="['fas','file-pdf']" size="1x" [fixedWidth]="false"></fa-icon>
+              ピッキングリスト
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- PRD_0033 add SIT start -->
+  </div>
+
+  <div class="row button-block">
+    <div class="col-xl-6 collapsed-text">
+      <a class="ml-0" (click)="isSearchItemsCollapsed = !isSearchItemsCollapsed;" [attr.aria-expanded]="!isSearchItemsCollapsed" aria-controls="collapseAnchorSearchItems">
+      <fa-icon [icon]="['fas',isSearchItemsCollapsed?'plus-circle':'minus-circle']" [fixedWidth]="true"></fa-icon>{{isSearchItemsCollapsed?'詳細条件を表示':'詳細条件を隠す'}}</a>
+    </div>
+  </div>
+  <!-- PRD_0033 add SIT end -->
+
+  <div class="row distribution-ratio-row">
+    <!-- PRD_0031 mod SIT start -->
+    <!--<div class="col-8">-->
+    <!--PRD_0123 #7054 mod JFE start -->
+    <!--<div class="col-6"> -->
+      <div class="col-sm-3">
+    <!--PRD_0123 #7054 mod JFE end -->
+      <div class="row distribution-ratio-row ml-1">
+        <div class="grid-input-cell mr-1 ">
+          <select class="custom-select" #distributionRatioType name="distributionRatioType"
+            formControlName="distributionRatioType" (click)="onChangeDistributionType(distributionRatioType.value)">
+            <option *ngFor="let distributionRatioMasta of distributionRatioMastaList; let idx=index;"
+              value="{{idx}}">
+              {{distributionRatioMasta.rtname}}</option>
+          </select>
+        </div>
+        <div class="grid-input-cell d-flex align-items-center">
+          <input type="button" (click)="onClickDistributionBtn(distributionRatioType.value)"
+            class="btn btn-secondary btn-outline-dark badge-pill btn-sm" value="配分"
+            [disabled]="distributionRatioType.disabled || distributionRatioType.value===''" />
+        </div>
+      </div>
+    </div>
+    <!-- PRD_0031 mod SIT start -->
+    <!--<div class="col-2 text-right">-->
+      <!--<div class="btn-cell">-->
+        <!--PRD_0123 #7054 add JFE start -->
+    <div class="col-sm-3 ">
+      <span class="label-short"*ngIf="deliveryLocationList.length > 0 && isShowDeliveryLocationList">納品先</span>
+      <select  class="custom-select"  formControlName="deliveryLocationCode" name="deliveryLocationCode"
+      *ngIf="deliveryLocationList.length > 0 && isShowDeliveryLocationList">
+          <option *ngFor="let deliveryLocation of deliveryLocationList;"
+          value="{{deliveryLocation.logisticsCode}}">
+           {{deliveryLocation.companyName}}</option>
+      </select>
+    </div>
+        <!--PRD_0123 #7054 add JFE end -->
+    <div class="col-4 text-right">
+    <!-- PRD_0031 mod SIT end -->
+      <input type="button" (click)="onClearDeliveryLotValue()" class="btn btn-outline-secondary btn-sm" value="依頼数クリア"
+        [disabled]="mainForm.disabled" />
+      <!-- PRD_0031 mod SIT start -->
+      <!--</div>-->
+      <ng-container *ngIf="isDeliveryStore">
+        <input type="button" (click)="onDistributeDownload()" class="btn btn-outline-secondary btn-sm" value="ダウンロード" />
+        <ng-container *ngIf="isDistributeUpload">
+          <label for="distributeUpload" class="btn btn-outline-secondary btn-sm mt-2" >アップロード
+            <input type="file" (change)="onDistributeUpload($event)" style="display:none" id="distributeUpload" accept=".csv"/>
+          </label>
+        </ng-container>
+      </ng-container>
+      <!-- PRD_0031 mod SIT end -->
+    </div>
+    <div *ngIf="!isDeliveryStore" class="col-2 text-right">
+      <button type="button" class="btn btn-link" (click)="onDeliveryPlanDetaiView()">
+        納品予定明細
+      </button>
+    </div>
+  </div>
+</div>

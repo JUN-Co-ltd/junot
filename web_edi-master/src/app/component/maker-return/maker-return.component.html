@@ -1,0 +1,357 @@
+<form [formGroup]="mainForm" *ngIf="showScreen" [appArrayRequired]="['makerReturnProducts', 'productCode']">
+  <div class="container-fluid pb-5">
+    <div class="base-area mb-3">
+
+      <!-- 1行目 -->
+      <div class="row form-inline">
+
+        <!-- ディスタ -->
+        <div class="col-sm-12 col-lg-6 col-xl-3 form-group required">
+          <label class="control-label"></label>
+          <select class="custom-select" [ngClass]="{'is-invalid':submitted && fCtrl.distaCode.errors}"
+            formControlName="distaCode" (change)="clearMakerReturnProducts();"
+            [attr.disabled]="path !== PATH.NEW ? 'disabled' : null">
+            <option *ngFor="let dista of distas;" [value]="dista.shpcd">{{dista.sname}}</option>
+          </select>
+
+          <!-- エラーメッセージ -->
+          <ng-container *ngIf="submitted && fCtrl.distaCode.errors?.required">
+            <div class="invalid-feedback d-block" translate='{{"ERRORS.VALIDATE.NO_SELECT"}}'></div>
+          </ng-container>
+        </div>
+
+        <div class="col-sm-12 col-lg-6 col-xl-5 form-group required">
+          <label class="control-label caption">メーカー</label>
+          <div class="input-group">
+            <input type="tel" #supplierCode class="form-control code_6" minlength="5" maxlength="5" pattern="^[0-9]+$"
+              formControlName="supplierCode"
+              (change)="onChangeSupplier(supplierCode.value); clearMakerReturnProducts();"
+              [ngClass]="{'is-invalid':submitted && fCtrl.supplierCode.errors}"
+              [attr.disabled]="path !== PATH.NEW ? 'disabled' : null" />
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" [disabled]="supplierCode.disabled"
+                (click)="onSearchSupplier()" type="button">
+                <fa-icon icon="search"></fa-icon>
+              </button>
+            </div>
+          </div>
+          <span class="ml-2">{{mainForm.get('supplierName').value}}</span>
+
+          <!-- エラーメッセージ -->
+          <ng-container *ngIf="submitted">
+            <div *ngIf="fCtrl.supplierCode.errors?.required; else supplierCodeNoError;" class="invalid-feedback d-block"
+              translate='{{"ERRORS.VALIDATE.EMPTY"}}'></div>
+            <ng-template #supplierCodeNoError>
+              <div *ngIf="fCtrl.supplierName.errors?.required" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.MAKER_EXISTENCE"}}'></div>
+            </ng-template>
+          </ng-container>
+        </div>
+
+        <div class="col-sm-12 col-lg-12 col-xl-4 form-group required">
+          <ng-container *ngIf="path !== PATH.NEW">
+            <span>伝票番号：{{mainForm.get('voucherNumber').value}}</span>
+            <button *ngIf="fileId != null" type="button" class="btn btn-link p-0 ml-3" (click)="onFileDownLoad(fileId)">
+              物品受領書【返品】
+            </button>
+          </ng-container>
+        </div>
+
+      </div>
+
+      <!-- 警告メッセージ -->
+      <div *ngIf="showAlertMessage" class="invalid-feedback d-block row ml-2"
+        translate='{{"INFO.MEKER_RETURN_DELETE_IF_CHANGE"}}'></div>
+
+      <!-- 2行目 -->
+      <div class="row form-inline mt-2">
+
+        <!-- TODO 店舗はいらないかも。いらないことが確約出来たら削除 -->
+        <!-- <div class="col-sm-12 col-lg-8 col-xl-7 form-group required">
+
+          <label class="control-label caption">店舗</label>
+          <div class="input-group">
+            <input type="text" #shpcd class="form-control length_10" length="8" maxlength="8" formControlName="shpcd"
+              (change)="onChangeShop(shpcd.value);" [ngClass]="{'is-invalid': submitted && fCtrl.shpcd.errors}"
+              [attr.disabled]="path !== PATH.NEW ? 'disabled' : null" />
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" [disabled]="shpcd.disabled" (click)="onSearchShop()"
+                type="button">
+                <fa-icon icon="search"></fa-icon>
+              </button>
+            </div>
+          </div>
+          <span class="ml-2">{{mainForm.get('shopName').value}}</span> -->
+
+          <!-- エラーメッセージ -->
+          <!-- <ng-container *ngIf="submitted">
+            <div *ngIf="fCtrl.shpcd.errors; else shpcdNoError;" class="invalid-feedback d-block">
+              <span *ngIf="fCtrl.shpcd.errors.required" translate='{{"ERRORS.VALIDATE.EMPTY"}}'></span>
+              <span *ngIf="fCtrl.shpcd.errors.pattern" translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER_ALPHABET"}}'></span>
+            </div>
+            <ng-template #shpcdNoError>
+              <div *ngIf="fCtrl.shopName.errors?.required" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.NO_EXISTENCE"}}' [translateParams]="{name: '店舗'}"></div>
+            </ng-template>
+          </ng-container>
+
+        </div> -->
+
+        <div class="col-sm-12 col-lg-6 col-xl-5 form-group required">
+          <label class="control-label caption-short">担当者</label>
+          <div class="input-group">
+            <input type="tel" class="form-control code_6" #mdfStaffCode formControlName="mdfStaffCode" name="mdfStaffCode"
+              minlength="6" maxlength="6" (change)="onChangeStaff(mdfStaffCode.value)" [ngClass]="{'is-invalid': submitted && fCtrl.mdfStaffCode.errors}"
+              required />
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" (click)="onSearchStaff()"
+                type="button">
+                <fa-icon icon="search"></fa-icon>
+              </button>
+            </div>
+          </div>
+          <span class="ml-2">{{mainForm.get('mdfStaffName').value}}</span>
+
+          <!-- エラーメッセージ -->
+          <ng-container *ngIf="submitted">
+            <div *ngIf="fCtrl.mdfStaffCode.errors; else mdfStaffCodeNoError;" class="invalid-feedback d-block">
+              <span *ngIf="fCtrl.mdfStaffCode.errors.required" translate='{{"ERRORS.VALIDATE.EMPTY"}}'></span>
+              <span *ngIf="fCtrl.mdfStaffCode.errors.pattern" translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER"}}'></span>
+            </div>
+            <ng-template #mdfStaffCodeNoError>
+              <div *ngIf="fCtrl.mdfStaffName.errors?.required" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.NO_EXISTENCE"}}' [translateParams]="{name: '担当者'}"></div>
+            </ng-template>
+          </ng-container>
+        </div>
+
+        <div class="col-sm-12 col-lg-6 col-xl-3 form-group required">
+          <label class="control-label caption">返品日</label>
+          <div class="input-group">
+            <input type="text" class="form-control length_10" formControlName="returnAt" name="returnAt"
+              (blur)="onBlurDate($event.target.value, 'returnAt');" appDateInput ngbDatepicker #returnAt="ngbDatepicker"
+              [showWeekNumbers]="true" maxlength="10" [ngClass]="{'is-invalid': submitted && fCtrl.returnAt.errors}"
+              [minDate]="minReturnAtValue" [maxDate]="maxReturnAtValue" [disabled]="path === PATH.VIEW">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" (click)="returnAt.toggle()" type="button"
+                [disabled]="returnAt.disabled">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- エラーメッセージ -->
+          <ng-container *ngIf="submitted && fCtrl.returnAt.errors">
+            <div *ngIf="fCtrl.returnAt.errors.required" class="invalid-feedback d-block"
+              translate='{{"ERRORS.VALIDATE.EMPTY"}}'></div>
+            <ng-container *ngIf="fCtrl.returnAt.errors.ngbDate">
+              <div *ngIf="fCtrl.returnAt.errors.ngbDate.requiredBefore || fCtrl.returnAt.errors.ngbDate.requiredAfter"
+                class="invalid-feedback d-block" translate='{{"ERRORS.VALIDATE.DATE_WITHIN"}}'
+                [translateParams]="{name: '当日', param: '30'}"></div>
+              <div *ngIf="fCtrl.returnAt.errors.ngbDate.invalid" class="invalid-feedback d-block"
+                translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+            </ng-container>
+          </ng-container>
+        </div>
+
+      </div>
+
+      <!-- 3行目 -->
+      <div class="row form-inline mt-2">
+
+        <div class="col-sm-12 col-lg-12 col-xl-9 form-group">
+          <label class="control-label caption">摘要</label>
+          <input type="text" class="form-control w-75" formControlName="memo" maxlength="500"
+            [attr.disabled]="path === PATH.VIEW ? 'disabled' : null" />
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 返品商品エラーメッセージ -->
+    <div class="row" *ngIf="submitted && mainForm.errors?.makerReturnProductsRequired"
+      class="invalid-feedback d-block mb-1" translate='{{"ERRORS.VALIDATE.ANY_EMPTY"}}'
+      [translateParams]="{name: '商品コードと数量'}"></div>
+    <div *ngIf="hasDupulicate" class="invalid-feedback d-block row ml-2" translate='{{"ERRORS.VALIDATE.DUPULICATE"}}'
+      [translateParams]="{name: '商品コード'}"></div>
+
+    <div class="table-wrapper">
+
+      <table class="sticky-table">
+
+        <thead>
+
+          <tr>
+
+            <th rowspan="2" scope="col" class="width-245">
+              <span class="mr-2">商品コード／品番</span>
+              <input type="button" (click)="onAdd()" class="btn btn-primary badge-pill btn-sm" value="追加"
+                [attr.disabled]="path !== PATH.NEW ? 'disabled' : null" />
+            </th>
+            <th colspan="2" scope="col" class="width-280">品名</th>
+            <th rowspan="2" scope="col" class="width-150">数量</th>
+            <th rowspan="2" scope="col" class="width-95">上代</th>
+            <th rowspan="2" scope="col" class="width-95">下代</th>
+            <th rowspan="2" scope="col" class="width-150">金額</th>
+            <th rowspan="2" scope="col" class="width-95">発注No</th>
+            <th rowspan="2" scope="col" class="width-95">最新単価</th>
+
+          </tr>
+
+          <tr class="tr-2">
+            <th scope="col">カラー</th>
+            <th scope="col">サイズ</th>
+          </tr>
+
+        </thead>
+
+        <tbody formArrayName="makerReturnProducts">
+
+          <ng-container *ngFor="let product of fArrayMakerReturnProducts.controls; index as idx;" [formGroupName]="idx"
+            [appRequiredRelation]="['productCode', 'partNoId']" [appRequiredRelation2]="['partNoId', 'returnLot']"
+            [appOverBaseNumber]="['stockLot', 'returnLot']">
+
+            <tr>
+
+              <!-- 商品コード -->
+              <td rowspan="2">
+                <div>
+
+                  <div class="d-flex align-items-center justify-content-center input-group">
+                    <a *ngIf="showProductTrash(product)" (click)="onProductTrash(product)"
+                      class="trash-icon mr-1 csr-pnt">
+                      <fa-icon class="csr-pnt" icon="trash-alt"></fa-icon>
+                    </a>
+                    <input (change)="onChangeProductCode(product, productCode.value)" type="tel" #productCode
+                      class="form-control width-180" formControlName="productCode"
+                      [ngClass]="{'is-invalid':submitted && product.errors?.partNoIdEmpty}"
+                      [attr.disabled]="isProductCodeDisable ? 'disabled' : null" />
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary calBtn" (click)="onSearchProduct(product)" type="button"
+                        [disabled]="productCode.disabled">
+                        <fa-icon icon="search"></fa-icon>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- エラーメッセージ -->
+                  <div *ngIf="submitted && product.errors?.partNoIdEmpty"
+                    class="invalid-feedback d-block text-left ml-3" translate='{{"ERRORS.400_01"}}'></div>
+                </div>
+              </td>
+
+              <!-- 商品名 -->
+              <td colspan="2">
+                <div class="ellipsis" placement="top" ngbTooltip="{{product.get('productName').value}}">
+                  {{product.get('productName').value}}
+                </div>
+              </td>
+              <!-- 数量 -->
+              <td rowspan="2">
+                <div class="return-lot">
+                  <div class="d-flex align-items-center justify-content-end">
+                    <input type="tel" (change)="onChangeReturnLot(product, $event.target.value)"
+                      class="form-control width-80 text-right" formControlName="returnLot" maxlength="5"
+                      [ngClass]="{'is-invalid':submitted && (product.get('returnLot').errors || product.errors?.returnLotEmpty)}"
+                      [attr.disabled]="isReturnLotDisable(product) ? 'disabled' : null" />
+                  </div>
+
+                  <!-- エラーメッセージ -->
+                  <ng-container *ngIf="submitted">
+                    <div *ngIf="product.get('returnLot').errors" class="invalid-feedback"
+                      translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER_NOT_LESS_THAN1"}}'></div>
+                    <ng-container *ngIf="product.errors">
+                      <div *ngIf="product.errors.returnLotEmpty" class="invalid-feedback ml-auto mr-0"
+                        translate='{{"ERRORS.VALIDATE.EMPTY"}}'></div>
+                      <div *ngIf="product.errors.returnLotOver" class="invalid-feedback ml-auto mr-0"
+                        translate='{{"ERRORS.VALIDATE.OVER_NUMBER"}}' [translateParams]="{name: '在庫数'}"></div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </td>
+
+              <td rowspan="2" class="text-right">
+                {{product.get('retailPrice').value | number}}
+              </td>
+
+              <td rowspan="2" class="text-right">
+                {{product.get('unitPrice').value | number}}
+              </td>
+
+              <td rowspan="2" class="text-right">
+                {{product.get('amount').value | number}}
+              </td>
+
+              <td rowspan="2" class="text-center">
+                {{product.get('orderNumber').value}}
+              </td>
+
+              <td rowspan="2" class="text-right">
+                {{product.get('otherCost').value | number}}
+              </td>
+
+            </tr>
+
+            <tr>
+              <td>{{product.get('colorCode').value}}</td>
+              <td>{{product.get('size').value}}</td>
+            </tr>
+
+          </ng-container>
+
+        </tbody>
+
+        <tfoot>
+
+          <tr>
+
+            <th colspan="3">合計</th>
+            <td class="text-right">{{total.returnLot | number}}</td>
+            <td></td>
+            <td></td>
+            <td class="text-right">{{total.amount | number}}</td>
+            <td></td>
+            <td></td>
+
+          </tr>
+
+        </tfoot>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  <footer>
+    <!-- 左ボタンエリア -->
+    <div class="footer-left">
+      <div class="d-none d-lg-block">
+        <ng-container *ngIf="path !== PATH.NEW">
+          <button class="btn btn-info mr-0" (click)="onNewCreatePage()" [disabled]="isLoading">新規登録</button>
+          <button *ngIf="path === PATH.EDIT" class="btn btn-danger mr-0 ml-3" (click)="onDelete()"
+            [disabled]="isLoading">削除</button>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- メッセージエリア -->
+    <div class="footer-center">
+      <div class="alert-success mr-2" [translate]="message.footer.success.code"
+        [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length"></div>
+      <div class="alert-danger mr-2" [translate]="message.footer.error.code"
+        [translateParams]="message.footer.error.param" *ngIf="message.footer.error.code.length"></div>
+    </div>
+
+    <!-- 右ボタンエリア -->
+    <div class="footer-right">
+      <ng-container *ngIf="path === PATH.NEW">
+        <button type="submit" class="btn btn-info mr-0 ml-3" [disabled]="isLoading" (click)="onCreate()">登録</button>
+      </ng-container>
+      <ng-container *ngIf="path === PATH.EDIT">
+        <button type="submit" class="btn btn-success mr-0 ml-3" [disabled]="isLoading" (click)="onUpdate()">更新</button>
+      </ng-container>
+    </div>
+  </footer>
+</form>

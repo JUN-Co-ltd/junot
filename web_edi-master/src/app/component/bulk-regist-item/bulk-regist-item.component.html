@@ -1,0 +1,110 @@
+<div class="pb-5 mb-5">
+  <div class="container-fluid">
+
+    <form class="form-group" [formGroup]="mainForm">
+      <div class="d-flex">
+        <div class="col-sd-6 col-md-1 cl-xl-1 form-group no-gutters p-0">
+          <input id="partNo" type="radio" class="btn btn-info" formControlName="registType"
+            [value]="REGIST_TYPE.PART_NO" />
+          <label class="csr-pnt mr-0 ml-1" for="partNo">
+            品番登録
+          </label>
+        </div>
+        <div class="col-sd-6 col-md-1 cl-xl-1 form-group no-gutters p-0">
+          <input id="item" type="radio" class="btn btn-info" formControlName="registType" [value]="REGIST_TYPE.ITEM" />
+          <label class="csr-pnt mr-0 ml-1" for="item">
+            商品登録
+          </label>
+        </div>
+      </div>
+    </form>
+
+    <div class="row d-flex align-items-center">
+      <div class="col-sm-12 col-lg-9 col-xl-9 d-flex">
+        <ng-container *ngIf="bulkRegistFile!=null">
+          <label class="label-middle">ファイル名：</label>
+          <button type="button" class="btn btn-link" (click)="onFileLink()"
+            [disabled]="isLoading">{{bulkRegistFile.name}}</button>
+          <button type="button" class="btn btn-link csr-pnt" (click)="onFileDelete()" [disabled]="isLoading">
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
+        </ng-container>
+      </div>
+      <div class="col-sm-12 col-lg-3 col-xl-3 right-container">
+        <label class="btn btn-secondary btn-outline-dark badge-pill btn-sm mb-0">ファイルを選択
+          <!-- 同じファイル選択時にもイベントを着火させるためにfileInput.value = nullにする -->
+          <input #fileInput type="file" [disabled]="isLoading" (click)="fileInput.value = null"
+            (change)="onFileSelect($event.target.files)" />
+        </label>
+        <button type="botton" class="btn btn-success" [disabled]="isCheckBtnDisable()" (click)="onCheck()">チェック</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="isShowTable">
+    <!-- チェック結果の一覧  -->
+    <div class="container-fluid pr-4 mt-2">
+      <div class="table-responsive table-wrapper">
+        <table class="table table-sm table-bordered check-result-table mb-0">
+          <thead>
+            <tr>
+              <th class="col-sm-12 col-lg-2 col-xl-2">ブランド</th>
+              <th class="col-sm-12 col-lg-3 col-xl-3">取込商品・品番</th>
+              <th class="col-sm-12 col-lg-2 col-xl-2">エラー商品・品番数</th>
+              <th class="col-sm-12 col-lg-3 col-xl-3">取込SKU数</th>
+              <th class="col-sm-12 col-lg-2 col-xl-2">エラーSKU数</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let result of checkResults;">
+              <td class="col-sm-12 col-lg-2 col-xl-2">{{result.brandCode}}</td>
+              <td class="col-sm-12 col-lg-3 col-xl-3 text-right text-success">{{result.itemCount|numberInput}}</td>
+              <td class="col-sm-12 col-lg-2 col-xl-2 text-right text-danger">{{result.errorItemCount|numberInput}}</td>
+              <td class="col-sm-12 col-lg-3 col-xl-3 text-right text-success">{{result.skuCount|numberInput}}</td>
+              <td class="col-sm-12 col-lg-2 col-xl-2 text-right text-danger">{{result.errorSkuCount|numberInput}}</td>
+            </tr>
+          </tbody>
+
+          <tfoot>
+            <tr>
+              <td class="col-sm-12 col-lg-2 col-xl-2">合計</td>
+              <td class="col-sm-12 col-lg-3 col-xl-3 text-right text-success">{{total.item|numberInput}}</td>
+              <td class="col-sm-12 col-lg-2 col-xl-2 text-right text-danger">{{total.itemError|numberInput}}</td>
+              <td class="col-sm-12 col-lg-3 col-xl-3 text-right text-success">{{total.sku|numberInput}}</td>
+              <td class="col-sm-12 col-lg-2 col-xl-2 text-right text-danger">{{total.skuError|numberInput}}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- チェック結果メッセージ  -->
+    <div class="container-fluid mt-5 pr-4">
+      <p class="row font-weight-bold">チェック結果メッセージ</p>
+      <div class="col-sd-12 col-md-12 cl-xl-12 border border-dark check-error-message">
+        <ul>
+          <li *ngFor="let errorMessage of checkErrorMessages;">
+            {{errorMessage}}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- フッター -->
+<footer>
+  <!-- メッセージエリア -->
+  <div class="footer-center">
+    <div class="alert-success mr-2" [translate]="message.footer.success.code"
+      [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length"></div>
+    <div class="alert-danger mr-2" [translate]="message.footer.error.code"
+      [translateParams]="message.footer.error.param" *ngIf="message.footer.error.code.length"></div>
+  </div>
+  <!-- 右ボタンエリア -->
+  <div class="footer-right">
+    <button type='button' class="btn btn-info mr-0 ml-3" [disabled]="isSubmitBtnDisable()"
+      (click)="onEntry()">登録</button>
+  </div>
+</footer>

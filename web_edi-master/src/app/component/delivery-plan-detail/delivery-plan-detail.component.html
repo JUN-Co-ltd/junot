@@ -1,0 +1,175 @@
+<div class="invalid-feedback custom_error_msg" translate id="apiErrorInfo" name="errorInfo"></div>
+<form [formGroup]="mainForm" *ngIf="isInitDataSetted">
+  <div class="container-fluid main">
+    <div class="row">
+      <div class="col-xl-12 title">
+        <p>{{itemData?.partNo | partNoInput}}&nbsp;{{itemData?.productName}}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-lg-2">生産メーカー</div>
+          <div class="col-lg-10 align-items-center">{{orderData?.mdfMakerName}}</div>
+        </div>
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-lg-2">発注No</div>
+          <div class="col-lg-10 align-items-center">{{orderData?.orderNumber}}</div>
+        </div>
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-lg-2">納品予定日</div>
+          <div class="col-lg-10 align-items-center">{{orderData?.productDeliveryAt}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="order-form-container">
+      <div class="table-heading-row">
+        <div class="grid-cell grid-width-s-double text-center">
+          <!-- カラー、サイズ -->
+        </div>
+        <div class="grid-cell grid-width-s text-center">
+          <p>発注数</p>
+        </div>
+        <div class="grid-cell grid-width-m-double text-center">
+          <p>生産数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center">
+          <p>納品済数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center">
+          <p>納品可能数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center">
+          <p>納品残数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center">
+          <p>増減産数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center">
+          <p>増減産率</p>
+        </div>
+        <div class="grid-cell delivery-plan-details-container text-left end-column-grid-cell">
+          <p>納品枚数</p>
+        </div>
+      </div>
+      <div class="all-content-container">
+        <div class="order-sku-container">
+          <div class="order-sku-aggregate-row">
+            <div class="grid-cell grid-width-s text-center">
+              <p>カラー</p>
+            </div>
+            <div class="grid-cell grid-width-s text-center">
+              <p>サイズ</p>
+            </div>
+            <div class="grid-cell grid-width-s text-right">
+              <!-- 発注数集計 -->
+              <p>{{orderData?.quantity | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 生産数集計 -->
+              <p>{{calcDeliveryPlanCutLot() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 生産数(％)集計 -->
+              <p>{{calcDeliveryPlanCutRate()}}%</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 納品済数集計 -->
+              <p>{{calcCompletedDelivery() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 納品可能数集計 -->
+              <p>{{calcDeliverableDeliveryPlanLot() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 納品残数集計 -->
+              <p>{{calcRemainingDeliveryPlanLot() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 増減産数集計 -->
+              <p>{{calcIncreaseOrDecreaseLot() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 増減産率集計 -->
+              <p>{{calcIncreaseOrDecreaseRate()}}%</p>
+            </div>
+          </div>
+          <div class="order-sku-data-container" formArrayName="deliveryPlanCuts">
+            <!-- 納品予定裁断(行) -->
+            <ng-container *ngFor="let deliveryPlanCut of fDeliveryPlanCuts; let yIdx=index; let last = last">
+              <div class="grid grid-height order-sku-cell-row" [formGroupName]="yIdx" [ngClass]="{'end-row-grid-cell':last}">
+                <!-- カラー -->
+                <div class="grid-cell grid-width-s text-right">
+                  <p>{{deliveryPlanCut.get('colorCode').value}}</p>
+                </div>
+                <!-- サイズ -->
+                <div class="grid-cell grid-width-s text-left">
+                  <p>{{deliveryPlanCut.get('size').value}}</p>
+                </div>
+                <!-- 発注数 -->
+                <div class="grid-cell grid-width-s text-right">
+                  <p>{{deliveryPlanCut.get('productOrderLot').value | number}}</p>
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 生産数 -->
+                  <p>{{deliveryPlanCut.get('deliveryPlanCutLot').value | number}}</p>
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 生産数(％) -->
+                  <p>
+                    {{calcDeliveryPlanCutRate(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value)}}%
+                  </p>
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 納品済数 -->
+                  <p>
+                    {{calcCompletedDelivery(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) | number}}
+                  </p>
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 納品可能数 -->
+                  <p>
+                    {{calcDeliverableDeliveryPlanLot(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) | number}}
+                  </p>
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 納品残数 -->
+                  <p>
+                    {{calcRemainingDeliveryPlanLot(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) | number}}
+                  </p>
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 増減産数 -->
+                  {{calcIncreaseOrDecreaseLot(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) | number}}
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 増減産率 -->
+                  <p>
+                    {{calcIncreaseOrDecreaseRate(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value)}}%
+                  </p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <div class="delivery-plan-details-container end-column-grid-cell" formArrayName="deliveryPlanDetails">
+          <!-- 納品予定明細(列) -->
+          <ng-container *ngFor="let deliveryPlanDetail of fDeliveryPlanDetails;let xIdx=index">
+            <div class="" [formGroupName]="xIdx">
+              <div class="grid-cell grid-width-l text-right">
+                <!-- 納品予定日 -->
+                {{deliveryPlanDetail.get('deliveryPlanAt').value}}
+              </div>
+              <!-- 納品予定数(行) -->
+              <ng-container formArrayName="deliveryPlanSkus" *ngFor="let deliveryPlanSku of deliveryPlanDetail.get('deliveryPlanSkus')['controls'];let yIdx=index">
+                <div class="grid-cell grid-width-l text-right" [formGroupName]="yIdx">
+                  {{deliveryPlanSku.get('deliveryPlanLot').value | number}}
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,32 @@
+<ng-container *ngIf="visibled">
+<!-- 検索 -->
+<div class="mb-4">
+  <app-inventory-shipment-list-form [isLoading]="isLoading" [stores]="stores"
+  [brands]="brands" [items]="items" [departments]=departments [divisionName]=divisionName
+  (clickSearchButton)="onClickSearchBtn($event)" (changeDivision)="onChangeDivision($event)">
+  </app-inventory-shipment-list-form>
+</div>
+<!-- 検索結果関係のメッセージ -->
+<div class="mb-2 ml-2 mr-2 mb-2" *ngIf="message.body.error.code.length">
+  <div class="alert alert-danger p-1 mb-0">
+    <div [translate]="message.body.error.code" [translateParams]="message.body.error.param"></div>
+  </div>
+</div>
+
+<!-- 一覧 -->
+<div class="result ml-2 mr-2">
+  <app-inventory-shipment-list-result (scrollToBottom)="onScrollToBottom($event)" (checkEvents)="onCheck($event)">
+  </app-inventory-shipment-list-result>
+</div>
+<footer class="align-items-center">
+  <!-- メッセージエリア -->
+  <div class="footer-center ml-3">
+    <div class="alert-success" [translate]="message.footer.success.code"
+      [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length"></div>
+  </div>
+  <!-- 右ボタンエリア -->
+  <div class="footer-right">
+    <button class="btn btn-success mr-0" (click)="onLgSubmit()" type="button" [disabled]="noCheck">在庫出荷指示送信</button>
+  </div>
+</footer>
+</ng-container>

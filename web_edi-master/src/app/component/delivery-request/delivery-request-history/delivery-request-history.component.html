@@ -1,0 +1,83 @@
+<div class="title">
+  <p>過去納品数</p>
+</div>
+<!-- メッセージエリア -->
+<div *ngIf="fileDLErrorMessageCode != null" class="file-dl-error-message-area" translate='{{fileDLErrorMessageCode}}'>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="main-container">
+      <div class="left-container">
+        <div class="left-container-header">
+          <div class="grid">
+            <div class="grid-cell narrow grid-center header text-center">
+              <p>カラー</p>
+            </div>
+            <div class="grid-cell narrow grid-center header text-center">
+              <p>サイズ</p>
+            </div>
+            <div class="grid-cell header text-center">
+              <p class="inner-header-content">登録日</p>
+              <p class="inner-header-content">納期</p>
+              <p class="inner-header-content">納品回数</p>
+              <p class="inner-header-content">合計</p>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngFor="let orderSku of orderSkuList;">
+          <div class="grid">
+            <div class="grid-cell narrow left-content-grid text-center">
+              <p>{{orderSku.colorCode}}</p>
+            </div>
+            <div class="grid-cell narrow left-content-grid text-center">
+              <p>{{orderSku.size}}</p>
+            </div>
+            <div class="grid-cell left-content-grid text-right">
+              <p>{{orderSku.historyLot | numberInput}}</p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="orverflow-x">
+        <div class="history-right-block">
+          <ng-container *ngFor="let deliveryHistory of groupedDeliveryHistoryList;">
+            <div class="history-block">
+              <div class="grid-cell header text-center">
+                <!-- 納品依頼日 -->
+                <p class="inner-header-content" appDeliveryHitoryDate>{{deliveryHistory.deliveryRequestAt}}</p>
+                <!-- リンク付き納期。承認済みはVIEW、未承認はEDIT -->
+                <p class="inner-header-content">
+                  <a appDeliveryHitoryDate
+                    [routerLink]="['/' + nextUrl, deliveryHistory.id, deliveryHistory.deliveryApproveStatus===APPROVAL_STATUS.ACCEPT ? PATH.VIEW : PATH.EDIT]"
+                    [queryParams]="{orderId:deliveryHistory.orderId}">
+                    {{deliveryHistory.deliveryAt}}</a>
+                </p>
+                <!-- 納品依頼回数 -->
+                <p class="inner-header-content">
+                  <span>{{deliveryHistory.deliveryCount|deliveryCount}}</span>
+                  <ng-container *ngIf="deliveryHistory.deliveryFileNoId!=null">
+                    <button type="button" class="btn btn-link float-right m-0 p-0 file-dl-btn"
+                      (click)="onFileDownload(deliveryHistory.deliveryFileNoId)">
+                      <fa-icon [icon]="['fas','file-pdf']" size="1x" [fixedWidth]="false"></fa-icon>
+                      依頼書
+                    </button>
+                  </ng-container>
+                </p>
+                <!-- 納品ID・納期・納品依頼回数ごとの納品依頼数合計 -->
+                <p class="inner-header-content text-right">{{deliveryHistory.deliveryLotSum | numberInput}}</p>
+              </div>
+              <!-- SKUごとの納品依頼数合計 -->
+              <div class="history-body">
+                <ng-container *ngFor="let deliveryLot of deliveryHistory.deliveryLotSumListBySku;">
+                  <div class="grid-cell text-right">
+                    <p>{{deliveryLot | numberInput}}</p>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

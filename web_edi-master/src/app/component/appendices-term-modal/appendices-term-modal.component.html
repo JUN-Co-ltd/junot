@@ -1,0 +1,54 @@
+<div class="modal-header">
+  <div *ngIf="washAppendicesTerm" class="modal-title" id="modal-basic-title">洗濯ネーム付記用語
+    <button type="button" class="btn btn-link p-0 mb-2">
+      <fa-icon [icon]="['fas','file-download']" [fixedWidth]="true"
+        (click)="onFileDownLoad(FUKUKITARU_MASTER_TYPE.WASH_NAME_APPENDICES_TERM)"></fa-icon>
+    </button>
+  </div>
+  <div *ngIf="attentionAppendicesTerm" class="modal-title" id="modal-basic-title">アテンションタグ付記用語
+    <button type="button" class="btn btn-link p-0 mb-2">
+      <fa-icon [icon]="['fas','file-download']" [fixedWidth]="true"
+        (click)="onFileDownLoad(FUKUKITARU_MASTER_TYPE.ATTENTION_TAG_APPENDICES_TERM)"></fa-icon>
+    </button>
+  </div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="tab-area-base">
+    <ul class="tab-menu-base">
+      <ng-container *ngFor="let tab of tabs">
+        <li [class.current]="tab.current" (click)="onTabClick($event.target.innerHTML)">{{tab.name}}</li>
+      </ng-container>
+    </ul>
+    <div class="result">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" class="name-column-1">選択</th>
+            <th scope="col" class="code-column-1">コード</th>
+            <th scope="col" class="term-column-1">付記用語</th>
+          </tr>
+        </thead>
+        <tbody id="resultBody" detect-scroll [bottomOffset]="200" [topOffset]="200">
+          <tr *ngFor="let item of resultItems;" class="{{item.selected ? 'selected' : ''}}" (click)="onSelectRow(item)">
+            <input type="hidden" value="{{item.item.appendicesTermId}}" />
+            <td class="name-column-2">
+              <input type="checkbox" checked="{{item.selected ? 'checked' : ''}}"
+                (click)="onSelectCheckbox($event.target)" />
+            </td>
+            <td class="code-column-2">{{item.item.appendicesTermCode}}</td>
+            <td class="term-column-2"><span [innerHTML]='item.item.appendicesTermSentence'></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br>
+  </div>
+</div>
+<div class="modal-footer">
+  <div class="alert-danger" [translate]="overallErrorMsgCode" [translateParams]="{ maxSelectCount: EXCEEDED_MAX_SELECT_COUNT }" *ngIf="overallErrorMsgCode.length!==0">
+  </div>
+  <button type="button" *ngIf="resultItems.length > 0" class="btn btn-outline-dark" (click)="onSelect()">選択</button>
+</div>

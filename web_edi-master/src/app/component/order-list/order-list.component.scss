@@ -1,0 +1,36 @@
+div.form-season {
+  padding-right: 15px;
+}
+
+div.period-center {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+div.table-wrapper {
+  overflow: scroll;
+  width: auto;
+  height: 80vh;
+}
+
+.leadeng {
+  height: 25px;
+  border-radius: 5px;
+  display:  inline-block;
+  box-sizing:  border-box;
+  margin-left: 4px;
+  padding:  0px;
+  text-align:  center;
+}
+.leadeng:nth-child(1) {
+  width:100px;
+  background-color:#ff7f50;
+}
+.leadeng:nth-child(2) {
+  width:70px;
+  background-color:#FFB499;
+}
+.leadeng:nth-child(3) {
+  width:70px;
+  background-color:#dddddd;
+}

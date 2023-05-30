@@ -1,0 +1,15 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../out-tsc/app",
+		"module": "es2015",
+    // PRD_0031 mod SIT start
+		//"types": []
+    "types": ["node"]
+    // PRD_0031 mod SIT end
+	},
+	"exclude": [
+		"src/test.ts",
+		"**/*.spec.ts"
+	]
+}

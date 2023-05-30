@@ -1,0 +1,54 @@
+<!-- サイズマスタが取得できない(SKUがない)時はメッセージを表示、それ以外はSKU入力フォームを表示 -->
+<div *ngIf="isNoSizeMasta; then noSkuInfo; else displaySku"></div>
+<ng-template #noSkuInfo>
+  <div class="ml-3" [translate]="'INFO.SET_PART_NO_KIND'"></div>
+  <div class="ml-3 no-sku-no-order" [translate]="'INFO.NO_SKU_NO_ORDER'"></div>
+</ng-template>
+<ng-template #displaySku>
+  <div class="">
+    <input type="button" (click)="onAddSkuForm()" class="btn btn-secondary btn-outline-dark badge-pill btn-sm"
+      value="追加" />
+  </div>
+  <div class="col-container size-contenar" [formGroup]="parentForm" *ngIf="parentForm">
+    <div class="grid">
+      <div class="grid-cell fixed">
+        <p></p>
+      </div>
+      <ng-container *ngFor="let sizeMaster of sizeMasterList">
+        <div class="grid-cell flexible text-center">
+          <p>{{sizeMaster.szkg}}</p>
+        </div>
+      </ng-container>
+    </div>
+    <div formArrayName="skus">
+      <ng-container *ngFor="let colorItem of fCtrlSkus; let rowIndex=index">
+        <div class="grid" [formGroupName]="rowIndex">
+          <div class="grid-cell fixed">
+            <div class="input-group">
+              <input type="tel" (input)="onChangeColorCode($event.target.value,rowIndex)" formControlName="colorCode"
+                class="form-control code_2" maxlength="2" [attr.disabled]="isColorCodeDisabled(colorItem)?'':null"
+                [ngClass]="{'is-invalid':submitted && (parentForm.touched || parentForm.dirty) && colorItem['controls']['colorCode']['errors']?.pattern}" />
+              <div class="input-group-append">
+                <!-- 色コードが非活性であればモーダル表示ボタンも非活性(ボタンの活性はtsで制御できない為ここで制御) -->
+                <button class="btn btn-outline-secondary iconBtn" (click)="openSearchColorModal(rowIndex)" type="button"
+                  [attr.disabled]="isColorCodeDisabled(colorItem)?'':null">
+                  <fa-icon icon="search"></fa-icon>
+                </button>
+              </div>
+              <p class="color-name" [ngClass]="{'color-code-error':colorItem.errors?.existsData}">{{colorItem.get('colorName').value}}</p>
+            </div>
+          </div>
+          <ng-container formArrayName="sizeList" *ngFor="let sku of colorItem.get('sizeList')['controls']; let colIndex=index">
+            <div class="grid-cell flexible">
+              <div [formGroupName]="colIndex">
+                <input type="checkbox" formControlName="select" class="form-control"
+                (change)="onChangeSizeCheck(colorItem.get('colorCode').value, sku, rowIndex)"
+                [attr.disabled]="isSkuDisabled(sku)?'':null">
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

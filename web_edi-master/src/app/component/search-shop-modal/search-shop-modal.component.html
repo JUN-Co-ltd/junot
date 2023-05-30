@@ -1,0 +1,138 @@
+<ng-container *ngIf="divisions$ | async as divisions">
+  <div class="modal-header">
+    <div class="modal-title" id="modal-basic-title">店舗検索</div>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form #searchForm="ngForm" (ngSubmit)="onSearch()">
+
+      <div class="row form-inline">
+
+        <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+          <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">事業部</label>
+          <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+            <select class="custom-select" name="divisionCode" [(ngModel)]="searchCondition.divisionCode">
+              <option></option>
+              <option *ngFor="let division of divisions;" [value]="division.code1">{{division.item2}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+          <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">電話番号</label>
+          <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+            <input type="text" class="form-control" name="telban" [(ngModel)]="searchCondition.telban" maxlength="15">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row form-inline mt-1">
+
+        <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+          <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">店舗コード</label>
+          <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+            <input type="text" class="form-control length_10" length="8" name="shpcd"
+              [(ngModel)]="searchCondition.shpcd" maxlength="8">
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-lg-6 col-xl-6 explain pl-4">
+          ※電話番号はハイフン(-)付きで入力してください。
+        </div>
+
+      </div>
+
+      <div class="row form-inline mt-1">
+        <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+          <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">店舗名</label>
+          <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+            <input type="text" class="form-control" name="name" [(ngModel)]="searchCondition.name" maxlength="100">
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end col-sm-12 col-lg-6 col-xl-6">
+          <button type="submit" class="btn btn-outline-dark" [disabled]="loading">検索</button>
+        </div>
+      </div>
+    </form>
+
+    <hr>
+    <div class="loader-bg" *ngIf="loading">
+      <div class="loading search-loading"></div>
+    </div>
+
+    <ng-container *ngIf="searchResults.length === 0; else resultTable">
+      <p>検索結果がありません</p>
+    </ng-container>
+
+    <ng-template #resultTable>
+
+      <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+
+        <table class="sticky-table">
+
+          <thead>
+            <tr>
+              <th scope="col" class="width-230">店舗コード<br>店舗名</th>
+              <th scope="col" class="width-335">
+                <div class="address-caption">住所</div>
+              </th>
+              <th scope="col" class="width-135">電話番号<br>FAX番号</th>
+              <th scope="col" class="width-95">開店日<br>閉店日</th>
+            </tr>
+          </thead>
+
+          <tbody detect-scroll>
+
+            <tr *ngFor="let result of searchResults; index as idx" [ngClass]="{'selected':idx === selectedIdx}"
+              (click)="onSelectRow(result, idx)">
+              <td>
+                <div class="ellipsis" placement="top" ngbTooltip="{{result.name}}">
+                  {{result.shpcd}}<br>
+                  {{result.name}}
+                </div>
+              </td>
+              <td class="align-top">
+                {{result.add1}}{{result.add2}}{{result.add3}}{{result.add4}}
+              </td>
+              <td>
+                <div>
+                  {{result.telban}}
+                </div>
+                <div>
+                  {{result.faxban}}
+                </div>
+              </td>
+              <td>
+                <div>
+                  <span *ngIf="result.opnymd !== '00000000'">
+                    {{result.opnymd | dateInput: true}}
+                  </span>
+                </div>
+                <div>
+                  <span *ngIf="result.clsymd !== '00000000'">
+                    {{result.clsymd | dateInput: true}}
+                  </span>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </ng-template>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" *ngIf="searchResults.length > 0" class="btn btn-outline-dark"
+      (click)="onSelectConfirm()">選択</button>
+  </div>
+</ng-container>

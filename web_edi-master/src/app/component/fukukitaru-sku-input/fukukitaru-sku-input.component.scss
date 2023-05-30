@@ -1,0 +1,82 @@
+.grid-sku {
+  min-width: 80px;
+  max-width: 80px;
+}
+
+@media screen and (min-width:320px) and (max-width:480px) {
+  .fixed-color {
+    width: 60px;
+  }
+
+  .color-name {
+    display: none;
+  }
+}
+
+@media screen and (min-width:480px) {
+  .fixed-color {
+    width: 150px;
+  }
+}
+
+.fixed-sum {
+  width: 60px;
+}
+
+.grid-cell p {
+  display: block;
+  margin: 0;
+  padding: 5px;
+  color: #000;
+  text-decoration: none;
+}
+
+table {
+  width: 100%;
+}
+
+div.left-heading {
+  width: 250;
+}
+
+div.header {
+  margin: 0px;
+  height: 72px;
+}
+
+div.overflow-x {
+  overflow-x: scroll;
+}
+
+div.main-container {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+}
+
+.size-container {
+  max-height: 100%;
+}
+
+.grid {
+  margin: 0;
+  padding: 0;
+  display: -webkit-flex;
+  display: flex;
+  list-style: none;
+}
+
+.grid-cell {
+  margin: 5px;
+  padding: 0px;
+  border-radius: 5px;
+  line-height: 1;
+  color: #000;
+  background: #fff;
+}
+
+div.grid-height {
+  min-height: 53px;
+}

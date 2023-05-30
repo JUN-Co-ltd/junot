@@ -1,0 +1,20 @@
+header {
+  height: 52px;
+  width: 100%;
+  max-width: 1260px;
+  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  border-bottom: 4px solid hsla(0, 0%, 67%, 0.664);
+  z-index: 10;
+}
+
+.logo {
+  max-width: 90px;
+  max-height: 24px;
+}
+
+.userInfo {
+  font-size: 14px;
+  line-height: initial;
+}

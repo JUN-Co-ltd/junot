@@ -1,0 +1,55 @@
+<div class="modal-header">
+    <div class="modal-title" id="modal-basic-title">{{title}}
+      <button type="button" class="btn btn-link p-0 mb-2">
+        <fa-icon [icon]="['fas','file-download']" [fixedWidth]="true"
+          (click)="onFileDownLoad(type)"></fa-icon>
+      </button>
+    </div>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="tab-area-base">
+      <ul class="tab-menu-base">
+        <ng-container *ngFor="let tab of tabs">
+          <li [class.current]="tab.current" (click)="onTabClick($event.target.innerHTML)">{{tab.name}}</li>
+        </ng-container>
+      </ul>
+      <div class="result">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" class="select-column-1">選択</th>
+              <th scope="col" class="sort-column-1">並び順</th>
+              <th scope="col" class="partno-column-1">品番</th>
+              <th scope="col" class="various-column-1">種類<br/>品名<br/>タイトル</th>
+              <th scope="col" class="sentence-column-1">アテンション文</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody" detect-scroll [bottomOffset]="200" [topOffset]="200">
+            <tr *ngFor="let item of resultItems;" class="{{item.selected ? 'selected' : ''}}" (click)="onSelectRow(item)">
+              <td class="code-column-2">
+              </td>
+              <td class="select-column-2">
+                <input type="checkbox" class="form-control" checked="{{item.selected ? 'checked' : ''}}" 
+                  (click)="onSelectCheckbox($event.target)"  />
+              </td>
+              <td class="sort-column-2"><input type="text" class="form-control" maxlength="1" [(ngModel)]="item.item.sortOrder"
+                (click)="$event.stopPropagation()" (blur)="onBlurSortOrder(item)" [disabled]="!item.selected" ></td>
+              <td class="partno-column-2">{{item.master.materialCodeName}}<br>({{item.master.oldMaterialCode}})</td>
+              <td class="various-column-2">
+                <span [innerHTML]='item.master.type'></span><br/><span [innerHTML]='item.master.productName'></span><br/><span [innerHTML]='item.master.title'></span>
+              </td>
+              <td class="sentence-column-2"><span [innerHTML]='item.master.sentence'></span></td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+  </div>
+  </div>
+  <div class="modal-footer">
+    <div class="alert-danger" [translate]="overallErrorMsgCode" [translateParams]="{ maxSelectCount: EXCEEDED_MAX_SELECT_COUNT }" *ngIf="overallErrorMsgCode.length!==0">
+    </div>
+    <button type="button" class="btn btn-outline-dark" (click)="onSelect()">選択</button>
+  </div>

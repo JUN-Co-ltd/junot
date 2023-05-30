@@ -1,0 +1,124 @@
+$border: 1px #ced4da;
+
+div {
+  &.main-container {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+  }
+
+  &.orverflow-x {
+    overflow-x: scroll;
+    display: flex;
+
+    // FF Only
+    @media screen and (-moz-images-in-menus: 0) {
+      direction: rtl; // スクロール初期位置を右端にする
+    }
+
+    // Chrome Only
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+      direction: rtl; // スクロール初期位置を右端にする
+    }
+
+    // Edge Only
+    @supports (-ms-ime-align:auto) {
+      direction: rtl; // スクロール初期位置を右端にする
+    }
+
+    div.history-right-block {
+
+      // FF Only
+      @media screen and (-moz-images-in-menus: 0) {
+        direction: ltr; // 親要素のdirection: rtlで子要素の表示順が変わってしまうので戻す
+      }
+
+      // Chrome Only
+      @media screen and (-webkit-min-device-pixel-ratio:0) {
+        direction: ltr; // 親要素のdirection: rtlで子要素の表示順が変わってしまうので戻す
+      }
+
+      // Edge Only
+      @supports (-ms-ime-align:auto) {
+        direction: ltr; // 親要素のdirection: rtlで子要素の表示順が変わってしまうので戻す
+      }
+    }
+
+  }
+
+  &.grid {
+    margin: 0;
+    padding: 0;
+    display: -webkit-flex;
+    display: flex;
+    list-style: none;
+  }
+
+  &.grid-center {
+    display: flex;
+    /* 左右中央揃え */
+    justify-content: center;
+    /* 上下中央揃え */
+    align-items: center;
+  }
+
+  &.grid-cell {
+    margin: 0px;
+    padding: 0px;
+    line-height: 1;
+    color: #000;
+    background: #fff;
+    width: 115px;
+    height: 35px;
+    border: $border solid;
+
+    &.narrow {
+      width: 65px;
+    }
+
+    &.header {
+      margin: 0px;
+      height: 113px;
+    }
+
+    p {
+      display: block;
+      margin: 0;
+      padding: 5px;
+      color: #000;
+      text-decoration: none;
+
+      &.inner-header-content {
+        border: $border dotted;
+        width: inherit;
+      }
+    }
+
+  }
+
+  &.history-right-block {
+    display: flex;
+  }
+
+  &.file-dl-error-message-area {
+    color: red;
+    margin: 5px;
+  }
+}
+
+a {
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+
+  &.file-dl-btn {
+    display: block;
+    position: relative;
+    top: -5px;
+    left: -5px;
+  }
+}

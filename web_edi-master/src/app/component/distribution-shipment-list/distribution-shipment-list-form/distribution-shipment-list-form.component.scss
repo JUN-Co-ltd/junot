@@ -1,0 +1,15 @@
+label {
+  &.caption {
+    // PRD_0004 mod SIT start
+    //min-width: 70px;
+    min-width: 80px;
+    // PRD_0004 mod SIT end
+    margin-right: 10px;
+    justify-content: start;
+  }
+  &.caption-short {
+    @extend .caption;
+    min-width: 50px;
+  }
+  white-space: nowrap;
+}

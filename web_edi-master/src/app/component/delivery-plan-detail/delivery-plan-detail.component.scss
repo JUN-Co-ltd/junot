@@ -1,0 +1,90 @@
+div.order-form-container {
+  margin-top: 30px;
+
+  p {
+    margin: 0;
+  }
+
+  div {
+    font-size: 13.5px;
+
+    &.table-heading-row {
+      display: flex;
+    }
+
+    &.all-content-container {
+      display: flex;
+
+      div {
+        &.delivery-plan-details-container {
+          width: 460px;
+          overflow-x: scroll;
+          display: flex;
+        }
+
+        &.order-sku-aggregate-row {
+          display: flex;
+        }
+
+        &.order-sku-cell-row {
+          display: flex;
+        }
+      }
+    }
+
+    div {
+      &.grid-cell {
+        line-height: 2;
+        padding: 5px;
+        height: 35px;
+        background: #fff;
+        border-top: solid 1px black;
+        border-left: solid 1px black;
+      }
+
+      &.end-row-grid-cell {
+        border-bottom: solid 1px black;
+      }
+
+      &.end-column-grid-cell {
+        border-right: solid 1px black;
+      }
+    }
+  }
+}
+
+div {
+  $width-s: 54px; // sの基準サイズ
+  $width-m: 82px; // mの基準サイズ
+  $width-l: 115px; // lの基準サイズ
+
+  &.grid-width-s {
+    width: $width-s;
+    min-width: $width-s;
+  }
+
+  &.grid-width-s-double {
+    width: $width-s * 2;
+    min-width: $width-s * 2;
+  }
+
+  &.grid-width-m {
+    width: $width-m;
+    min-width: $width-m;
+  }
+
+  &.grid-width-m-double {
+    width: $width-m * 2;
+    min-width: $width-m * 2;
+  }
+
+  &.grid-width-l {
+    width: 114.7px;
+    min-width: 114.7px;
+  }
+
+  &.delivery-plan-details-container {
+    width: $width-l * 4;
+    min-width: $width-l * 4;
+  }
+}

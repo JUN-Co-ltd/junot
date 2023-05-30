@@ -1,0 +1,329 @@
+<div class="pl-4 pr-4 invalid-feedback custom_error_msg" translate id="noDataErrorInfo" name="errorInfo"></div>
+
+<form [formGroup]="mainForm" *ngIf="isInitDataSetted">
+  <div class="container-fluid main">
+
+    <div class="row title">
+      <!-- 商品タイトル -->
+      <div class="col-xl-7 col-lg-10 col-12" id="ank1">
+        <span>{{itemData.partNo | partNoInput}}-{{seasonValue}}</span><span class="ml-2">{{itemData.productName}}</span>
+      </div>
+      <!-- 発注No -->
+      <div class="col-xl-3 col-8 text-xl-right">
+        <span *ngIf="orderData && isConfirmed">発注No:{{orderData?.orderNumber}}</span>
+      </div>
+      <!-- 確定・承認ステータスラベル 発注情報がある時のみ表示 -->
+      <div class="col-xl-2 col-4">
+        <span [ngClass]="showOrderStatusClass()" *ngIf="orderData">
+          <span>{{orderStatusText()}}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xl-10">
+        <div class="row">
+          <!-- 生産メーカー -->
+          <div class="col-sm-12 col-lg-12 col-xl-7 form-group" id="ank2">
+            <label class="control-label">生産メーカー</label>{{mainForm.get('mdfMakerName').value}}
+          </div>
+          <!-- 費目 -->
+          <div class="col-sm-12 col-lg-12 col-xl-3 form-group">
+            <div class="input-group">
+              <label class="control-label">費目</label>
+              <select class="custom-select form-control" name="expenseItem" formControlName="expenseItem" aria-label="">
+                <option value="01">製品発注</option>
+                <option disabled value="04">縫製発注</option>
+                <option disabled value="24">生地縫製発注</option>
+              </select>
+            </div>
+          </div>
+          <!-- 自動裁断 -->
+          <div class="col-sm-12 col-lg-12 col-xl-2 form-group">
+            <label>
+              <input type="checkbox" value="1" checked disabled>&nbsp;自動裁断
+              <input type="hidden" formControlName="cutAutoType" [ngModel]="1">
+            </label>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- 生産工場名 -->
+          <div class="col-sm-12 col-lg-12 col-xl-6 form-group">
+            <label class="control-label">生産工場名</label>{{orderData.mdfMakerFactoryName}}
+          </div>
+          <!-- 年度 -->
+          <div class="col-sm-12 col-lg-12 col-xl-2 form-group">
+            <label class="control-label min">年度</label>{{itemData.year}}
+          </div>
+          <!-- 季節 -->
+          <div class="col-sm-12 col-lg-12 col-xl-2 form-group">
+            <label class="control-label min">季節</label>{{itemData.seasonCode}}:{{seasonName}}
+          </div>
+          <!-- 引取回数 -->
+          <div class="col-sm-12 col-lg-12 col-xl-2 form-group">
+            <label class="control-label min">引取回数</label>{{orderData.deliveryCount}}
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- 生産発注日 -->
+          <div class="col-sm-12 col-lg-6 col-xl-4 form-group pr-0">
+            <div class="input-group">
+              <label class="control-label no-gutters col-sm-5 col-lg-5 col-xl-5 p-0">生産発注日</label>
+              <input
+                class="form-control length_10 no-gutters col-sm-9 col-lg-9 col-xl-9"
+                type="text"
+                name="productOrderAt"
+                formControlName="productOrderAt"
+                appDateInput ngbDatepicker #productOrderAt="ngbDatepicker" />
+            </div>
+          </div>
+          <!-- 上代(税無) -->
+          <div class="col-sm-12 col-lg-3 col-xl-5 form-group form-inline d-flex p-0">
+            <label class="control-label no-gutters col-sm-5 col-lg-5 col-xl-5 p-0">上代(税無)</label>
+            <input
+              class="form-control length_10 text-right"
+              type="tel"
+              name="retailPrice"
+              [value]="mainForm.get('retailPrice').value | number"
+              formControlName="retailPrice"
+              />
+          </div>
+          <!-- 単価 -->
+          <div class="col-sm-12 col-lg-3 col-xl-3 form-group form-inline d-flex p-0">
+            <label class="control-label no-gutters col-sm-3 col-lg-3 col-xl-3">単価</label>
+            <input
+              class="form-control length_10 text-right"
+              type="tel"
+              name="unitPrice"
+              [value]="mainForm.get('unitPrice').value | number"
+              formControlName="unitPrice"
+              />
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- 生産納期 -->
+          <div class="col-sm-12 col-lg-6 col-xl-4 form-group pr-0">
+            <div class="input-group ">
+              <label class="control-label no-gutters col-sm-5 col-lg-5 col-xl-5 p-0">生産納期</label>
+              <input
+                class="form-control length_10 no-gutters col-sm-9 col-lg-9 col-xl-9"
+                type="text"
+                name="productCorrectionDeliveryAt"
+                formControlName="productCorrectionDeliveryAt"
+                appDateInput ngbDatepicker #productCorrectionDeliveryAt="ngbDatepicker" />
+            </div>
+          </div>
+          <!-- PRD_0023 add JFE start -->
+          <div class="col-sm-12 col-lg-3 col-xl-5 form-group form-inline d-flex p-0">
+            <label class="control-label no-gutters col-sm-5 col-lg-5 col-xl-5 p-0">原価合計
+              <ng-container *ngIf="affiliation===AUTH_INTERNAL">・原価率</ng-container>
+            </label>
+            <input disabled [value]="calculateTotal() > 0 ? calculateTotal() : ''" type="tel" class="form-control length_10 text-right" formControlName="totalCost"
+              name="totalCost" maxlength="9"  />
+            <ng-container *ngIf="affiliation===AUTH_INTERNAL">
+              <span class="ml-1" [ngClass]="{'red-font' : calculateCostRate() > 100}">({{calculateCostRate()}}%)</span>
+            </ng-container>
+          </div>
+          <!-- PRD_0023 add JFE end -->
+          <!-- 金額 -->
+          <div class="col-sm-12 col-lg-3 col-xl-3 money form-group form-inline d-flex p-0">
+            <label class="control-label no-gutters col-sm-3 col-lg-3 col-xl-3">金額</label>
+            <span class="text-right mt-1">{{orderAmount | number}}</span>
+          </div>
+        </div>
+
+        <!-- PRD_0023 add JFE start -->
+        <div class="row form-inline mb-2">
+          <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 form-group" [ngStyle]="{'padding-right': '-15px'}">
+            <label class="control-label">生地原価</label>
+            <input disabled #matlVal type="tel" class="form-control length_10 text-right" formControlName="matlCost"
+              name="matlCost" maxlength="9"  />
+          </div>
+          <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 pr-0 form-group " [ngStyle]="{'padding-right':'5px'}">
+            <label class="control-label" [ngStyle]="{'padding-right':'10px'}">加工原価</label>
+            <input disabled #processingVal type="tel" class="form-control length_10 text-right" formControlName="processingCost"
+              name="processingCost" maxlength="9" />
+          </div>
+          <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 pr-0 form-group " [ngStyle]="{'padding-right':'5px'}">
+            <label class="control-label">附属原価</label>
+            <input disabled #accrVal type="tel" class="form-control length_10 text-right" formControlName="attachedCost"
+              name="attachedCost" maxlength="9" />
+          </div>
+          <div  class="col-sm-12 col-lg-3 col-xl-3 mb-2 form-group" [ngStyle]="{'padding-right': '-15px'}">
+            <label class="control-label">その他</label>
+            <input type="tel" class="form-control length_10 text-right" appNumberInput formControlName="otherCost"
+              name="otherCost" maxlength="9" disabled />
+          </div>
+          <div class="col-sm-12 col-lg-4 col-xl-3 mb-2 pr-0 form-group">
+            <label class="control-label">生地単価</label>
+            <input disabled type="tel" class="form-control length_10 text-right" formControlName="matlUnitPrice"
+              name="matlUnitPrice" maxlength="9"  />
+          </div>
+          <div class="col-sm-12 col-lg-4 col-xl-4 mb-2 pr-0 form-group">
+            <div class="input-group remaining-order">
+              <label class="control-label no-gutters">発注残数</label>
+              <span class="no-gutters text-right">{{remainingOrder() | numberInput}}</span>
+            </div>
+          </div>
+        </div>
+        <!-- PRD_0023 add JFE end -->
+
+        <!-- 色・サイズ -->
+        <div class="title">
+          <label class="control-label" id="ank3">色・サイズ</label>
+        </div>
+        <app-sku-input
+          class="order"
+          [parentForm]="mainForm"
+          [skuList]="skusValue"
+          [orderSkuValue]="orderSkuValue"
+          [isConfirmed]="isConfirmed"
+          [isOrderComplete]="isOrderComplete"
+          [deliveryList]="deliveryList"
+          [path]="path"
+          [affiliation]="affiliation">
+        </app-sku-input>
+        <!-- 組成 -->
+        <div class="title">
+          <label class="control-label with-status" id="ank4">
+            <div class="d-flex align-items-center">
+              組成
+              <!-- 優良誤認承認ステータスラベル -->
+              <span *ngIf="showQualityApprovalStatuslabel(itemData.qualityCompositionStatus)"
+              class="badge ml-1"
+              [ngClass]="showQualityStatusClass(itemData.qualityCompositionStatus)">
+                {{showQualityApprovalStatuslabel(itemData.qualityCompositionStatus)}}
+              </span>
+            </div>
+          </label>
+        </div>
+
+        <div class="row">
+          <ng-container *ngFor="let corloItem of compViewList;">
+            <div class="col-xl-6 mb-4">
+              <p>{{corloItem.colorCode}} {{corloItem.colorName}}</p>
+              <div class="row borderBottom" *ngFor="let composition of corloItem.compositions;">
+                <div class="col-xl-5 p-1">
+                  {{composition.partsName}}
+                </div>
+                <div class="col-xl-5 p-1">
+                  {{composition.compositionName}}
+                </div>
+                <div class="col-xl-2 p-1">
+                  {{composition.percent}}
+                  <ng-container *ngIf="composition.percent > 0">%</ng-container>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="title" id="ank5">摘要
+          <small>(300文字以内で入力してください。)</small>
+        </div>
+        <div class="row form-group">
+          <div class="col-sm-12 col-lg-12 col-xl-12">
+            <textarea class="form-control" formControlName="application" maxlength="300"></textarea>
+          </div>
+        </div>
+        <div class="title" id="ank6">その他</div>
+
+        <div class="row">
+          <div class="col-sm-12 col-lg-8 col-xl-8">
+
+            <div class="row">
+              <div class="col-sm-12 col-lg-6 col-xl-6">
+                <label class="control-label with-status">製造担当</label>
+                {{orderData.mdfStaffName}}
+              </div>
+              <div class="col-sm-12 col-lg-6 col-xl-6">
+                <label class="control-label with-status">委託先工場</label>
+                {{mainForm.get('consignmentFactory').value}}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12 col-lg-12 col-xl-12">
+                <!-- 原産国 -->
+                <label class="control-label with-status">
+                  <div>
+                    原産国
+                    <!-- 優良誤認承認ステータスラベル -->
+                    <span *ngIf="showQualityApprovalStatuslabel(itemData.qualityCooStatus)"
+                      class="badge ml-1" [ngClass]="showQualityStatusClass(itemData.qualityCooStatus)">
+                      {{showQualityApprovalStatuslabel(itemData.qualityCooStatus)}}
+                    </span>
+                  </div>
+                </label>
+                {{mainForm.get('cooName').value}}
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-lg-4 col-xl-4">
+            <div class="col-sm-12 col-lg-12 col-xl-12">
+              <label class="control-label">上代金額</label>
+              {{orderData.retailPrice * sumAllOrderQuantity() | number}}
+              <br />
+              <label class="control-label">発注金額</label>
+              {{orderData.productCost * sumAllOrderQuantity() | number}}
+              <br />
+              <label class="control-label">原価金額</label>
+                {{orderData.productCost * sumAllOrderQuantity() | number}}
+                <span class="percentage" >({{ calculateCostRate() }}%)</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="col-xl-2">
+        <!-- 品番情報リンク -->
+        <ng-container *ngIf="itemData.registStatus===REGIST_STATUS.PART">
+          <button type="button" class="btn btn-outline-info btn-sm btn-block text-left" name="button_sidemenu"
+            [routerLink]="['/items', itemData.id, PATH.EDIT]" [queryParams]="{viewMode:VIEW_MODE.PART_EDIT}">
+              <fa-icon [icon]="['fas','angle-right']" [fixedWidth]="true"></fa-icon>品番情報
+          </button>
+        </ng-container>
+
+        <!-- ページ内リンク(項目へ遷移)-->
+        <div class="side">
+          <input type="button" (click)="scrollEvent('ank3')" class="btn btn_side mb-2" name="button_sidemenu" value="色・サイズ" />
+          <input type="button" (click)="scrollEvent('ank2')" class="btn btn_side" name="button_sidemenu" value="生産メーカ" />
+          <input type="button" (click)="scrollEvent('ank4')" class="btn btn_side" name="button_sidemenu" value="組成" />
+          <input type="button" (click)="scrollEvent('ank5')" class="btn btn_side" name="button_sidemenu" value="摘要" />
+          <input type="button" (click)="scrollEvent('ank6')" class="btn btn_side mb-2" name="button_sidemenu" value="その他" />
+          <input type="button" (click)="scrollEvent('ank1')" class="btn btn_side" name="button_sidemenu" value="先頭に戻る" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <!-- メッセージエリア-->
+    <div class="footer-center">
+      <div class="alert-danger ml-2" translate='{{overall_error_msg_code}}' *ngIf="overall_error_msg_code.length"></div>
+      <div class="alert-success ml-2" translate='{{overall_susses_msg_code}}' *ngIf="overall_susses_msg_code.length">
+      </div>
+    </div>
+
+    <!-- 右ボタンエリア -->
+    <div class="footer-right">
+      <!-- 状態が未承認、且つログインユーザに承認権限がある場合に承認ボタンを表示 -->
+      <ng-container>
+        <button
+          class="btn btn-success  mr-0"
+          *ngIf="isApproveableUser() && isApproveableStatus()"
+          type='submit'
+          (click)="onApproval()"
+          name="button_submit"
+          [disabled]="isBtnLock || itemData.readOnly || orderData.readOnly">承認</button>
+      </ng-container>
+    </div>
+  </footer>
+
+</form>

@@ -1,0 +1,93 @@
+.text-height {
+  height: 30vh;
+  size: 30vh;
+}
+
+.placeholder-default::placeholder {
+  color: #B0C4DE;
+}
+
+.placeholder-default::-webkit-input-placeholder {
+  color: #B0C4DE;
+}
+
+.placeholder-default:-ms-input-placeholder {
+  color: #B0C4DE;
+}
+
+span.makerName {
+  padding-left: 10px;
+}
+
+b {
+  font-weight: bold;
+}
+
+div.row div.form-check-inline {
+  padding: 0;
+  margin: 0;
+}
+
+.bottom {
+  margin-bottom: 70px;
+}
+
+.red {
+  color: red;
+}
+
+.text-margin-left {
+  margin-left: 435px;
+}
+
+.div-margin-left {
+  margin-left: 40px;
+}
+
+.title-middle {
+  width: 120px;
+  //border: 1px solid BLUE;
+  margin-left: 20px;
+  float: left;
+}
+
+.title-short {
+  width: 100px;
+  //border: 1px solid BLUE;
+  margin-left: 10px;
+  float: left;
+}
+
+.data-middle {
+  width: 300px;
+  margin-left: 10px;
+  float: left;
+}
+
+.brand {
+  width: 70px;
+}
+
+.hkbn-title {
+  width: 90px;
+}
+
+.hkbn {
+  margin: 0px;
+}
+
+.hkbn-table {
+  border-spacing: 0px;
+}
+
+.float-div {
+  float: left;
+}
+
+.float-clear {
+  clear: both;
+}
+
+.border {
+  border: solod;
+}

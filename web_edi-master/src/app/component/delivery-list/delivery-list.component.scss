@@ -1,0 +1,126 @@
+$width1:20px;
+//PRD_0127 #9837 mod JFE start
+// $width2:50px;
+// $width3:90px;
+$width2:55px;
+$width3:80px;
+//PRD_0127 #9837 mod JFE start
+$width4:100px;
+$width5:115px;
+// PRD_0011 mod SIT start
+$width7:280px;
+// PRD_0011 mod SIT end
+span.period-center {
+  padding: 5px;
+}
+
+div.padding-right0 {
+  padding-right: 0;
+}
+
+div.margin-right0 {
+  margin-right: 0;
+}
+
+// PRD_0011 add SIT start
+.input-group {
+  display: contents;
+  width: 100%;
+}
+// PRD_0011 add SIT end
+
+.form-group {
+  span {
+    &.label {
+      min-width: 100px;
+      margin-right: 15px;
+    }
+    &.label-short {
+      @extend .label;
+      min-width: 70px;
+    }
+  }
+}
+
+/* テーブル */
+div.table-wrapper {
+  overflow: scroll;
+  width: auto;
+  height: 560px;
+}
+
+table.sticky-table {
+  border: 1px solid rgb(175, 165, 240);
+  border-spacing: 0;
+  border-collapse: separate;
+
+  thead th {
+    font-weight: bold;
+    background-color: #e6e6fa;
+    /* 縦スクロール時に固定する */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    /* tbody内のセルより手前に表示する */
+    z-index: 1;
+  }
+
+  th,
+  td {
+    font-size: 14px;
+    font-weight: normal;
+    padding: 5px;
+    border: 1px solid gray;
+    vertical-align: top;
+
+    &.width-1 {
+      width: $width1;
+      min-width: $width1;
+    }
+
+    &.width-2 {
+      width: $width2;
+      min-width: $width2;
+    }
+
+    &.width-3 {
+      width: $width3;
+      min-width: $width3;
+    }
+
+    &.width-4 {
+      width: $width4;
+      min-width: $width4;
+    }
+
+    &.width-5 {
+      width: $width5;
+      min-width: $width5;
+    }
+
+    &.width-7 {
+      width: $width7;
+      min-width: $width7;
+    }
+  }
+
+  .ellipsis {
+    width: $width7;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  .font-red {
+    color: rgb(255, 0, 0);
+  }
+
+  .font-blue {
+    color: rgb(0, 0, 255);
+  }
+
+  .font-green {
+    color: rgb(10, 199, 0);
+  }
+}

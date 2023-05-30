@@ -1,0 +1,209 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-basic-title">返品商品検索</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form #searchForm="ngForm" [appFromToCheck]="['retailPriceFrom', 'retailPriceTo']" (ngSubmit)="onSearch()">
+    <div class="row form-inline">
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">ブランド</label>
+        <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <input type="text" class="form-control" name="brandCodes" [(ngModel)]="searchCondition.brandCodes"
+            maxlength="100">
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">メーカー</label>
+        <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <span>{{supplier.code}}</span><span class="ml-1">{{supplier.name}}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row form-inline mt-1">
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">アイテム</label>
+        <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <input type="text" class="form-control" name="itemCodes" [(ngModel)]="searchCondition.itemCodes"
+            maxlength="100">
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">カラー</label>
+        <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <input type="text" class="form-control" name="colorCodes" [(ngModel)]="searchCondition.colorCodes"
+            maxlength="100">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row form-inline mt-1">
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">商品コード</label>
+        <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <input type="text" class="form-control" name="productCode" [(ngModel)]="searchCondition.productCode"
+            maxlength="17">
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">サイズ</label>
+        <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <input type="text" class="form-control" name="sizeList" [(ngModel)]="searchCondition.sizeList"
+            maxlength="100">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row form-inline mt-1">
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">品番</label>
+        <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <input type="text" class="form-control length_10" name="partNo" [(ngModel)]="
+            searchCondition.partNo" maxlength="9">
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">シーズン</label>
+        <div class="d-flex col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <ng-container *ngFor="let season of seasons; index as idx;">
+            <label class="csr-pnt">
+              <input type="checkbox" class="csr-pnt" name="season.idx" id="season.idx" [(ngModel)]="season.selected"
+                [value]="season.id">{{season.value}}
+            </label>
+          </ng-container>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row form-inline mt-1">
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">品名</label>
+        <div class="col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <input type="text" class="form-control" name="productName" [(ngModel)]="searchCondition.productName"
+            maxlength="100">
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <label class="form-label col-sm-3 col-lg-3 col-xl-3 no-gutters">上代</label>
+        <div class="d-flex col-sm-9 col-lg-9 col-xl-9 no-gutters">
+          <input type="text" name="retailPriceFrom" class="form-control code_6"
+            [(ngModel)]="searchCondition.retailPriceFrom" maxlength="5">
+          <label class="ml-1">～</label>
+          <input type="text" name="retailPriceTo" class="form-control code_6"
+            [(ngModel)]="searchCondition.retailPriceTo" maxlength="5">
+        </div>
+
+
+        <!-- エラーメッセージ -->
+        <ng-container *ngIf="searchForm != null && searchForm.touched">
+          <div class="invalid-feedback d-block">
+            <div *ngIf="searchForm.errors?.retailPriceFromOverTo" translate='{{"ERRORS.VALIDATE.AMOUNT_FROM_OVER_TO"}}'>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+    </div>
+
+    <div class="row form-inline mt-1">
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+        <div class="checkbox pl-3">
+          <label>
+            <input type="checkbox" name="latestOrderOnly" [(ngModel)]="searchCondition.latestOrderOnly">最新発注分のみ表示
+          </label>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end col-sm-12 col-lg-6 col-xl-6">
+        <button type="submit" class="btn btn-outline-dark" [disabled]="loading">検索</button>
+      </div>
+    </div>
+  </form>
+
+  <hr>
+
+  <div class="loader-bg" *ngIf="loading">
+    <div class="loading search-loading"></div>
+  </div>
+
+  <ng-container *ngIf="searchResults.length === 0; else resultTable">
+    <p>検索結果がありません</p>
+  </ng-container>
+
+  <ng-template #resultTable>
+
+    <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+
+      <table class="sticky-table">
+
+        <thead>
+          <tr>
+            <th scope="col" class="width-160">商品コード</th>
+            <th scope="col" class="width-262">品番<br>品名</th>
+            <th scope="col" class="width-68">カラー<br>サイズ</th>
+            <th scope="col" class="width-78">ブランド<br>アイテム</th>
+            <th scope="col" class="width-120">上代<br>単価</th>
+            <th scope="col" class="width-110">発注日<br>発注No.</th>
+          </tr>
+        </thead>
+
+        <tbody detect-scroll>
+
+          <tr *ngFor="let result of searchResults; index as idx" [ngClass]="{'selected':idx === selectedIdx}"
+            (click)="onSelectRow(result, idx)">
+            <td>
+              {{result.partNo | partNoInput}}-{{result.colorCode}}-{{result.size}}</td>
+            <td>
+              <div class="ellipsis" placement="top" ngbTooltip="{{result.productName}}">
+                {{result.partNo | partNoInput}}<br>
+                {{result.productName}}
+              </div>
+            </td>
+            <td>
+              {{result.colorCode}}<br>
+              {{result.size}}
+            </td>
+            <td>
+              {{result.brandCode}}<br>
+              {{result.itemCode}}
+            </td>
+            <td class="text-right">
+              {{result.retailPrice | numberInput}}<br>
+              {{result.unitPrice | numberInput}}
+            </td>
+            <td>
+              {{result.productOrderAt | date:'yyyy/MM/dd'}}<br>
+              {{result.orderNumber}}
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </ng-template>
+</div>
+
+<div class="modal-footer">
+  <button type="button" *ngIf="searchResults.length > 0" class="btn btn-outline-dark"
+    (click)="onSelectConfirm()">選択</button>
+</div>

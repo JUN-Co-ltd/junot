@@ -1,0 +1,31 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-basic-title">登録確認</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form [formGroup]="confirmFormGroup">
+  <div class="modal-body">
+    <div class="confirm-message">
+      <p>
+        全ての納品予定明細を入力し、登録する場合は、<br>
+        以下をチェックし「登録する」を押してください。
+      </p>
+    </div>
+    <div class="check-box-row">
+      <label>
+        <input type="checkbox" formControlName="isFinalDeliveryPlan">全ての納品予定明細を入力済
+      </label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="btn-row">
+      <div class="">
+        <button type="button" class="btn btn-outline-dark btn-submit" (click)="onSubmit()">登録する</button>
+      </div>
+      <div class="">
+        <button type="button" class="btn btn-outline-dark btn-cancel" (click)="onCancel()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+</form>

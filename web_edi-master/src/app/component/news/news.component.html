@@ -1,0 +1,37 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12 col-md-3">
+      <div class="title">お知らせ</div>
+    </div>
+    <div class="col-sm-12 col-md-9 clearfix">
+      <div class="float-right text-right"><app-contact-information></app-contact-information></div>
+    </div>
+  </div>
+  <div class="row list-height">
+    <div class="col-12 news-list-frame" detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+      <!-- お知らせ0件のメッセージ -->
+      <div *ngIf="message.body.error.code.length" class="no-data-message" [translate]="message.body.error.code" [translateParams]="message.body.error.param"></div>
+
+      <div class="container-list" *ngFor="let item of searchResultItems">
+
+        <div class="under_boder">
+          <div class="row">
+            <div class="col-12 d-flex">
+              <div *ngIf="({ news:item, today:null } | isNewNews)" class="new-mark">New</div>
+              <p class="title">
+                <a routerLink="/top/news/{{item.id}}" role="button">{{item.title}}</a>
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 d-flex">
+              <div class="open-start-at-right">{{item.openStartAt | date: 'yyyy/MM/dd'}}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

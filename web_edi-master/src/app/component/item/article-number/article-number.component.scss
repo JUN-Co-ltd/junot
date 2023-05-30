@@ -1,0 +1,96 @@
+@media screen and (min-width:320px) and (max-width:480px) {
+  .fixed-color {
+    width: 60px;
+  }
+
+  .color-name {
+    display: none;
+  }
+}
+
+@media screen and (min-width:480px) {
+  .fixed-color {
+    width: 150px;
+  }
+}
+
+div.main-container {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+}
+
+div.left-color-container {
+  width: 200px;
+}
+
+div.article-number-container {
+  display: block;
+  overflow-x: scroll;
+}
+
+.grid {
+  margin: 0;
+  padding: 0;
+  display: -webkit-flex;
+  display: flex;
+  list-style: none;
+}
+
+.grid-cell {
+  margin: 2px;
+  padding: 2px;
+  height: 38px;
+  background: #fff;
+  // border: solid 1px black;
+}
+
+.grid-cell p {
+  display: block;
+  margin: 0;
+  padding: 5px;
+  color: #000;
+  text-decoration: none;
+}
+
+div {
+  $width-s: 54px; // sの基準サイズ
+  $width-m: 82px; // mの基準サイズ
+  $width-l: 150px; // lの基準サイズ
+
+  &.grid-width-s {
+    width: $width-s;
+    min-width: $width-s;
+  }
+
+  &.grid-width-s-double {
+    width: $width-s * 2;
+    min-width: $width-s * 2;
+  }
+
+  &.grid-width-m {
+    width: $width-m;
+    min-width: $width-m;
+  }
+
+  &.grid-width-m-double {
+    width: $width-m * 2;
+    min-width: $width-m * 2;
+  }
+
+  &.grid-width-l {
+    width: $width-l;
+    min-width: $width-l;
+  }
+}
+
+.no-sku {
+  font-size: 80%;
+  color: #dc3545;
+}
+
+.control-label{
+  cursor: pointer;
+}

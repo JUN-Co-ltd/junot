@@ -1,0 +1,186 @@
+<form #searchForm="ngForm">
+  <div class="row mt-3">
+    <div class="col-sd-12 col-md-8 col-lg-6 cl-xl-6 form-group">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <select class="custom-select" name="keywordType" [(ngModel)]="orderListSearchFormConditions.keywordType"
+            #keywordType="ngModel" maxlenght="200" aria-label="">
+            <!-- PRD_0107 mod JFE Start -->
+            <option [ngValue]="KEYWORD_TYPE.NO_SELECT" >キーワード</option>
+            <option [ngValue]="KEYWORD_TYPE.ITEM_NO" [selected]="true">品番</option>
+            <!-- PRD_0107 mod JFE End -->
+            <option [ngValue]="KEYWORD_TYPE.ITEM_NAME">品名</option>
+            <option *ngIf="affiliation===AUTH_INTERNAL" [ngValue]="KEYWORD_TYPE.MAKER">メーカー</option>
+            <option [ngValue]="KEYWORD_TYPE.BRAND">ブランドコード</option>
+            <option [ngValue]="KEYWORD_TYPE.ITEM_CODE">アイテムコード</option>
+            <option [ngValue]="KEYWORD_TYPE.ORDER_NO">発注No</option>
+          </select>
+        </div>
+        <input type="text" class="form-control" [(ngModel)]="orderListSearchFormConditions.keyword" #keyword="ngModel"
+          name="keyword" aria-label="..." maxlength="100">
+      </div>
+    </div>
+    <div class="col-sd-12 col-md-4 col-lg-6 cl-xl-6">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <select class="custom-select" name="staffType" [(ngModel)]="orderListSearchFormConditions.staffType"
+            #staffType="ngModel" aria-label="">
+            <option [ngValue]="STAFF_TYPE.NO_SELECT" selected>担当</option>
+            <option [ngValue]="STAFF_TYPE.PLANNING">企画</option>
+            <option [ngValue]="STAFF_TYPE.PRODUCTION">製造</option>
+            <option [ngValue]="STAFF_TYPE.PATANER">パターンナー</option>
+            <option [ngValue]="STAFF_TYPE.MAKER">メーカー担当</option>
+          </select>
+        </div>
+        <input type="text" class="form-control" name="staffName" [(ngModel)]="orderListSearchFormConditions.staffName"
+          #inputStaffName="ngModel" aria-label="..." maxlength="20">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 col-md-4 col-lg-3 col-xl-2">
+      <div class="form-group form-inline form-season">
+        <label class="tilte">シーズン</label>
+        <select class="custom-select form-control" name="subSeason"
+          [(ngModel)]="orderListSearchFormConditions.subSeason" #inputSubSeason="ngModel" aria-label="">
+          <option selected></option>
+          <option *ngFor="let season of seasonMasterList" [value]="season.id">{{season.value}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-8 col-lg-3 col-xl-2">
+      <div class="form-group form-inline">
+        <label class="tilte">年度</label>
+        <input type="tel" class="form-control code_6" name="year" [(ngModel)]="orderListSearchFormConditions.year"
+        #inputYear="ngModel" aria-label="" maxlength="4" pattern="^2[0-9]{3}$"
+        [ngClass]="{'is-invalid':submitted && inputYear.errors}">
+        <div *ngIf="submitted&&inputYear['errors']?.pattern" class="invalid-feedback d-block">
+          <div [translate]="'ERRORS.VALIDATE.YEAR_FORMAT'"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 form-inline d-flex align-items-start">
+      <div class="form-group">
+        <label class="tilte">納期</label>
+        <div class="input-group">
+          <input type="tel" class="form-control code_6" name="productDeliveryAtYearFrom"
+            [(ngModel)]="orderListSearchFormConditions.productDeliveryAtYearFrom" #productDeliveryAtYearFrom="ngModel"
+            aria-label="" maxlength="4" pattern="^2[0-9]{3}$"
+            [ngClass]="{'is-invalid':submitted && productDeliveryAtYearFrom.errors}">
+          <div class="input-group-append">
+            <select class="custom-select form-control" name="productDeliveryAtMonthlyFrom"
+              [(ngModel)]="orderListSearchFormConditions.productDeliveryAtMonthlyFrom"
+              #productDeliveryAtMonthlyFrom="ngModel" aria-label=""
+              [attr.disabled]="productDeliveryAtYearFrom.value?.length===4?null:''">
+              <option selected></option>
+              <option *ngFor="let month of [1,2,3,4,5,6,7,8,9,10,11,12]">{{month}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group period-center">
+          ～
+        </div>
+        <div class="form-group input-group">
+          <input type="tel" class="form-control code_6" name="productDeliveryAtYearTo"
+            [(ngModel)]="orderListSearchFormConditions.productDeliveryAtYearTo" #productDeliveryAtYearTo="ngModel"
+            aria-label="" maxlength="4" pattern="^2[0-9]{3}$"
+            [ngClass]="{'is-invalid':submitted && productDeliveryAtYearTo.errors}">
+          <div class="input-group-append">
+            <select class="custom-select form-control" name="productDeliveryAtMonthlyTo"
+              [(ngModel)]="orderListSearchFormConditions.productDeliveryAtMonthlyTo"
+              #productDeliveryAtMonthlyTo="ngModel" aria-label=""
+              [attr.disabled]="productDeliveryAtYearTo.value?.length===4?null:''">
+              <option selected></option>
+              <option *ngFor="let month of [1,2,3,4,5,6,7,8,9,10,11,12]">{{month}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="productDeliveryAtYearFrom['errors']?.pattern||productDeliveryAtYearTo['errors']?.pattern"
+            class="invalid-feedback d-block">
+      <div [translate]="'ERRORS.VALIDATE.PRODUCT_DELIVERY_AT_YEAR_FORMAT'"></div>
+    </div>
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-12 col-xl-2 right">
+      <input type="button" (click)="onClickSearchBtn(orderListSearchFormConditions,searchForm)" class="btn btn-info"
+        name="button_submit" value="検索">
+    </div>
+  </div>
+</form>
+<div class="row">
+  <div class="col-md-5 col-lg-7 col-xl-8 overall_msg_left d-flex align-items-center">
+    <div class="invalid-feedback custom_error_msg" translate id="defaultErrorInfo" name="errorInfo"></div>
+    <div *ngIf="overall_msg_code.length > 0">
+      <div class="alert alert-danger p-1">
+        <div translate='{{overall_msg_code}}'></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7 col-lg-5 col-xl-4 d-flex align-items-center justify-content-end">
+    凡例：
+    <div class="leadeng">
+      実施中作業
+    </div>
+    <div class="leadeng">
+      次作業
+    </div>
+    <div class="leadeng">
+      完了
+    </div>
+  </div>
+</div>
+<ngb-tabset #tabSet="ngbTabset" (tabChange)="onOrderListTabChange($event)">
+  <ngb-tab id="confirmPendingOrder">
+  <ng-template ngbTabTitle>受注確定待ち({{confirmPendingOrderList.length}})</ng-template>
+    <ng-template ngbTabContent>
+      <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+        <app-order-status-list [affiliation]='affiliation' [orderList]='confirmPendingOrderList'>
+        </app-order-status-list>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="mdPendingOrder">
+    <ng-template ngbTabTitle>発注承認待ち({{mdPendingOrderList.length}})</ng-template>
+    <ng-template ngbTabContent>
+      <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+        <app-order-status-list [affiliation]='affiliation' [orderList]='mdPendingOrderList'>
+        </app-order-status-list>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="misleadingPendingOrder">
+    <ng-template ngbTabTitle>優良誤認待ち({{misleadingPendingOrderList.length}})</ng-template>
+    <ng-template ngbTabContent>
+      <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+        <app-order-status-list [affiliation]='affiliation' [orderList]='misleadingPendingOrderList'>
+        </app-order-status-list>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="productionOrder">
+    <ng-template ngbTabTitle>生産中({{productionOrderList.length}})</ng-template>
+    <ng-template ngbTabContent>
+      <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+        <app-order-status-list [affiliation]='affiliation' [orderList]='productionOrderList'>
+        </app-order-status-list>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="productCompleteOrder">
+    <ng-template ngbTabTitle>完納({{productCompleteOrderList.length}})</ng-template>
+    <ng-template ngbTabContent>
+      <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+        <app-order-status-list [affiliation]='affiliation' [orderList]='productCompleteOrderList'>
+        </app-order-status-list>
+      </div>
+    </ng-template>
+  </ngb-tab>
+  <ngb-tab id="allOrder">
+    <ng-template ngbTabTitle>全て({{allOrderList.length}})</ng-template>
+      <ng-template ngbTabContent>
+        <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)">
+          <app-order-status-list [affiliation]='affiliation' [orderList]='allOrderList'></app-order-status-list>
+        </div>
+      </ng-template>
+  </ngb-tab>
+</ngb-tabset>

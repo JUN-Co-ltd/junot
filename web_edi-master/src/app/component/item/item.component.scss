@@ -1,0 +1,160 @@
+// 画像ドロップエリア
+#dropArea {
+  overflow: hidden;
+  width: 100%;
+  height: 180px;
+  padding: 15px 10px;
+  background: #fff;
+  border: 3px #666 dashed;
+  color: #999;
+  font-size: 15px;
+  font-weight: bold;
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#deleteMsg {
+  text-align: right;
+
+  span {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+  }
+}
+
+input[type="file"] {
+  height: 0px;
+  visibility: hidden;
+  position: absolute;
+}
+
+input[type=radio] {
+  max-width: 13px;
+  max-height: 13px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+// PRD_0023 && No_65 add JFE start
+span.red-font {
+  color: #ff0000;
+}
+// PRD_0023 && No_65 add JFE end
+
+.btn {
+  margin-right: 12px;
+}
+
+label {
+  &.fileBtn {
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    padding: 15px 30px;
+    margin: 0 10px 0 0;
+    display: inline-block;
+  }
+}
+
+a {
+  margin-right: 10px;
+  margin-left: 3px;
+
+  &.trash-icon {
+    cursor: pointer;
+  }
+}
+
+span.checkbox-title {
+  display: block;
+  margin-right: 5px;
+}
+
+// 注釈
+label.note-label {
+  font-size: 15px;
+}
+
+select {
+  max-width: 170px;
+}
+
+.staff-trash {
+  margin-left: 10px;
+}
+
+div.row label.checkbox-label {
+  cursor: pointer;
+}
+
+span.misleading-representation-status {
+  margin-left: 15px;
+}
+
+.coo-name-form {
+  width: 40%;
+}
+
+.parts-name-form {
+  width: 35%;
+}
+
+.composition-name-form {
+  width: 40%;
+}
+
+.side-oder-list {
+  li {
+    list-style: none;
+  }
+
+  margin: 0%;
+  margin-top: 5px;
+  margin-left: 6px;
+  padding: 0%;
+}
+
+.card-body {
+  padding: 0px;
+}
+
+.title-collapsed {
+  margin-left: -22px;
+  cursor: pointer;
+}
+
+.order-exist-disable-part-no {
+  color: #dc3545;
+}
+
+footer {
+
+  // 左の固定
+  .footer-left {
+    max-width: 290px;
+  }
+
+  // 右の固定幅
+  .footer-right {
+    max-width: 230px;
+  }
+}
+
+div.paddig-0 {
+  padding: 0;
+}
+
+span.recycle-mark-title {
+  margin-right: 10px;
+}
+
+div.appendicesTermArea {
+  max-width: 220px;
+  max-height: 170px;
+}
+
+.cn-product-coo-name {
+  width: 40%;
+}

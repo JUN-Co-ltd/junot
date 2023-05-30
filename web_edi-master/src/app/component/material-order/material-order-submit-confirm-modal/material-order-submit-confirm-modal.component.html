@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <div class="modal-title">資材発注確定確認</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<form [formGroup]="confirmFormGroup">
+  <div class="modal-body">
+    <div class="confirm-message">
+      <p>資材発注を確定します。よろしいですか？</p>
+    </div>
+    <div *ngIf="!isQualityApprovalOk" class="solid-line">
+      <div class="quality-unapproved">※優良誤認が承認されていません</div>
+      <div class="check-box-row d-flex">
+        <span><input type="checkbox" formControlName="isOrderResponsible" id="responsible-checkbox" ></span>
+        <label for="responsible-checkbox">優良誤認承認が未承認であることを承諾して資材の発注を確定する</label>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-danger" (click)="onOk()">OK</button>
+  </div>
+</form>

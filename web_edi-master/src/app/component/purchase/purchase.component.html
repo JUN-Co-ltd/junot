@@ -1,0 +1,224 @@
+<form [formGroup]="mainForm" *ngIf="showScreen">
+
+  <div class="container-fluid pb-5">
+
+    <div class="base-area">
+      <div class="row">
+        <!-- 対象ディスタ -->
+        <div class="input-group-prepend col-sm-12 col-lg-3 col-xl-3 d-block required">
+          <span class="control-label"></span>
+          <select class="custom-select" formControlName="arrivalShop"
+            [ngClass]="{'is-invalid': displayError('arrivalShop')}">
+            <option *ngFor="let store of stores;" [value]="store.shpcd">{{store.name}}</option>
+          </select>
+          <!-- 対象ディスタエラーメッセージ -->
+          <div *ngIf="displayError('arrivalShop')" class="invalid-feedback d-block">
+            <div [translate]='"ERRORS.VALIDATE.EMPTY"'></div>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-lg-3 col-xl-2">
+          <label class="caption-short">納品No</label>
+          <span>{{delivery.deliveryDetails[0].deliveryNumber}}</span>
+        </div>
+
+        <div *ngIf="path!==PATH.NEW" class="col-sm-12 col-lg-3 col-xl-3">
+          <label class="caption-short">伝票No</label>
+          <span>{{mainForm.get('purchaseVoucherNumber').value}}</span>
+        </div>
+
+      </div>
+
+      <div class="row">
+        <!-- 品番、品名 -->
+        <div class="col-sm-12 col-lg-12 col-xl-5">
+          <label class="caption">品名</label>
+          <span class="mr-2">{{item.partNo | partNoInput}}</span>
+          <span>{{item.productName}}</span>
+        </div>
+
+        <!-- 仕入先 -->
+        <div class="col-sm-12 col-lg-12 col-xl-7">
+          <label class="caption">生産メーカー</label>
+          <span class="mr-2">{{order.mdfMakerCode}}</span>
+          <span>{{mdfMakerName}}</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12 col-lg-4 col-xl-3 form-inline">
+          <div class="required form-group">
+            <label class="caption control-label">入荷日</label>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <!-- 入荷日テキストボックス -->
+              <input type="text" class="form-control length_10" formControlName="arrivalAt" name="arrivalAt"
+                (blur)="onBlurDate($event.target.value, 'arrivalAt');" appDateInput ngbDatepicker
+                #arrivalAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10" [maxDate]="currentDate"
+                [ngClass]="{'is-invalid': displayError('arrivalAt') }">
+              <!-- 入荷日カレンダーアイコン -->
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calBtn" (click)="arrivalAt.toggle()" type="button"
+                 [attr.disabled]="arrivalAt.disabled ? '' : null">
+                  <fa-icon icon="calendar-alt"></fa-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- 入荷日エラーメッセージ -->
+          <div *ngIf="displayError('arrivalAt')" class="invalid-feedback d-block">
+            <div *ngIf="fCtrl.arrivalAt.errors.required" [translate]='"ERRORS.VALIDATE.EMPTY"'></div>
+            <ng-container *ngIf="fCtrl.arrivalAt.errors.ngbDate">
+              <div *ngIf="fCtrl.arrivalAt.errors.ngbDate.requiredAfter" [translate]='"ERRORS.VALIDATE.DATE_TODAY_OVER"'>
+              </div>
+              <div *ngIf="fCtrl.arrivalAt.errors.ngbDate.invalid" [translate]='"ERRORS.VALIDATE.DATE_FORMAT"'></div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-lg-3 col-xl-2">
+          <label class="caption-short">発注No</label>
+          <span>{{order.orderNumber}}-{{delivery.deliveryCount | deliveryCount}}</span>
+        </div>
+
+        <div class="col-sm-12 col-lg-3 col-xl-3">
+          <label class="caption">納品日</label>
+          <span>{{delivery.deliveryDetails[0].correctionAt | date:"yyyy/MM/dd"}}</span>
+        </div>
+
+        <!-- ブランド -->
+        <div class="col-sm-12 col-lg-12 col-xl-4">
+          <label class="caption">ブランド</label>
+          <span class="mr-2">{{item.brandCode}}</span>
+          <span>{{brandName}}</span>
+        </div>
+      </div>
+
+      <div class="row mt-2">
+        <div class="col-sm-12 col-lg-3 col-xl-3">
+          <div class="form-group form-inline">
+            <label class="caption">相手伝票番号</label>
+            <input type="tel" formControlName="makerVoucherNumber" class="form-control code_6" maxlength="6"
+              minLength="6" [ngClass]="{'is-invalid': displayError('makerVoucherNumber')}" />
+          </div>
+          <!-- 相手伝票番号エラーメッセージ -->
+          <div *ngIf="displayError('makerVoucherNumber')" class="invalid-feedback d-block">
+            <div *ngIf="fCtrl.makerVoucherNumber.errors.pattern"
+              [translate]='"ERRORS.VALIDATE.PATTERN_NUMBER_ALPHABET"'>
+            </div>
+            <div *ngIf="fCtrl.makerVoucherNumber.errors.minlength || fCtrl.makerVoucherNumber.errors.maxlength"
+              [translate]='"ERRORS.VALIDATE.LENGTH_NOT_MATCH"' [translateParams]='{name: "", length:"6"}'>
+            </div>
+          </div>
+        </div>
+
+        <!-- 伝票区分 -->
+        <div class="col-sm-12 col-lg-3 col-xl-2">
+          <label class="caption-short">伝票区分</label>
+          <span class="mr-2">31</span>
+          <span>製品仕入</span>
+        </div>
+
+        <!-- 費目 -->
+        <div class="col-sm-12 col-lg-3 col-xl-3">
+          <label class="caption">費目</label>
+          <span class="mr-2">{{order.expenseItem}}</span>
+          <span>{{expenseItemName}}</span>
+        </div>
+
+        <!--年度・シーズン -->
+        <div class="col-sm-12 col-lg-3 col-xl-4">
+          <label class="caption">年度・シーズン</label>
+          <span class="mr-2">{{item.year}}年度</span>
+          <span>{{subSeasonName}}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="table-area mt-4 mr-3">
+      <!-- 入荷数量エラーメッセージ -->
+      <div *ngIf="isArrivalCountMaxError" class="invalid-feedback d-block"
+        [translate]='"ERRORS.VALIDATE.ARRIVAL_COUNT_OVER"'>
+      </div>
+      <div *ngIf="isArrivalCountPatternError" class="invalid-feedback d-block"
+        [translate]='"ERRORS.VALIDATE.PATTERN_NUMBER_NOT_LESS_THAN1"'>
+      </div>
+      <div *ngIf="isArrivalCountRequiredError" class="invalid-feedback d-block"
+        [translate]='"ERRORS.VALIDATE.ANY_EMPTY_IN_LIST"' [translateParams]="{name: '入荷数量'}">
+      </div>
+
+      <div class="table-wrapper">
+        <table class="sticky-table">
+          <thead>
+            <tr>
+              <th scope="col" class="width-3 fix-col">
+                <span>カラー</span>
+              </th>
+              <th scope="col" class="width-1 fix-col">
+                <span>サイズ</span>
+              </th>
+              <th scope="col" class="width-2">
+                <span>仕入数合計</span>
+              </th>
+              <th scope="col" class="width-2" *ngFor="let division of divisionList;">
+                <span>{{division.name}}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody formArrayName="purchaseSkus">
+            <tr>
+              <td class="fix-col" colspan="2"><span>仕入数合計</span></td>
+              <td class="width-2 text-right"><span>{{mainForm.get('totalLot').value | numberInput}}</span></td>
+              <td class="width-2 text-right" *ngFor="let division of divisionList;">
+                <span>{{division.totalLot | numberInput}}</span>
+              </td>
+            </tr>
+            <tr *ngFor="let sku of mainForm.get('purchaseSkus')['controls']; let skuIdx=index;"
+              [formGroupName]="skuIdx">
+              <td class="width-3 fix-col" [ngClass]="{'not-first-color': sku.get('isFirstColor').value === false}">
+                <ng-container *ngIf="sku.get('isFirstColor').value === true">
+                  <span class="mr-2">{{sku.get('colorCode').value}}</span>
+                  <span>{{sku.get('colorName').value}}</span>
+                </ng-container>
+              </td>
+              <td class="width-1 fix-col"><span>{{sku.get('size').value}}</span></td>
+              <td class="width-2 text-right"><span>{{sku.get('totalLot').value | numberInput}}</span></td>
+              <ng-container formArrayName="purchaseDivisions">
+                <td class="width-2 text-right"
+                  *ngFor="let division of sku.get('purchaseDivisions')['controls']; let divisionIdx=index;"
+                  [formGroupName]="divisionIdx">
+                  <input type="tel" class="form-control text-right" formControlName="arrivalCount" maxlength="5"
+                    (blur)="onBlurArrivalCount(sku, division)"
+                    [ngClass]="{'is-invalid': displayChildFormGroupError(division, 'arrivalCount')}">
+                </td>
+              </ng-container>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <!-- メッセージエリア -->
+    <div class="footer-center">
+      <div class="alert-success mr-2" [translate]="message.footer.success.code"
+        [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length > 0"></div>
+      <div class="alert-danger mr-2" [translate]="message.footer.error.code"
+        [translateParams]="message.footer.error.param" *ngIf="message.footer.error.code.length > 0"></div>
+    </div>
+    <!-- 右ボタンエリア -->
+    <div class="footer-right">
+      <ng-container *ngIf="(path === PATH.NEW)">
+        <button type="submit" class="btn btn-info mr-0 ml-3" [disabled]="isLoading" (click)="onCreate()">登録</button>
+      </ng-container>
+      <ng-container *ngIf="(path !== PATH.NEW && existsLgNoInstruction)">
+        <button type="submit" class="btn btn-success mr-0 ml-3" [disabled]="isLoading" (click)="onUpdate()">更新</button>
+      </ng-container>
+    </div>
+  </footer>
+
+</form>

@@ -1,0 +1,17 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sd-6 col-md-6 col-xl-6">
+      <div class="list-group list-group-flush">
+        <a *ngIf="auth.masterMaintenance" class="list-group-item list-group-item-action" [routerLink]="['/maint/users']" role="button">ユーザ一覧</a>
+        <a *ngIf="auth.masterMaintenance" class="list-group-item list-group-item-action" [routerLink]="['/maint/maint-code']" role="button">コード管理</a>
+        <!-- //PRD_0141 #10656 add start -->
+        <a *ngIf="auth.masterMaintenance" class="list-group-item list-group-item-action" [routerLink]="['/maint/sires']" role="button">取引先一覧</a>
+        <!-- //PRD_0141 #10656 add end -->
+        <a class="list-group-item list-group-item-action" [routerLink]="['/maint/news']" role="button">お知らせ一覧</a>
+        <!-- //PRD_0137 #10669 mod start -->
+        <a *ngIf="auth.masterMaintenance" class="list-group-item list-group-item-action" [routerLink]="['/maint/maint-size']" role="button">サイズ登録</a>
+        <!-- //PRD_0137 #10669 mod end -->
+      </div>
+    </div>
+  </div>
+</div>

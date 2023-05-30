@@ -1,0 +1,25 @@
+label {
+  &.caption {
+    min-width: 80px;
+    margin-right: 10px;
+    justify-content: start;
+  }
+  &.caption-short {
+    @extend .caption;
+    min-width: 50px;
+  }
+  white-space: nowrap;
+}
+
+.form-group {
+  span {
+    &.label {
+      min-width: 80px;
+      margin-right: 10px;
+    }
+    &.label-short {
+      @extend .label;
+      min-width: 50px;
+    }
+  }
+}

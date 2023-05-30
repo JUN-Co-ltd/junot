@@ -1,0 +1,58 @@
+@import "mixins";
+
+input[type="file"] {
+  height: 0px;
+  visibility: hidden;
+  position: absolute;
+}
+
+.right-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+label.label-middle {
+  align-items: center;
+  display: flex;
+  margin: 0;
+}
+
+div.table-wrapper {
+  max-height: 400px;
+
+  table.check-result-table {
+    overflow-y: scroll;
+    margin-right: 10px;
+
+    tr {
+      display: flex;
+
+      th,
+      td {
+        font-size: 14px;
+        font-weight: normal;
+      }
+    }
+
+    thead tr {
+      @include fix-thead-tr;
+    }
+
+    tfoot tr {
+      @include fix-tfoot-tr;
+    }
+  }
+}
+
+ul {
+  list-style: none;
+}
+
+.check-error-message {
+  display: block;
+  overflow-y: scroll;
+  min-height: 100px;
+  max-height: 300px;
+  margin-right: 10px;
+}

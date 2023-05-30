@@ -1,0 +1,193 @@
+<!--PRD_0133 #10181 add JFE start -->
+<div class="container-fluid row">
+  <form #searchForm="ngForm" class="col-9" [appFromToCheck]="['recordAtFrom', 'recordAtTo']">
+
+    <!-- 1行目 -->
+    <div class="row form-inline">
+      <!-- 仕入先-->
+      <div class="form-group  col-xl-12">
+        <label class="caption">仕入先</label>
+        <div class="input-group">
+          <input type="text" class="form-control" name="sirCodes" [(ngModel)]="formCondition.sirCodes" #sirCodes
+            value="{{sirCodes}}">
+        </div>
+
+        <!-- 仕入先コード反映ボタン-->
+        <button type="button" class="form-group" (click)="onClickReflect(mdfMakerCode.value)">＜</button>
+
+        <!-- 仕入先検索-->
+        <div class="input-group">
+          <input type="tel" class="form-control code_6" minlength="5" maxlength="5" pattern="^[0-9]+$"
+            (change)="onChangeMaker(mdfMakerCode.value)" [(ngModel)]="formCondition.mdfMakerCode" #mdfMakerCode
+            name="mdfMakerCode">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="openSearchSupplierModal(mdfMakerCode.value)"
+              type="button">
+              <fa-icon icon="search"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <span class="ml-2">{{mdfMakerName}}</span>
+      </div>
+    </div>
+    <!-- //ここまで1行目 -->
+
+    <!-- 2行目 -->
+    <div class="row mt-3  form-inline">
+      <div class="form-group  col-xl-7">
+        <label class="caption">事業部</label>
+        <select class="form-control div1" [(ngModel)]="formCondition.divisionCode" name="divisionCode">
+          <option selected></option>
+          <option *ngFor="let division of divisionMasterList;" [value]="division.id">{{division.value}}</option>
+        </select>
+      </div>
+      <div class="form-group col-xl-5">
+        <label class="caption">会社コード</label>
+        <div class="input-group">
+          <input type="text" class="form-control" [(ngModel)]="formCondition.comCode" name="comCode">
+        </div>
+      </div>
+    </div>
+
+    <!-- ここまで2行目 -->
+
+    <!-- 3行目 -->
+    <div class="row mt-3 form-inline">
+      <!-- 品番 -->
+      <div class="form-group col-xl-7">
+        <label class="caption">品番</label>
+        <div class="input-group">
+          <input type="text" class="form-control" [(ngModel)]="formCondition.partNo" name="partNo">
+        </div>
+      </div>
+      <!-- // ここまで品番 -->
+      <!-- ディスタ(納入場所) -->
+      <div class=" form-group  col-xl-5">
+        <label class="control-label ">入荷場所</label>
+        <select class="form-control" [(ngModel)]="formCondition.arrivalShop" name="arrivalShop">
+          <!-- PRD_0185 #10181　JFE add start-->
+          <!-- PRD_0174 #10181　JFE add start-->
+          <!-- <option selected></option> -->
+          <option selected></option>
+          <!-- PRD_0174 #10181　JFE add end-->
+          <!-- PRD_0185 #10181　JFE add end-->
+          <!-- PRD_0190 JFE mod start-->
+          <!-- <option *ngFor="let store of stores;" [value]="store.shpcd">{{store.name}}</option> -->
+          <option *ngFor="let store of stores;" [value]="store.shpcd">{{store.sname}}</option>
+          <!-- PRD_0190 JFE mod end-->
+        </select>
+      </div>
+    </div>
+    <!-- //ここまで3行目 -->
+
+
+    <!-- 4行目 -->
+    <div class="row mt-3 form-inline ">
+      <!-- 計上日 -->
+      <div class=" form-group  col-xl-7">
+        <label class="caption">計上日</label>
+        <div class="input-group">
+          <!-- 計上日 from -->
+          <input type="tel" class="length_10 form-control" (blur)="onBlurDate($event.target.value, 'recordAtFrom');"
+            appDateInput ngbDatepicker #recordAtFromDate="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+            [(ngModel)]="formCondition.recordAtFrom" name="recordAtFrom">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="recordAtFromDate.toggle()" type="button">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <span class="ml-2 mr-2">～</span>
+        <div class="input-group">
+          <!-- 計上日 to -->
+          <input type="tel" class="length_10 form-control" (blur)="onBlurDate($event.target.value, 'recordAtTo');"
+            appDateInput ngbDatepicker #recordAtToDate="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+            [(ngModel)]="formCondition.recordAtTo" name="recordAtTo">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="recordAtToDate.toggle()" type="button">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <!-- エラーメッセージ -->
+        <ng-container *ngIf="searchForm != null && searchForm.touched">
+          <div class="invalid-feedback d-block">
+            <div *ngIf="searchForm.controls.recordAtFrom.errors?.ngbDate?.invalid
+              || searchForm.controls.recordAtTo.errors?.ngbDate?.invalid"
+              translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+            <div *ngIf="searchForm.errors?.recordAtFromOverTo" translate='{{"ERRORS.VALIDATE.DATE_FROM_OVER_TO"}}'>
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+      <!--ここまで計上日 -->
+      <!-- 仕入区分 -->
+      <div class=" form-group col-xl-5">
+        <label class="caption-short">仕入区分</label>
+        <select class="custom-select" [(ngModel)]="formCondition.purchaseType" name="purchaseType">
+          <option *ngFor="let status of PURCHASE_SELECT_VALUES" [value]="status.value">{{status.name}}</option>
+        </select>
+      </div>
+    </div>
+    <!-- //ここまで4行目 -->
+
+    <!-- 5行目 -->
+    <div class="row mt-3  ">
+      <div class="form-inline  col-xl-12">
+        <label class="caption">費目</label>
+        <div class="checkbox">
+          <label class="checkbox-label">
+            <input type="checkbox" name="expenseProduct" [(ngModel)]="formCondition.expenseProduct">&nbsp;製品(01,24,04)
+          </label>
+        </div>
+        <div class="checkbox ml-2">
+          <label class="checkbox-label">
+            <input type="checkbox" name="expenseMaterial" [(ngModel)]="formCondition.expenseMaterial">&nbsp;生地(20,24)
+          </label>
+        </div>
+        <div class="checkbox ml-2">
+          <label class="checkbox-label">
+            <input type="checkbox" name="expenseAttached" [(ngModel)]="formCondition.expenseAttached">&nbsp;附属(30)
+          </label>
+        </div>
+        <div class="checkbox ml-2">
+          <label class="checkbox-label">
+            <input type="checkbox" name="expenseProcessing" [(ngModel)]="formCondition.expenseProcessing">&nbsp;加工(05)
+          </label>
+        </div>
+
+        <div class="checkbox ml-2">
+          <label class="checkbox-label">
+            <input type="checkbox" name="expenseOther" [(ngModel)]="formCondition.expenseOther">&nbsp;その他
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ここまで5行目 -->
+  </form>
+  <div class="col-xl-3">
+    <div class="calculate-area">
+      <div class="calculate-row">
+        <div class="col-xl-4 heading-cell">合計 数量</div>
+        <div class="data-cell">{{fixArrivalCountSum|numberInput}}</div>
+      </div>
+      <div class="calculate-row">
+        <div class="col-xl-4 heading-cell">合計 m数</div>
+        <div class="data-cell">{{mKyuSum|numberInput}}</div>
+      </div>
+      <div class="calculate-row">
+        <div class="col-xl-4 heading-cell">合計 金額</div>
+        <div class="data-cell">{{unitPriceSumTotal|numberInput}}</div>
+      </div>
+    </div>
+
+    <!-- 検索ボタン -->
+    <div class="col-sm-12 mt-2" style="margin-left:74% ;">
+      <button class="btn btn-info" type="button" (click)="onSearch(searchForm)" [disabled]="isLoading||searchForm.errors?.recordAtFromOverTo">検索</button>
+    </div>
+  </div>
+</div>
+<!--PRD_0133 #10181 add JFE end -->

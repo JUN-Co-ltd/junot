@@ -1,0 +1,449 @@
+/* You can add global styles to this file, and also import other style files */
+
+@charset "utf-8";
+
+@import url(https://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
+@import "./node_modules/bootstrap/scss/bootstrap.scss";
+@import "mixins";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  font-family: "Noto Sans Japanese", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  height: 100%;
+  line-height: 1.8;
+  font-size: 16px;
+  background: #f9f7f7;
+  font-weight: 300;
+}
+
+::-webkit-selection {
+  color: #fcfcfc;
+  background: #bdaeca;
+}
+
+::-moz-selection {
+  color: #fcfcfc;
+  background: #bdaeca;
+}
+
+::selection {
+  color: #fcfcfc;
+  background: #bdaeca;
+}
+
+.content {
+  padding-top: 60px;
+}
+
+/** 必須項目 */
+.form-group.required .control-label::before {
+  color: #d00;
+  content: "*";
+  margin-left: -10px;
+}
+
+.required {
+  @include required-form;
+}
+
+/** Input Typeの設定 */
+input[type=text],
+input[type=tel] {
+  &.code_2 {
+    // 2桁コード用
+    width: 45px;
+    flex: unset;
+  }
+
+  &.code_3 {
+    // 3桁コード用
+    width: 65px;
+    flex: unset;
+  }
+
+  &.code_4 {
+    // 4桁コード用
+    width: 65px;
+    flex: unset;
+  }
+
+  &.code_6 {
+    // 6桁コード用
+    width: 90px;
+    flex: unset;
+  }
+
+  &.length_8 {
+    // 8文字用
+    width: 80px;
+    flex: unset;
+  }
+
+  &.length_10 {
+    // 10文字用
+    width: 120px;
+    flex: unset;
+  }
+
+  &.length_12 {
+    // 12文字用
+    width: 140px;
+    flex: unset;
+  }
+}
+
+label>input[type=checkbox] {
+  cursor: pointer;
+}
+
+img {
+  width: 100%;
+}
+
+.csr-pnt {
+  cursor: pointer;
+}
+
+div {
+
+  /** 画面全体に掛かるエラーメッセージ */
+  &.overall_msg {
+    height: 70px;
+    min-height: 1px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /** 画面全体に掛かるエラーメッセージ */
+  &.overall_msg_left {
+    height: 70px;
+    min-height: 1px;
+    font-size: 15px;
+    display: flex;
+    justify-content: start;
+  }
+
+  /** カスタムエラーメッセージ */
+  &.custom_error_msg {
+    min-height: 1px;
+    font-size: 15px;
+    justify-content: start;
+  }
+
+  /** フッターがある場合のメインコンテンツ設定 */
+  &.main {
+    margin-top: -130px;
+    padding-top: 100px;
+    padding-bottom: 60px;
+  }
+
+  /** margin-bottom設定 */
+  &.bottom_10 {
+    padding-bottom: 10px;
+  }
+}
+
+.height-flat {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+label {
+  margin-right: 8px;
+}
+
+.form-group {
+  margin-bottom: 0.5rem;
+}
+
+div {
+  &.creander {
+    // カレンダー用
+    max-width: 200px;
+  }
+}
+
+/** 見出し設定 */
+div {
+  &.title {
+    font-weight: 550;
+    font-size: 18px;
+    margin-top: 15px;
+    margin-bottom: 8px;
+  }
+
+  &.left {
+    text-align: left
+  }
+
+  &.right {
+    text-align: right
+  }
+
+  &.marginLeft-20 {
+    margin-left: -20px;
+  }
+
+  &.marginRight-20 {
+    margin-right: -20px;
+  }
+}
+
+/** ボタンの線・色 */
+.iconBtn {
+  border: 1px solid #ced4da;
+}
+
+/** カレンダー表示のボタン */
+.calBtn {
+  border: 1px solid #ced4da;
+}
+
+/** フッター設定 */
+footer {
+  background-color: rgba(200, 200, 200, 0.6);
+  max-width: 1260px;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  position: fixed;
+  text-align: right;
+  bottom: 0;
+  padding: 10px 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  z-index: 100;
+
+  &.container {
+    max-width: 100%;
+  }
+
+  /**
+   * フッターのボタン/エラーメッセージ表示エリア
+   * ボタンの数に応じて各コンポーネントのSCSSでfooter-left/footer-rightの
+   * max-widthを調整してください。
+   * (参考) order.component.scss
+   */
+  // 左のボタン表示エリア(固定)
+  .footer-left {
+    min-width: 0px;
+    margin-left: 15px;
+    margin-right: 15px;
+    order: 1;
+  }
+
+  // 真ん中のメッセージ表示エリア
+  .footer-center {
+    order: 2;
+    flex: 1;
+  }
+
+  // 右のボタン表示エリア(固定)
+  .footer-right {
+    min-width: 0px;
+    margin-left: 15px;
+    margin-right: 15px;
+    order: 3;
+  }
+}
+
+// =======================================================
+// 画面装飾系
+// =======================================================
+div {
+  &.borderBottom {
+    border-bottom: solid 1px #999;
+    margin-left: 12px;
+  }
+}
+
+// =======================================================
+// サイドメニュー
+// =======================================================
+.side {
+  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 80px;
+  width: 100%;
+}
+
+.btn_side {
+  margin-right: 12px;
+  width: 100%;
+  font-size: 13px;
+  text-align: left;
+  background-color: rgba(200, 200, 200, 0.6);
+}
+
+.btn_side_status {
+  margin-right: 12px;
+  width: 100%;
+  font-size: 13px;
+  text-align: center;
+  background-color: rgba(200, 224, 89, 0.6);
+  border: solid 0.5px rgb(26, 187, 93);
+}
+
+// =======================================================
+// Bootstrap設定上書き
+// =======================================================
+.badge {
+  font-weight: 200;
+}
+
+.container-fluid {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.row {
+  margin-right: 12px;
+  margin-left: -12px;
+}
+
+ngb-modal-window.modal {
+  &.delivery-approval-list {
+    div.modal-dialog div.modal-content {
+      width: 370px;
+      height: 470px;
+    }
+  }
+
+  &.production-status {
+    div.modal-dialog {
+      max-width: 850px;
+
+      div.modal-content {
+        width: 850px;
+        height: 850px;
+      }
+    }
+  }
+
+  &.company {
+    div.modal-dialog {
+      max-width: 850px;
+
+      div.modal-content {
+        width: 850px;
+      }
+    }
+  }
+
+  &.appendices-term {
+    div.modal-dialog {
+      max-width: 850px;
+
+      div.modal-content {
+        width: 850px;
+        height: 640px;
+      }
+    }
+  }
+
+  &.attention {
+    div.modal-dialog {
+      max-width: 850px;
+
+      div.modal-content {
+        width: 850px;
+        height: 740px;
+      }
+    }
+  }
+
+  &.fukukitaru-input-assist {
+    div.modal-dialog {
+      max-width: 800px;
+
+      div.modal-content {
+        width: 800px;
+        height: 550px;
+      }
+    }
+  }
+
+  &.error {
+    div.modal-dialog {
+      max-width: 600px;
+
+      div.modal-content {
+        width: 100%;
+      }
+    }
+  }
+
+  &.fukukitaru-order {
+    div.modal-dialog {
+      max-width: 670px;
+      div.modal-content {
+        width: 670px;
+        height: 570px;
+      }
+    }
+  }
+
+  &.shop,
+  &.maker-return-products {
+    div.modal-dialog {
+      max-width: 850px;
+
+      div.modal-content {
+        width: 850px;
+        height: 850px;
+      }
+    }
+  }
+}
+
+.invalid-feedback {
+  white-space: pre-wrap;
+}
+
+// カレンダー右揃え
+.right-aligned-calendar .dropdown-menu {
+  left: -100px !important;
+}
+
+// 発注登録画面のsku入力コンポーネント
+app-sku-input.order div.main-container div.size-container {
+  max-height: none;
+}
+
+// 確定・承認ステータスラベル
+.confirm-approve-lable {
+  @extend .h5;
+
+  span {
+    @extend .badge;
+    @extend .badge-pill;
+    @extend .badge-primary;
+    @extend .pt-2;
+    @extend .pb-2;
+    @extend .d-block;
+  }
+}
+
+// 未承認ステータスラベル
+.unapproved-lable {
+  @extend .h5;
+
+  span {
+    @extend .badge;
+    @extend .badge-pill;
+    @extend .badge-danger;
+    @extend .pt-2;
+    @extend .pb-2;
+    @extend .d-block;
+  }
+}

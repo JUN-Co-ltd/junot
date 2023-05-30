@@ -1,0 +1,30 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-basic-title">納品依頼一覧</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div *ngIf="affiliation===AUTH_INTERNAL&&!isQualityApproved" class="quality-unapproved-msg" [translate]="'ERRORS.MISREP_APPROVE_ERROR'"></div>
+  <div class="color-explain"><span class="color-red">赤字：承認待ち</span>&nbsp;<span>黒字：承認済</span></div>
+  <div class="list-area">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col" class="date-column">納品日</th>
+          <th scope="col" class="count-column">回数</th>
+          <th scope="col" class="lot-column">納品数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let delivery of deliveryList;" (click)="onSelectRow(delivery)">
+          <td class="date-column" [ngClass]="{'color-red':delivery.deliveryApproveStatus !== ACCEPT}">{{delivery.correctionAt | date: 'yyyy/MM/dd'}}
+            <span *ngIf="delivery.lastDeliveryStatus===LAST_DELIVERY_STATUS.LAST" class="badge badge-primary">最終納品</span>
+          </td>
+          <td class="count-column text-right" [ngClass]="{'color-red':delivery.deliveryApproveStatus !== ACCEPT}">{{delivery.deliveryCount | deliveryCount}}</td>
+          <td class="lot-column text-right" [ngClass]="{'color-red':delivery.deliveryApproveStatus !== ACCEPT}">{{delivery.sumDeliveryLot | numberInput}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

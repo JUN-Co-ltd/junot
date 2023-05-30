@@ -1,0 +1,144 @@
+div.modal-header {
+  div.modal-title {
+    color: #9e9e9e;
+  }
+
+  button.close {
+    color: #9e9e9e;
+    font-weight: 500;
+    font-size: 1.3rem;
+  }
+}
+
+div.modal-body {
+  height: 600px;
+
+  div.tab-area-base {
+    margin: auto;
+    width: 100%;
+    height: 70px;
+  }
+
+  ul.tab-menu-base {
+    list-style: none;
+    margin: 0px auto;
+    padding: 0;
+    margin: 1% auto;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    border-bottom: 1px solid #a0a0a0;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    justify-content: flex-start;
+  }
+
+  ul.tab-menu-base li {
+    margin: 0px;
+    border: 1px solid rgb(160, 160, 160);
+    border-bottom: none;
+    padding: 0;
+    background: rgb(230, 230, 230);
+    border-radius: 10px 10px 0 0;
+    width: 20%;
+    text-align: center;
+    cursor: pointer;
+    height: 50px;
+    flex: none;
+  }
+
+  ul.tab-menu-base li.current {
+    background: rgb(160, 160, 160);
+    color: #ffffff;
+  }
+
+  div.result {
+
+    table {
+      font-size: 14px;
+
+      thead,
+      tbody {
+        display: block;
+
+        tr {
+
+          th,
+          td {
+            height: 30px;
+            padding: 2px;
+
+            &.select-column-1,
+            &.select-column-2 {
+              width: 50px;
+            }
+
+            &.sort-column-1,
+            &.sort-column-2 {
+              width: 60px;
+            }
+
+            &.partno-column-1,
+            &.partno-column-2 {
+              width: 120px;
+            }
+
+            &.various-column-1,
+            &.various-column-2 {
+              width: 180px;
+            }
+
+            &.sentence-column-1,
+            &.sentence-column-2 {
+              width: 390px;
+            }
+          }
+        }
+      }
+
+      thead {
+        tr {
+          th {
+            background-color: gray;
+            color: #FFF;
+          }
+        }
+      }
+
+      tbody {
+        overflow-y: scroll;
+        height: 410px;
+
+        tr {
+          cursor: pointer;
+
+          &.selected {
+            background-color: rgba(41, 103, 182, 0.89);
+            color: #FFF;
+          }
+
+          &:hover {
+            background-color: #e2e6ea;
+            color: #212529;
+
+            &.selected {
+              background-color: rgba(41, 103, 182, 0.89);
+              color: #FFF;
+            }
+          }
+
+          input[type=checkbox] {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+          }
+
+          input[type=input] {
+            width: 48px;
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,235 @@
+<app-delivery-header-error-message [affiliation]="affiliation" [deliveryApproveStatus]="deliveryApproveStatus"
+  [isQualityApproved]="isQualityApproved" [path]="path">
+</app-delivery-header-error-message>
+<form [formGroup]="mainForm" *ngIf="!invisibled">
+  <!-- ExpressionChangedAfterItHasBeenCheckedErrorになるのでここでも*ngIf="isInitDataSetted"を記述します -->
+  <!-- PRD_0031 mod SIT start -->
+  <!--<app-delivery-header *ngIf="!invisibled" [isDeliveryStore]="true" [itemData]="itemData" [orderData]="orderData"
+    [deliveryHistoryList]="deliveryHistoryList" [distributionRatioMastaList]="distributionRatioMastaList"
+    [deliveryApproveStatus]="deliveryApproveStatus" [path]="path" [submitted]="submitted" [mainForm]="mainForm"
+    [overPerchase]="overPerchase" [deliveryPlan]="deliveryPlan" [deliveryDetails]="deliveryDetailList"
+    [isDirectDelivery]="isDirectDelivery" [deliveryVoucherFileInfos]="deliveryVoucherFileInfos"
+    (distributeTypeIndex)="onChangeDistributeType($event)" (distribute)="onClickDistribute($event)"
+    (clearDeliveryLotValue)="onClearDeliveryLotValue()" (inputDeliveryAt)="onInputDeliveryAt()">-->
+      <!--PRD_0123 #7054 mod JFE start -->
+  <!-- <app-delivery-header *ngIf="!invisibled" [isDeliveryStore]="true" [itemData]="itemData" [orderData]="orderData"
+    [deliveryHistoryList]="deliveryHistoryList" [distributionRatioMastaList]="distributionRatioMastaList"
+    [deliveryApproveStatus]="deliveryApproveStatus" [path]="path" [submitted]="submitted" [mainForm]="mainForm"
+    [overPerchase]="overPerchase" [deliveryPlan]="deliveryPlan" [deliveryDetails]="deliveryDetailList"
+    [isDirectDelivery]="isDirectDelivery" [deliveryVoucherFileInfos]="deliveryVoucherFileInfos"
+    (distributeTypeIndex)="onChangeDistributeType($event)" (distribute)="onClickDistribute($event)"
+    (clearDeliveryLotValue)="onClearDeliveryLotValue()" (inputDeliveryAt)="onInputDeliveryAt()"
+    (distributeDownload)="onDistributeDownload()" (distributeUpload)="onDistributeUpload($event)"> -->
+  <app-delivery-header *ngIf="!invisibled" [isDeliveryStore]="true" [itemData]="itemData" [orderData]="orderData"
+    [deliveryHistoryList]="deliveryHistoryList" [distributionRatioMastaList]="distributionRatioMastaList"[deliveryLocationList]="deliveryLocationList"[isShowDeliveryLocationList]="isShowDeliveryLocationList"
+    [deliveryApproveStatus]="deliveryApproveStatus" [path]="path" [submitted]="submitted" [mainForm]="mainForm"
+    [overPerchase]="overPerchase" [deliveryPlan]="deliveryPlan" [deliveryDetails]="deliveryDetailList"
+    [isDirectDelivery]="isDirectDelivery" [deliveryVoucherFileInfos]="deliveryVoucherFileInfos"
+    (distributeTypeIndex)="onChangeDistributeType($event)" (distribute)="onClickDistribute($event)"
+    (clearDeliveryLotValue)="onClearDeliveryLotValue()" (inputDeliveryAt)="onInputDeliveryAt()"
+    (distributeDownload)="onDistributeDownload()" (distributeUpload)="onDistributeUpload($event)">
+      <!--PRD_0123 #7054 mod JFE end -->
+  </app-delivery-header>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <!-- 納品数量相関エラーメッセージ -->
+        <div class="invalid-feedback custom_error_msg" display="none" translate id="deliveryLotErrorInfo"
+          name="errorInfo"></div>
+        <div *ngIf="submitted">
+          <ng-container *ngIf="fErr">
+            <!-- 更新処理時は納期と納品数量が未入力の場合に削除処理とする為エラーにしない -->
+            <div *ngIf="fErr['deliveryAtLotRequired'] && path !== PATH.EDIT" class="invalid-feedback d-block"
+              translate='{{"ERRORS.VALIDATE.DELIVERY_LOT_EMPTY"}}'>
+            </div>
+            <div *ngIf="fErr['photoDeliveryLotRequired']" class="invalid-feedback d-block"
+              translate='{{"ERRORS.VALIDATE.PHOTO_DELIVERY_LOT_EMPTY"}}'>
+            </div>
+            <div *ngIf="fErr['sewingDeliveryLotRequired']" class="invalid-feedback d-block"
+              translate='{{"ERRORS.VALIDATE.SEWING_DELIVERY_LOT_EMPTY"}}'>
+            </div>
+            <div *ngIf="fErr['deliveryLotRequired']" class="invalid-feedback d-block"
+              translate='{{"ERRORS.VALIDATE.PRODUCT_DELIVERY_LOT_EMPTY"}}'>
+            </div>
+          </ng-container>
+        </div>
+        <div class="table-content">
+          <div class="table-head-row d-flex">
+            <div class="store-heading fix-col">
+              <div class="store-heading-contents">
+                <div class="direct-cell text-center"><label class="checkbox-label">
+                    <input formControlName="allDirectCheckbox" type="checkbox"
+                      (change)="onChangeDirect($event.target.checked)" [disabled]="mainForm.disabled">&nbsp;直送</label>
+                </div>
+                <div class="store-name-cell text-center">得意先</div>
+                <div class="distribution-cell text-center">配分率</div>
+                <!-- PRD_0033 add SIT start -->
+                <div class="store-sum-cell text-right ml-4">合計</div>
+                <!-- PRD_0033 add SIT end -->
+              </div>
+            </div>
+            <div class="sku-heading mr-1 fix-col">
+              <div class="text-center">カラー</div>
+              <div class="text-center">サイズ</div>
+              <div class="text-center distribution-heading">配分数</div>
+              <div class="text-center distribution-heading">合計</div>
+            </div>
+            <div class="sku-content d-flex" formArrayName="skuFormArray">
+              <div class="sku-heading mr-1" *ngFor="let sku of mainForm.controls.skuFormArray['controls']">
+                <div class="pl-1">{{sku.controls.colorCode.value}}</div>
+                <div class="pl-1">{{sku.controls.size.value}}</div>
+                <!-- 配分数 -->
+                <div class="distribution-heading">
+                  <input type="tel" class="form-control text-right" maxlength="5"
+                    [attr.disabled]="path!==PATH.NEW?'disabled':null"
+                    [value]="sku.controls.distribution.value"
+                    (blur)="onBlurDistribution($event.target, sku.controls.distribution)">
+                </div>
+                <div class="text-right distribution-heading pr-2" [ngClass]="{'red': path !== PATH.NEW && sku.controls.isNotMatchLotBetweenDivisionAndStore.value}">
+                  {{sku.controls.totalLot.value | number}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="store-content">
+            <ng-container *ngFor="let store of mainForm.controls.deliveryStores['controls']">
+              <div class="store-record d-flex mb-1"
+                [ngClass]="{'last-division-code':store.controls.lastDivisionCode.value}">
+                <div class="store-base fix-col d-flex">
+                  <!-- 直送チェックボックス非活性：更新・訂正時にSKU登録なしの店舗 -->
+                  <div class="direct-cell text-center"><label *ngIf="store.controls.directDeliveryFlg.value===true"
+                      class="checkbox-label"><input type="checkbox"
+                        [attr.disabled]="store.controls.isEditableStore.value===false?'disabled':null"
+                        [checked]="store.controls.direct.value"
+                        (change)="onChangeDirectAtIndividual($event.target.checked, store.controls.direct)"></label>
+                  </div>
+                  <!-- 得意先名 -->
+                  <div class="store-name-cell pl-1">{{store.controls.sname.value}}</div>
+                  <!-- 配分率 -->
+                  <div class="storeDistributionRatio-cell text-center">
+                    <input type="tel" class="form-control text-right" maxlength="4"
+                      [attr.disabled]="store.controls.storeDistributionRatio.disabled?'disabled':null"
+                      [value]="store.controls.storeDistributionRatio.value"
+                      (blur)="onBlurRatio($event.target, store.controls.storeDistributionRatio)">
+                  </div>
+                </div>
+                <!-- PRD_0033 mod SIT start -->
+                <!--<div class="store-sum-cell fix-col text-right pr-1 mr-1">-->
+                <div class="store-sum-cell text-right">
+                <!-- PRD_0033 mod SIT end -->
+                  {{store.controls.totalLot.value | number}}
+                </div>
+                <!-- PRD_0033 add SIT start -->
+                <div class="store-sku fix-col text-right pr-1 mr-1">
+                  <label>配分数</label>
+                  <label>現在庫</label>
+                  <label>売上数</label>
+                </div>
+                <!-- PRD_0033 add SIT end -->
+                <div class="text-right d-flex">
+                  <ng-container
+                    *ngFor="let storeSku of store.controls.deliveryStoreSkus['controls']">
+                    <!-- PRD_0033 add SIT start -->
+                    <div class="store-sku-lot mr-1">
+                    <!-- PRD_0033 add SIT end -->
+                      <!-- 配分数 -->
+                      <div class="store-sku mr-1">
+                        <!-- PRD_0031 mod SIT start-->
+                        <!--<input type="tel" class="form-control text-right" maxlength="5"
+                          [attr.disabled]="storeSku.controls.deliveryLot.disabled?'disabled':null"
+                          [value]="storeSku.controls.deliveryLot.value"
+                          (blur)="onBlurLot($event.target, store, storeSku)">-->
+                        <input type="tel" class="form-control text-right" maxlength="5"
+                          [attr.disabled]="storeSku.controls.deliveryLot.disabled?'disabled':null"
+                          [value]="storeSku.controls.deliveryLot.value"
+                          (blur)="onBlurLot($event.target, store, storeSku)" name="deliveryLot">
+                        <!-- PRD_0031 mod SIT end-->
+                      </div>
+                    <!-- PRD_0033 add SIT start -->
+                      <!-- 現在庫 -->
+                      <div class=".store-sku mr-1 mt-2">
+                        {{storeSku.controls.stockLot.value | number}}
+                      </div>
+                      <div class=".store-sku mr-1">
+                        <Label *ngIf="storeSku.controls.stockLot.value === null">&nbsp;</Label>
+                      </div>
+                      <!-- 売上数 -->
+                      <div class=".store-sku mr-1">
+                        {{storeSku.controls.salesScore.value | number}}
+                        <Label *ngIf="storeSku.controls.salesScore.value === null">&nbsp;</Label>
+                      </div>
+                    </div>
+                    <!-- PRD_0033 add SIT end -->
+                  </ng-container>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <!-- 左ボタンエリア -->
+    <div class="footer-left">
+      <input type="button" (click)="onClickDivisionDistribute()" class="btn btn-success mr-0" name="button_submit"
+        value="課別配分" [disabled]="isBtnLock">
+      <ng-container *ngIf="isShowEdiButton && showDeleteBtn()">
+        <input type="button" (click)="onDeleteConfirmModal()" class="btn btn-danger mr-0 ml-3" name="button_delete"
+          value="削除" [disabled]="isBtnLock">
+      </ng-container>
+      <!-- PRD_0044 add SIT start -->
+      <ng-container *ngIf="isShowEdiButton && showCorrecSaveBtn()">
+        <input type="button" (click)="onSubmitUpsert(SUBMIT_TYPE.SAVE_CORRECT)" class="btn btn-success mr-0 ml-3"
+        name="button_submit" value="一時保存" [disabled]="isBtnLock">
+      </ng-container>
+      <!-- PRD_0044 add SIT end -->
+    </div>
+    <!-- メッセージエリア -->
+    <div class="footer-center">
+      <div class="alert-danger" translate='{{overallErrorMsgCode}}'
+        [translateParams]='{sqLockUserAccountName:sqLockUserAccountName}' *ngIf="overallErrorMsgCode.length">
+      </div>
+      <div class="alert-success" translate='{{overallSuccessMsgCode}}' *ngIf="overallSuccessMsgCode.length">
+      </div>
+    </div>
+    <ng-container *ngIf="isShowEdiButton">
+      <!-- 右ボタンエリア -->
+      <div class="footer-right">
+        <ng-container *ngIf="showRegistBtn()">
+          <input type="button" (click)="onSubmitUpsert(SUBMIT_TYPE.ENTRY)" class="btn btn-success mr-0"
+            name="button_submit" value="登録" [disabled]="isBtnLock">
+        </ng-container>
+        <ng-container *ngIf="showUpdateBtn()">
+          <input type="button" (click)="onSubmitUpsert(SUBMIT_TYPE.UPDATE)" class="btn btn-success mr-0"
+            name="button_submit" value="{{existsRegistedDeliveryStore?'更新':'登録'}}" [disabled]="isBtnLock">
+          <ng-container *ngIf="showApproveBtn()">
+            <input type="button" (click)="onSubmitApproveDeliveryData()" class="btn btn-success mr-0 ml-3"
+              name="button_submit" value="承認" [disabled]="isBtnLock || !isApprovable || !isQualityApproved">
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="showCorrectBtn()">
+          <!-- 直送の場合 直送確定ボタンを表示 -->
+          <ng-container *ngIf="isShowDirectConfirmButton">
+            <button type="button" (click)="onSubmitDirectDeliveryData()" class="btn btn-success mr-3 ml-0">直送確定</button>
+          </ng-container>
+          <!-- PRD_0044 mod SIT start -->
+          <!--<button type="button" (click)="openCorrectAlertModal()" class="btn btn-success mr-0" name="button_submit"
+            [disabled]="isBtnLock || isCorrectLock">
+            <ng-container>
+              <fa-icon [icon]="['fas','lock']" *ngIf="sqLockUserAccountName != null" class="text-warning pr-2"
+                placement="top" ngbTooltip="ログインID:{{sqLockUserAccountName}}がロック中です"></fa-icon>
+            </ng-container>訂正-->
+            <button type="button" (click)="openCorrectAlertModal()" class="btn btn-success mr-0" name="button_submit"
+            [disabled]="isBtnLock">訂正
+          <!-- PRD_0044 mod SIT end -->
+          </button>
+        </ng-container>
+        <ng-container *ngIf="showCorrecSaveBtn()">
+          <input type="button" (click)="onSubmitUpsert(SUBMIT_TYPE.CORRECT)" class="btn btn-success mr-0"
+            name="button_submit" value="訂正保存" [disabled]="isBtnLock">
+        </ng-container>
+      </div>
+    </ng-container>
+  </footer>
+</form>

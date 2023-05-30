@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-basic-title">資材発注一覧</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div *ngIf="searchLoading" class="search-loading"></div>
+  <div *ngIf="!searchLoading" class="search-result">
+    <div class="btn-row">
+      <button type="button" class="btn btn-info" name="button_submit" (click)="onClickFukukitaruOrderCreate(WASH_NAME_URL)">洗濯ネーム発注</button>
+      <button type="button" class="btn btn-info" name="button_submit" (click)="onClickFukukitaruOrderCreate(BOTTOM_BILL_URL)">下札発注</button>
+      <div>発注数：{{quantity}}</div>
+    </div>
+    <div *ngIf="fukukitaruOrderList.length == 0">
+      <p>検索結果がありません</p>
+    </div>
+    <table *ngIf="fukukitaruOrderList.length > 0">
+      <thead>
+        <tr>
+          <th rowspan="2" class="date">資材発注日</th>
+          <th scope="row" colspan="2" class="material">資材発注数</th>
+          <th rowspan="2" class="date">ステータス</th>
+        </tr>
+        <tr>
+          <th scope="row col" class="material-num">洗濯ネーム</th>
+          <th scope="row col" class="material-num">下札</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr (click)="onSelectRow(fOrder)" *ngFor="let fOrder of fukukitaruOrderList;">
+          <td class="date">{{fOrder.orderAt | date:"yyyy/MM/dd"}}</td>
+          <td class="material-num">
+            <ng-container *ngIf="fOrder.orderType === WASH_NAME || fOrder.orderType === WASH_NAME_KOMONO">{{fOrder.totalOrderLot | numberInput}}</ng-container>
+          </td>
+          <td class="material-num">
+            <ng-container *ngIf="fOrder.orderType === BOTTOM_BILL || fOrder.orderType === BOTTOM_BILL_KOMONO">{{fOrder.totalOrderLot | numberInput}}</ng-container>
+          </td>
+          <td class="status">
+            <span>{{showStatuslabel(fOrder)}}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

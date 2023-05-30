@@ -1,0 +1,5 @@
+<div class="container-fluid">
+  <div class="invalid-feedback custom-error-msg" translate id="fatalErrorInfo" name="errorInfo"></div>
+  <div *ngIf="!isQualityApproved && path === PATH.EDIT && deliveryApproveStatus !== APPROVAL_STATUS.ACCEPT && AUTH_INTERNAL === affiliation"
+    class="quality-unapproved-msg" [translate]="'ERRORS.MISREP_APPROVE_ERROR'"></div>
+</div>

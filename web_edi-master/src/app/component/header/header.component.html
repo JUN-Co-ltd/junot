@@ -1,0 +1,9 @@
+<header *ngIf="headerService.headerDisplay" class="navbar navbar-default py-0" id="header">
+  <a routerLink="/top"><div class="logo logo-image"></div></a>
+  <!-- {{headerService.session | json}} -->
+  <span class="text-right userInfo">
+    ログインID:{{headerService.session?.accountName}}<br />
+    <button type="button" class="btn btn-link float-right m-0 p-0" (click)="headerService.logout()">ログアウト</button>
+  </span>
+
+</header>

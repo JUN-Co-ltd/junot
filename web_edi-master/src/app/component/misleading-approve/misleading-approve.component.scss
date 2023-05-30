@@ -1,0 +1,92 @@
+@import 'mixins';
+
+label {
+  &.title {
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  &.color-title {
+    font-weight: bold;
+    font-size: 16px;
+  }
+}
+
+form {
+  padding-bottom: 120px;
+}
+
+input[type="text"] {
+  height: 80%;
+}
+
+input[type=checkbox] {
+  top: 9px;
+  right: 10px;
+  position: absolute;
+  @include checkbox;
+}
+
+.tab-group-vertical {
+  position: relative;
+  vertical-align: middle;
+  zoom: 1;
+}
+
+.tab-group-vertical>li.active>a,
+.tab-group-vertical>li.active>a:hover,
+.tab-group-vertical>li.active>a:focus {
+  color: #000;
+}
+
+.tab-group-vertical>li>a {
+  border-radius: 0;
+}
+
+.tab-group-vertical>li>a:hover {
+  border-radius: 4px;
+}
+
+.tab-group-vertical>li {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+}
+
+.tab-group-vertical>li+li {
+  margin-top: -1px;
+  margin-left: 0px;
+}
+
+li.active {
+  background-color: #007bff;
+  background-image: none;
+  border-color: #007bff;
+  border-radius: 5px;
+
+  button {
+    color: #fff;
+  }
+}
+
+div.row.coo {
+  min-height: 75px;
+}
+
+div.memo-area {
+  // 改行
+  white-space: pre-wrap;
+}
+
+div.alert-font {
+  color: $alert-red;
+}
+
+footer {
+
+  // 右の固定幅
+  .footer-right {
+    max-width: 230px;
+  }
+}

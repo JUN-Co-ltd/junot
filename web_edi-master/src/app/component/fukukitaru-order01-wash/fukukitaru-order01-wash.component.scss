@@ -1,0 +1,84 @@
+.btn {
+  margin-right: 12px;
+}
+
+select {
+  max-width: 170px;
+}
+
+div.row label.checkbox-label {
+  cursor: pointer;
+}
+
+input[type="radio"] {
+  cursor: pointer;
+}
+
+div.row label.radio-label {
+  cursor: pointer;
+}
+
+div.notes label {
+  font-size: 80%;
+  color: #dc3545;
+  margin: 0;
+}
+
+div.status-area-block {
+  display: inline-block;
+  border-left: 1px solid black;
+  width: 110px;
+
+  div {
+    border-top: 1px solid black;
+  }
+
+  div:last-child {
+    border-bottom: 1px solid black;
+  }
+}
+
+div.status-area-block:last-child {
+  border-right: 1px solid black;
+}
+
+.parts-name-form {
+  width: 35%;
+}
+
+.composition-name-form {
+  width: 40%;
+}
+
+div.past-order-area {
+  overflow-x: scroll;
+  width: auto;
+}
+
+div.attentionName {
+  input[type="text"] {
+    width: 130px;
+  }
+
+  .sameCommonMsg {
+    font-size: 80%;
+    color: #dc3545;
+  }
+}
+
+div.appendicesTermArea {
+  max-width: 220px;
+  max-height: 170px;
+}
+
+footer {
+  // 左の固定
+  .footer-left {
+    max-width: 400px;
+  }
+
+  // 右の固定幅
+  .footer-right {
+    max-width: 230px;
+  }
+}

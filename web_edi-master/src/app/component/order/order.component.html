@@ -1,0 +1,467 @@
+<div class="pl-4 pr-4 invalid-feedback custom_error_msg" translate id="noDataErrorInfo" name="errorInfo"></div>
+
+<form [formGroup]="mainForm" *ngIf="isInitDataSetted">
+  <div class="container-fluid main">
+
+    <div class="row title">
+      <div class="col-xl-7 col-lg-10 col-12" id="ank1">
+        <span>
+          {{itemData.partNo | partNoInput}}-{{seasonValue}}
+        </span>
+        <span class="ml-1">
+          {{itemData.productName}}
+        </span>
+      </div>
+      <div class="col-xl-3 col-8 text-xl-right">
+        <span *ngIf="orderData && isConfirmed">発注No:{{orderData?.orderNumber}}</span>
+        <ng-container *ngIf="isAbleToDLFile">
+          &nbsp;
+          <button type="button" class="btn btn-link m-0 p-0 file-dl-btn"
+            (click)="onFileDownload(orderData.orderFileInfo.fileNoId)">
+            <fa-icon [icon]="['fas','file-pdf']" size="1x" [fixedWidth]="false"></fa-icon>
+            <span *ngIf="isApprovalOk(); else elseConfirm">
+              発注書
+            </span>
+            <ng-template #elseConfirm>
+              受注書
+            </ng-template>
+          </button>
+        </ng-container>
+      </div>
+      <div class="col-xl-2 col-4">
+        <div class="confirm-approve-lable" *ngIf="orderData != null">
+          <span>{{statusLabel}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <!-- 品番未登録エラーメッセージ -->
+      <div *ngIf="path === PATH.EDIT && affiliation===AUTH_INTERNAL && itemData.registStatus !== REGIST_STATUS.PART"
+        class="red-font" translate='{{"ERRORS.NO_PART_ERROR"}}'></div>
+      <!-- 発注書ファイルダウンロードエラーメッセージ -->
+      <div *ngIf="orderFileDLErrorMessageCode != null" class="file-dl-error-message-area"
+        translate='{{orderFileDLErrorMessageCode}}'>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xl-10">
+
+        <div class="row form-inline mb-2">
+          <div class="col-sm-12 col-lg-12 col-xl-7 form-group required">
+            <!-- PRD_0023 mod JFE start -->
+            <label class="caption control-label" style="min-width: 120px;">生産メーカー</label>
+            <!-- PRD_0023 mod JFE end -->
+            <!-- PRD0112 #7710 JFE mod start-->
+            <!--<select class="custom-select form-control supplier-width" formControlName="mdfMakerCode" name="mdfMakerCode"
+              (change)="onChangeMaker($event.target.value)"
+              [attr.disabled]="isDeliveriedOrCompletedOrAuthSuppriers() ? 'disabled' : null">
+              <option *ngFor="let orderSupplier of itemData.orderSuppliers;" [value]="orderSupplier.supplierCode">
+                {{orderSupplier.supplierName}}</option>
+            </select> -->
+            <select class="custom-select form-control supplier-width" formControlName="mdfMakerCode" name="mdfMakerCode"
+              (change)="onChangeMaker($event.target.value)" required [ngClass]="{'is-invalid':isSeihin}"
+              [attr.disabled]="isDeliveriedOrCompletedOrAuthSuppriers() ? 'disabled' : null">
+              <option *ngFor="let orderSupplier of itemData.orderSuppliers;" [value]="orderSupplier.supplierCode">
+                {{orderSupplier.supplierName}}</option>
+            </select>
+            <div *ngIf="isSeihin" class="invalid-feedback d-block">
+              <div *ngIf="isSeihin" [translate]="'ERRORS.400_I_32'"></div>
+            </div>
+            <!-- PRD0112 #7710 JFE mod end-->
+          </div>
+
+          <div class="col-sm-6 col-lg-6 col-xl-3 mt-xl-0 mt-sm-2 form-group required z">
+            <label class="caption-short control-label">費目</label>
+            <!--
+              TODO 生地縫製機能を追加するまで、製品発注のみ発注可能とする
+              <select class="custom-select form-control" name="expenseItem" formControlName="expenseItem"
+                [attr.disabled]="isApprovalOkOrCompleted() ? 'disabled' : null" aria-label="">
+            -->
+            <!-- PRD_0144 #10776 JFE mod start-->
+            <!--
+              費目04を選択可能にする
+            <select class="custom-select form-control" name="expenseItem" formControlName="expenseItem"
+              [attr.disabled]="'disabled'" aria-label="">
+              <option value="01">製品発注</option>
+              <option disabled value="04">縫製発注</option>
+              <option disabled value="24">生地縫製発注</option>
+            -->
+            <select class="custom-select form-control" name="expenseItem" formControlName="expenseItem"
+            (change)="onChangeExpenseItem($event.target.value);" [attr.disabled]="isConfirmedOrCompleted() ? 'disabled' : null" aria-label="">
+            <option *ngFor="let expenseItem of expenseItemList;" [value]="expenseItem.value">{{expenseItem.label}}</option>
+            <!-- PRD_0144 #10776 JFE mod end-->
+            </select>
+          </div>
+
+          <div class="col-sm-6 col-lg-6 col-xl-2 mt-xl-0 mt-sm-2 form-group">
+            <label>
+              <input type="checkbox" value="1" checked disabled>&nbsp;自動裁断
+              <input type="hidden" formControlName="cutAutoType" [ngModel]="1">
+            </label>
+          </div>
+        </div>
+
+        <div class="row form-inline mb-2">
+          <div class="col-sm-12 col-md-6 col-lg-5 col-xl-5 mt-lg-0 mt-sm-2 form-group required">
+            <!-- PRD_0023 mod JFE start -->
+            <label class="caption control-label" style="min-width: 120px;">生産発注日</label>
+            <div class="input-group">
+              <input class="form-control length_10" style="padding-right: 5px;" placeholder="" type="text" formControlName="productOrderAt"
+                name="productOrderAt" (blur)="onBlurDate($event.target.value, 'productOrderAt');" appDateInput
+                ngbDatepicker #productOrderAt="ngbDatepicker" [maxDate]="endOrderAt" [showWeekNumbers]="true"
+                maxlength="10" required [ngClass]="{'is-invalid': submitted && f.productOrderAt.errors}"
+                [disabled]="isDeliveriedOrCompleted()">
+              <!-- PRD_0023 mod JFE end -->
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calBtn" (click)="productOrderAt.toggle()" type="button"
+                  [disabled]="isDeliveriedOrCompleted()">
+                  <fa-icon icon="calendar-alt"></fa-icon>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="submitted && f.productOrderAt.errors" class="invalid-feedback d-flex">
+              <div *ngIf="f.productOrderAt.errors.required" translate='{{"ERRORS.VALIDATE.EMPTY"}}'></div>
+              <div *ngIf="f.productOrderAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.ORDER_DATE_NOT_RANGE"}}'>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRD_0023 && No_65 add JFE start -->
+          <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 mt-lg-0 mt-sm-2 form-group required" style="right: 95px;">
+            <label class="caption control-label">上代(税無)</label>
+            <input type="tel" class="form-control length_10 text-right" appNumberInput formControlName="retailPrice"
+            name="retailPrice" maxlength="9" required [ngClass]="{'is-invalid': submitted && f.retailPrice.errors}"
+            [attr.disabled]="isDeliveriedOrCompleted() ? 'disabled' : null" style="margin-left: 25px;" />
+            <!-- PRD_0023 && No_65 add JFE end -->
+            <div *ngIf="submitted && f.retailPrice.errors" class="invalid-feedback">
+              <div *ngIf="f.retailPrice.errors.required" [translate]="'ERRORS.VALIDATE.RETAIL_PRICE_EMPTY'"></div>
+              <div *ngIf="f.retailPrice.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6 col-lg-3 col-xl-3 mt-lg-0 mt-sm-2 form-group form-inline d-flex required">
+            <label class="caption-short control-label">単価</label>
+            <input type="tel" class="form-control length_10 text-right" appNumberInput formControlName="unitPrice"
+              name="unitPrice" maxlength="9" required [ngClass]="{'is-invalid': submitted && f.unitPrice.errors}"
+              [attr.disabled]="isDeliveriedOrCompleted() ? 'disabled' : null" />
+            <div *ngIf="submitted && f.unitPrice.errors" class="invalid-feedback">
+              <!--//  PRD_0114 単価０NG対応#7820 --mod JFE Start//-->
+              <!--
+              <div *ngIf="f.unitPrice.errors.required" [translate]="'ERRORS.VALIDATE.UNIT_PRICE_EMPTY'"></div>
+              <div *ngIf="f.unitPrice.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+              -->
+              <div *ngIf="f.unitPrice.errors?.equalZero" translate='{{"ERRORS.VALIDATE.UNIT_PRICE_EMPTY"}}'></div>
+              <div *ngIf="f.unitPrice.errors?.notInt" translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER"}}'></div>
+              <!--//  PRD_0114 単価０NG対応#7820 --mod JFE END--//-->
+            </div>
+          </div>
+        </div>
+
+        <div class="row form-inline mb-2">
+          <!-- PRD_0023 mod JFE start -->
+          <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 mt-lg-0 mt-sm-2 form-group required">
+            <label class="caption control-label" style="min-width: 120px;">生産納期</label>
+            <!-- PRD_0023 mod JFE end -->
+            <div class="input-group">
+              <input class="form-control length_10" placeholder="" type="text"
+                formControlName="productCorrectionDeliveryAt" name="productCorrectionDeliveryAt"
+                (blur)="onBlurDate($event.target.value, 'productCorrectionDeliveryAt');" appDateInput ngbDatepicker
+                #productCorrectionDeliveryAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+                [minDate]="mainForm.controls['productOrderAt'].value" [maxDate]="endDeliveryAt" required
+                [ngClass]="{ 'is-invalid': submitted && f.productCorrectionDeliveryAt.errors }"
+                [disabled]="isDeliveriedOrCompleted()">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary calBtn" (click)="productCorrectionDeliveryAt.toggle()"
+                  type="button" [disabled]="isDeliveriedOrCompleted()">
+                  <fa-icon icon="calendar-alt"></fa-icon>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="submitted && f.productCorrectionDeliveryAt.errors" class="invalid-feedback d-flex">
+              <div *ngIf="f.productCorrectionDeliveryAt.errors.required" translate='{{"ERRORS.VALIDATE.EMPTY"}}'>
+              </div>
+              <div *ngIf="f.productCorrectionDeliveryAt.errors.ngbDate"
+                translate='{{"ERRORS.VALIDATE.PRODDELIVERY_NOT_RANGE"}}'>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRD_0023 && No_65 mod JFE start  -->
+          <div class="col-sm-12 col-lg-4 col-xl-5 mb-2 pr-0 form-group" style="padding-left: 0px;">
+            <!-- PRD_0023 && No_65 mod JFE end  -->
+            <label class="caption control-label">原価合計
+              <ng-container *ngIf="affiliation===AUTH_INTERNAL"><span mr-1>・原価率</span></ng-container>
+            </label>
+            <input disabled [value]="calculateTotal() > 0 ? calculateTotal() : ''" type="tel" class="form-control length_10 text-right" formControlName="totalCost"
+              name="totalCost" maxlength="9"  />
+            <ng-container *ngIf="affiliation===AUTH_INTERNAL">
+              <span class="ml-1" [ngClass]="{'red-font' : calculateCostRate() > 100}">({{calculateCostRate()}}%)</span>
+            </ng-container>
+            <!-- PRD_0023 && No_65 mod JFE start  -->
+            <div *ngIf="submitted && mainForm.errors">
+              <div *ngIf="mainForm?.errors['totalCostOverRetailPrice']" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.TOTAL_COST_OVER_RETAIL_PRICE'">
+              </div>
+            <!-- PRD_0023 && No_65 mod JFE end   -->
+            </div>
+          </div>
+          <div class="col-sm-12 col-lg-6 col-xl-3 form-group">
+            <label class="caption-short control-label">金額</label>
+            <div class="col text-right w-100">
+              {{orderAmount | number}}
+            </div>
+          </div>
+        </div>
+        <!-- PRD_0023 && No_65 mod JFE start  -->
+        <div class="row form-inline mb-2">
+          <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 form-group" [ngStyle]="{'padding-right': '-15px'}">
+            <label class="control-label">生地原価</label>
+            <input #matlVal type="tel" class="form-control length_10 text-right" formControlName="matlCost"
+              name="matlCost" maxlength="9"  />
+          </div>
+          <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 pr-0 form-group " [ngStyle]="{'padding-right':'5px'}">
+            <label class="control-label" [ngStyle]="{'padding-right':'10px'}">加工原価</label>
+            <input #processingVal type="tel" class="form-control length_10 text-right" formControlName="processingCost"
+              name="processingCost" maxlength="9" />
+          </div>
+          <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 pr-0 form-group " [ngStyle]="{'padding-right':'5px'}">
+            <label class="control-label">附属原価</label>
+            <input #accrVal type="tel" class="form-control length_10 text-right" formControlName="attachedCost"
+              name="attachedCost" maxlength="9" />
+          </div>
+          <div  class="col-sm-12 col-lg-3 col-xl-3 mb-2 form-group required" [ngStyle]="{'padding-right': '-15px'}">
+            <label class="control-label">その他</label>
+            <input type="tel" class="form-control length_10 text-right" appNumberInput formControlName="otherCost"
+              name="otherCost" maxlength="9" required [ngClass]="{'is-invalid':submitted && f.otherCost.errors}"
+              [attr.disabled]="isDeliveriedOrCompleted() ? 'disabled' : null" />
+            <ng-container *ngIf="submitted">
+              <div *ngIf="f.otherCost.errors" class="invalid-feedback">
+                <div *ngIf="f.otherCost.errors.required" [translate]="'ERRORS.VALIDATE.OTHER_COST_EMPTY'"></div>
+                <div *ngIf="f.otherCost.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+              </div>
+            </ng-container>
+          </div>
+          <div class="col-sm-12 col-lg-4 col-xl-3 mb-2 pr-0 form-group">
+            <label class="control-label">生地単価</label>
+            <input type="tel" class="form-control length_10 text-right" formControlName="matlUnitPrice"
+              name="matlUnitPrice" maxlength="9" [attr.disabled]="isDeliveriedOrCompleted() || isProduct() ? 'disabled' : null"/>
+          </div>
+          <!-- PRD_0144 #10776 JFE add start-->
+          <div  class="col-sm-12 col-lg-3 col-xl-5 mb-2 form-group" [ngStyle]="{'padding-right': '-15px'}">
+            <label class="control-label">生地発注番号(関連番号)</label>
+            <input type="tel" class="form-control length_10 text-right" appNumberInput formControlName="relationNumber"
+              name="relationNumber" maxlength="6" [ngClass]="{'is-invalid':submitted && f.relationNumber.errors}"
+              [attr.disabled]="isDeliveriedOrCompleted() || isProduct() ? 'disabled' : null" />
+            <ng-container *ngIf="submitted">
+              <div *ngIf="f.relationNumber.errors" class="invalid-feedback">
+                <div *ngIf="f.relationNumber.errors.required" [translate]="'ERRORS.VALIDATE.OTHER_COST_EMPTY'"></div>
+                <div *ngIf="f.relationNumber.errors.pattern" [translate]="'ERRORS.VALIDATE.RELATION_NUMBER_PATTERN_NUMBER'"></div>
+              </div>
+            </ng-container>
+          </div>
+          <!-- PRD_0144 #10776 JFE add end-->
+        </div>
+        <!-- PRD_0023 && No_65 mod JFE end  -->
+
+        <div class="title title-collapsed" id="anhor-statistics-info">
+          <a class="ml-0" (click)="isOtherCollapsed = !isOtherCollapsed" [attr.aria-expanded]="!isOtherCollapsed"
+            aria-controls="collapseAnchorStatisticsInfo">
+            <fa-icon [icon]="['fas',isOtherCollapsed?'angle-up':'angle-down']" [fixedWidth]="true"></fa-icon>その他
+          </a>
+        </div>
+
+        <div id="collapseAnchorStatisticsInfo" [ngbCollapse]="!isOtherCollapsed">
+          <div class="row form-inline mb-2">
+            <div class="col-sm-12 col-lg-4 col-xl-7 form-group">
+              <div class="input-group">
+                <label class="caption control-label">生産工場</label>
+                <span>{{mainForm.get('mdfMakerFactoryName').value}}</span>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-lg-4 col-xl-5 form-group required">
+              <label class="caption control-label">製造担当</label>
+              <div class="input-group">
+                <ng-container *ngIf="affiliation===AUTH_INTERNAL">
+                  <input type="tel" class="form-control code_6" formControlName="mdfStaffCode" name="mdfStaffCode"
+                    minlength="6" maxlength="6" (change)="onChangeStaff($event.target.value)"
+                    [ngClass]="{'is-invalid':submitted && (f.mdfStaffCode.errors || mainForm.errors?.mdfStaffExistence)}"
+                    required [attr.disabled]="isDeliveriedOrCompleted() ? 'disabled' : null" />
+                </ng-container>
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="openSearchStaffModel()"
+                    type="button" [attr.disabled]="isDeliveriedOrCompleted() ? 'disabled' : null">
+                    <fa-icon icon="search"></fa-icon>
+                  </button>
+                </div>
+              </div>
+              <span class="ml-2">
+                {{mainForm.get('mdfStaffName').value}}
+              </span>
+            </div>
+          </div>
+
+          <div class="row form-inline mb-2">
+            <div class="col-sm-12 col-lg-6 col-xl-7 form-group">
+              <div class="input-group">
+                <label class="caption control-label">委託先工場</label>
+                <span name="consignmentFactory">{{mainForm.get('consignmentFactory').value}}</span>
+              </div>
+            </div>
+            <div class="col-sm-12 col-lg-6 col-xl-5 form-group">
+              <div class="input-group" *ngIf="affiliation===AUTH_INTERNAL">
+                <label class="caption control-label">展開</label>
+                <span>{{itemData.outletName}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-inline mb-2 align-items-start">
+            <div class="col-sm-12 col-lg-7 col-xl-7 d-flex">
+              <div>
+                <label class="caption">見積ファイル</label>
+              </div>
+              <div>
+                <ng-container *ngFor="let file of estimatesFile; let iIdx=index;">
+                  <a href="javascript:void(0)" (click)="onEstimatesFileDownlad(iIdx)">{{file.fileName}}</a><br />
+                </ng-container>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-lg-4 col-xl-5 form-group required">
+              <label class="caption control-label">原産国</label>
+              <datalist id="cooMasterList">
+                <option *ngFor="let coo of cooMasterList" [value]="coo.item2"></option>
+              </datalist>
+              <div class="input-group">
+                <input type="text" #cooName name="cooName" formControlName="cooName"
+                  (input)="onInputCooName(cooName.value)" autocomplete="on" list="cooMasterList"
+                  class="form-control"
+                  [ngClass]="{'is-invalid':submitted && (f.cooName.errors || f.cooCode.errors)}"
+                  [required]="(viewMode===VIEW_MODE.PART_EDIT || registStatus === REGIST_STATUS.PART)"
+                  [attr.disabled]="isDeliveriedOrCompleted() ? 'disabled' : null" />
+              </div>
+              <!-- 原産国コードをhiddenにする。名称が入力されたらコードを設定 -->
+              <input type="hidden" #cooCode name="cooCode" formControlName="cooCode" class="form-control"
+                [required]="(viewMode===VIEW_MODE.PART_EDIT || registStatus === REGIST_STATUS.PART)" />
+              <div *ngIf="submitted" class="invalid-feedback">
+                <div *ngIf="f.cooName.errors?.required" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+                <div *ngIf="!f.cooName.errors && f.cooCode.errors?.required"
+                  [translate]="'ERRORS.VALIDATE.COO_CODE_EXISTENCE'"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="title form-group required">
+          <label class="control-label" id="ank4">色・サイズ</label>
+        </div>
+        <div *ngIf="submitted && (f.orderSkus.status==='INVALID' || f.quantity.errors)"
+          class="invalid-feedback d-block">
+          <div *ngIf="f.orderSkus.status==='INVALID'" translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER"}}'></div>
+          <div *ngIf="f.quantity.errors?.greaterThanZero" translate='{{"ERRORS.VALIDATE.ORDER_LOT_EMPTY"}}'></div>
+        </div>
+        <app-sku-input class="order" [parentForm]="mainForm" [skuList]="skusValue" [orderSkuValue]="orderSkuValue"
+          [isConfirmed]="isConfirmed" [isOrderComplete]="isDeliveriedOrCompleted()" [deliveryList]="deliveryList" [path]="path"
+          [affiliation]="affiliation">
+        </app-sku-input>
+
+        <div class="title" id="ank5">混率</div>
+        <div class="row">
+          <ng-container *ngFor="let corloItem of compViewList;">
+            <div class="col-xl-6">
+              <p class="mt-4">{{corloItem.colorCode}} {{corloItem.colorName}}</p>
+              <div class="row borderBottom" *ngFor="let composition of corloItem.compositions;">
+                <div class="col-xl-5 p-1">
+                  {{composition.partsName}}
+                </div>
+                <div class="col-xl-5 p-1">
+                  {{composition.compositionName}}
+                </div>
+                <div class="col-xl-2 p-1">
+                  {{composition.percent}}
+                  <ng-container *ngIf="composition.percent > 0">%</ng-container>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="title" id="ank6">摘要
+          <small>(300文字以内で入力してください。)</small>
+        </div>
+        <div class="row form-group">
+          <div class="col-sm-12 col-lg-12 col-xl-12">
+            <textarea class="form-control" formControlName="application" maxlength="300"></textarea>
+          </div>
+        </div>
+
+        <!-- 発注書ファイルダウンロードエラーメッセージ -->
+        <div *ngIf="estimatesFileDLErrorMessageCode != null" class="file-dl-error-message-area"
+          translate='{{estimatesFileDLErrorMessageCode}}'>
+        </div>
+      </div>
+
+      <div class="col-xl-2">
+        <!--　商品/品番情報リンク。商品の場合は「商品情報」、品番の場合は「品番情報」 -->
+        <button type="button" class="btn btn-outline-info btn-sm btn-block text-left" name="button_sidemenu"
+          [routerLink]="['/items', itemData.id, PATH.EDIT]">
+          <fa-icon [icon]="['fas','angle-right']" [fixedWidth]="true"></fa-icon>
+          <ng-container *ngIf="itemData.registStatus===REGIST_STATUS.ITEM">商品情報</ng-container>
+          <ng-container *ngIf="itemData.registStatus===REGIST_STATUS.PART">品番情報</ng-container>
+        </button>
+
+        <!-- ページ内リンク(項目へ遷移)-->
+        <div class="side">
+          <input type="button" (click)="scrollEvent('ank4')" class="btn btn_side mb-2" name="button_sidemenu"
+            value="色・サイズ" />
+          <input type="button" (click)="scrollEvent('ank2')" class="btn btn_side" name="button_sidemenu"
+            value="生産メーカ" />
+          <input type="button" (click)="scrollEvent('ank3')" class="btn btn_side" name="button_sidemenu" value="発注情報" />
+          <input type="button" (click)="scrollEvent('ank5')" class="btn btn_side" name="button_sidemenu" value="混率" />
+          <input type="button" (click)="scrollEvent('ank6')" class="btn btn_side" name="button_sidemenu" value="摘要" />
+          <input type="button" (click)="scrollEvent('ank7')" class="btn btn_side mb-2" name="button_sidemenu"
+            value="その他" />
+          <input type="button" (click)="scrollEvent('ank1')" class="btn btn_side" name="button_sidemenu"
+            value="先頭に戻る" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <ng-container *ngIf="isShowFooter">
+      <!-- 左ボタンエリア -->
+      <div class="footer-left">
+        <!-- PATH=EDITかつ発注承認ステータスが未確定の時は削除ボタンを表示 -->
+        <button type='submit' *ngIf="path === PATH.EDIT && !isConfirmed" class="btn btn-danger mr-0"
+          (click)="onDeleteConfirmModal()" name="button_submit" [disabled]="isBtnLock || itemData.readOnly || orderData.readOnly">削除</button>
+      </div>
+      <!-- メッセージエリア-->
+      <div class="footer-center">
+        <div class="alert-danger mr-2" translate='{{overall_error_msg_code}}' *ngIf="overall_error_msg_code.length"></div>
+        <div class="alert-success mr-2" translate='{{overall_susses_msg_code}}' *ngIf="overall_susses_msg_code.length">
+        </div>
+      </div>
+      <!-- 右ボタンエリア -->
+      <div class="footer-right">
+        <ng-container *ngIf="path === PATH.NEW">
+          <button type='submit' class="btn btn-success mr-0" (click)="onSubmit()" name="button_submit"
+            [disabled]="isBtnLock || itemData.readOnly">登録</button>
+        </ng-container>
+        <!-- PATH=EDIT であれば更新ボタンを表示 -->
+        <ng-container *ngIf="path === PATH.EDIT">
+          <button type='submit' class="btn btn-success mr-0" (click)="onUpdate()" name="button_submit"
+            [disabled]="isBtnLock || itemData.readOnly || orderData.readOnly">更新</button>
+        </ng-container>
+        <!-- JUN権限&&品番登録済み&&発注未確定時は確定ボタンを表示 -->
+        <ng-container *ngIf="affiliation === AUTH_INTERNAL && path === PATH.EDIT
+          && itemData.registStatus === REGIST_STATUS.PART && !isConfirmed">
+          <button type='submit' class="btn btn-success mr-0 ml-3" (click)="onConfirm()" name="button_submit"
+            [disabled]="isBtnLock || isDirty || itemData.readOnly || orderData.readOnly">確定</button>
+        </ng-container>
+      </div>
+    </ng-container>
+  </footer>
+</form>

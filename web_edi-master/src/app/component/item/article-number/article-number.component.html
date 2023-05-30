@@ -1,0 +1,62 @@
+<a class="ml-0" (click)="isArticleNumberCollapsed = !isArticleNumberCollapsed"
+  [attr.aria-expanded]="!isArticleNumberCollapsed" aria-controls="collapseAnchorArticleNumber">
+  <fa-icon [icon]="['fas', isExpandArticleNumbers?'angle-up':'angle-down']" [fixedWidth]="true"></fa-icon>
+  <label class="control-label">詳細</label>
+</a>
+<div id="collapseAnchorArticleNumber" [ngbCollapse]="isArticleNumberCollapsed">
+  <div *ngIf="!isShowArticleNumbers && !isAutomaticallyRegistInHouseJan" class="ml-3 no-sku"
+    [translate]="'INFO.NO_SKU_NO_ARTICLE_NUMBER'"></div>
+  <div *ngIf="isAutomaticallyRegistInHouseJan" class="ml-3 no-sku"
+    [translate]="'INFO.IN_HOUSE_JAN_ENTRY_AUTOMATICALLY'"></div>
+  <div *ngIf="isShowArticleNumbers">
+    <ng-container *ngIf="isArticleNumberValidationError()">
+      <!-- JAN/UPCのカスタムエラーメッセージ -->
+      <div *ngFor="let errMsg of articleNumberErrorMsg">
+        <div class="invalid-feedback custom_error_msg d-block" [translate]="errMsg.code" [translateParams]="{arg: errMsg.arg}"></div>
+      </div>
+    </ng-container>
+    <div class="main-container" [formGroup]="parentForm" *ngIf="parentForm">
+      <ng-container formArrayName="articleNumbers">
+        <!-- 左側(色) -->
+        <div class="left-color-container">
+          <div class="grid-cell fixed-color">
+            <p>
+              <!-- 色コード・名称 -->
+            </p>
+          </div>
+          <ng-container *ngFor="let colorItem of fCtrlArticleNumbers; let iIdx=index">
+            <div class="grid" [formGroupName]="iIdx">
+              <div class="grid-cell fixed-color">
+                <p>{{colorItem.get('colorCode').value}} <span class="color-name">{{colorItem.get('colorName').value}}
+                  </span></p>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <!-- 右側(サイズ、JAN/UPCコード) -->
+        <div class="article-number-container pb-2">
+          <div class="grid">
+            <ng-container *ngFor="let size of sizeMasterList">
+              <div class="grid-cell grid-width-m-double text-center">
+                <p>{{size.szkg}}</p>
+              </div>
+            </ng-container>
+          </div>
+          <ng-container *ngFor="let colorItem of fCtrlArticleNumbers; let iIdx=index">
+            <!-- 行(色ごとに1行)-->
+            <div class="grid" [formGroupName]="iIdx">
+              <ng-container formArrayName="sizeList"
+                *ngFor="let size of colorItem['controls']['sizeList']['controls']; let vIdx=index">
+                <!-- 列(サイズごとに1列) -->
+                <div class="grid-cell grid-width-m-double" [formGroupName]="vIdx">
+                  <input type="tel" class="form-control text-right grid-width-m-double" appNumberInput
+                    formControlName="janCode" maxlength="13" [ngClass]="{'is-invalid':isJanCodeError(size)}">
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

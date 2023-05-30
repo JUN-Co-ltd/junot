@@ -1,0 +1,151 @@
+<ng-container *ngIf="!invisibledMaintForm">
+  <form [formGroup]="maintForm">
+    <div class="container-fluid">
+      <div class="row form-inline">
+            <!-- //PRD_0136 #10671 mod start -->
+        <!-- <div class="col-sm-4 col-lg-2 col-xl-2 form-group required"> -->
+          <!-- <label class="control-label col-form-label">テーブル : </label> -->
+          <div class="col-sm-5 col-lg-5 col-xl-5 form-group required">
+          <label class="control-label col-form-label">テーブル区分 : </label>
+          <!-- //PRD_0136 #10671 mod end -->
+          <select formControlName="selectTblId" class="form-control length_10">
+            <option *ngFor="let tbl of maintTableList" [value]="tbl.tableId" id="selectId">{{tbl.tableId}} {{tbl.name}}</option>
+          </select>
+        </div>
+        <div class="col-sm-1 col-lg-1 col-xl-1">
+          <button type="button" class="btn btn-info" [disabled]="disabled" (click)="onReference()"
+            name="button_reference">参照</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <ng-container *ngIf="!invisibledDataForm">
+    <!-- 検索領域 -->
+    <div class="row search-input-area">
+      <div class="col-sd-6 col-md-6 cl-xl-6">
+        <span class="search-input-title">検索条件入力欄</span>
+      </div>
+      <div class="col-sd-6 col-md-6 cl-xl-6 right">
+        <button type="button" class="btn btn-info mr-0 ml-3" [disabled]="disabled" (click)="onSearch()"
+          name="button_search">検索</button>
+      </div>
+    </div>
+
+    <div detect-scroll id="dataArea" class="data-area" (onScroll)="onScroll($event)">
+      <form [formGroup]="searchForm">
+        <div class="title-area flex-row-nowrap">
+          <div class="title-list-checkbox-width"></div>
+          <ng-container *ngFor="let config of formConfigs;">
+            <ng-container *ngIf="config.type !== 'hidden'">
+              <div class="title-list-width" style="width:100%;">
+                <div class="title-1-list-width">
+                  <input type="text" [formControlName]="config.key" style="width:100%;">
+                </div>
+                <div class="title-2-list-width"></div>
+                <!-- データ領域：タイトル -->
+                <div class="title-3-list-width">
+                  {{config.name}}
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </form>
+
+      <!-- データ領域：データ -->
+      <form [formGroup]="dataForm">
+        <div *ngFor="let codeData of dataListFormArray.controls; let i = index" formArrayName="list">
+          <!-- データ表示 -->
+          <div [formGroupName]="i" class="flex-row-nowrap">
+            <div class="list-checkbox-width">
+              <ng-container *ngIf="codeData.value.selected == 'true'">
+                <input type="checkbox" formControlName="selected" checked
+                  (change)="onCheckbox(i, codeData.value.id, codeData.value.selected)" class="center">
+              </ng-container>
+              <ng-container *ngIf="codeData.value.selected != 'true'">
+                <input type="checkbox" formControlName="selected"
+                  (change)="onCheckbox(i, codeData.value.id, codeData.value.selected)" class="center">
+              </ng-container>
+            </div>
+            <ng-container *ngFor="let config of formConfigs">
+              <ng-container *ngIf="config.type === 'hidden'">
+                <ng-container *ngIf="config.id !== 'selected'">
+                  <input type="hidden" [formControlName]="config.key">
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="config.type !== 'hidden'">
+                <div class="list-width">
+                  <ng-container *ngIf="!(codeData.value.selected) ? 'disabled' : null">
+                    <input type="text" [formControlName]="config.key" class="list-col back-color-disabled"
+                      [attr.disabled]="!(codeData.value.selected) ? 'disabled' : null">
+                  </ng-container>
+                  <ng-container *ngIf="(codeData.value.selected) ? 'disabled' : null">
+                    <!-- PRD_0147 #10671 mod JFE start  -->
+                    <!-- <ng-container *ngIf="codeData.value.id < 0 "> -->
+                    <ng-container *ngIf="codeData.value.id < 0 || codeData.value.id == null">
+                      <!--PRD_0147 #10671 mod JFE end -->
+                      <input type="text" [formControlName]="config.key" class="list-col back-color-new"
+                        [attr.disabled]="!(codeData.value.selected) ? 'disabled' : null">
+                    </ng-container>
+                    <ng-container *ngIf="codeData.value.id > 0">
+                      <input type="text" [formControlName]="config.key" class="list-col back-color-edit"
+                        [attr.disabled]="!(codeData.value.selected) ? 'disabled' : null">
+                    </ng-container>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+          <!-- エラー表示 -->
+          <div>
+            <ng-container *ngFor="let error of getErrors(codeData);">
+              <ng-container *ngIf="!(codeData.value.selected) ? 'disabled' : null">
+                <div class="list-error font-color-red back-color-disabled" [translate]="error.code"
+                  [translateParams]="error.params"></div>
+              </ng-container>
+              <ng-container *ngIf="(codeData.value.selected) ? 'disabled' : null">
+                <ng-container *ngIf="codeData.value.id < 0">
+                  <div class="list-error font-color-red back-color-new" [translate]="error.code"
+                    [translateParams]="error.params"></div>
+                </ng-container>
+                <ng-container *ngIf="codeData.value.id > 0">
+                  <div class="list-error font-color-red back-color-edit" [translate]="error.code"
+                    [translateParams]="error.params"></div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- 追加ボタン -->
+    <div class="btn-area">
+      <div class="right new-entry-btn">
+        <button type="button" class="btn btn-info mr-0 ml-3" [disabled]="disabled" (click)="onNewEntry()"
+          name="button_new">追加</button>
+      </div>
+    </div>
+
+    <footer>
+      <!-- 左ボタンエリア -->
+      <div class="footer-left">
+        <button type="button" class="btn btn-danger mr-0 ml-3" [disabled]="deleteButtonDisabled" (click)="onDelete()"
+          name="button_delete">削除</button>
+      </div>
+      <!-- メッセージエリア -->
+      <div class="footer-center">
+        <div class="alert-success mr-2" [translate]="message.footer.success.code"
+          [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length"></div>
+        <div class="alert-danger mr-2" [translate]="message.footer.error.code"
+          [translateParams]="message.footer.error.param" *ngIf="message.footer.error.code.length"></div>
+      </div>
+      <!-- 右ボタンエリア -->
+      <div class="footer-right">
+        <button type="button" class="btn btn-success mr-0 ml-3" [disabled]="updateButtonDisabled" (click)="onUpdate()"
+          name="button_update">更新</button>
+      </div>
+    </footer>
+  </ng-container>
+</ng-container>

@@ -1,0 +1,234 @@
+<div *ngIf="!invisibled">
+  <!-- 検索フォーム-->
+  <div class="container-fluid">
+    <form #searchForm="ngForm">
+      <div class="row form-inline mb-2">
+        <div class="col-sm-4 col-lg-3 form-group">
+          <span class="label">ブランド</span>
+          <select class="custom-select code-3" [(ngModel)]="formConditions.brandCode" name="brandCode">
+            <option selected></option>
+            <option *ngFor="let brand of brandList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </div>
+        <div class="col-sm-4 col-lg-3 form-group">
+          <span class="label">アイテム</span>
+          <select class="custom-select" [(ngModel)]="formConditions.itemCode" name="itemCode">
+            <option selected></option>
+            <option *ngFor="let item of itemList" [value]="item.code2">{{item.code2}}</option>
+          </select>
+        </div>
+        <div class="col-sm-4 col-lg-2 form-group">
+          <span class="label-short">年度</span>
+          <input [(ngModel)]="formConditions.year" type="text" name="year" class="form-control code_4" maxlength="4"
+            minlength="4" pattern="^2[0-9]{3}$" [ngClass]="{'is-invalid': isErrorDisplay(searchForm.controls['year'])}">
+          <ng-container *ngIf="isErrorDisplay(searchForm.controls['year'])">
+            <div *ngIf="searchForm.controls['year'].errors?.pattern" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.YEAR_FORMAT'"></div>
+            <div *ngIf="searchForm.controls['year'].errors?.minlength" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'" [translateParams]="{name:'年度は', length:'4'}"></div>
+          </ng-container>
+        </div>
+        <div class="col-sm-12 col-lg-4 form-group">
+          <span class="label">シーズン</span>
+          <ng-container *ngFor="let season of seasonList; index as idx;">
+            <label class="checkbox-label">
+              <input type="checkbox" name="season{{idx}}" id="season{{idx}}" [(ngModel)]="season.selected" [value]="season.code">{{season.code}}
+            </label>
+          </ng-container>
+        </div>
+      </div>
+      <div class="row form-inline mb-2">
+        <div class="col-sm-12 col-lg-5 form-group">
+          <span class="label">品番</span>
+          <input [(ngModel)]="formConditions.partNoKind" name="partNoKind" type="text" class="form-control code_3" maxlength="3" minlength="3"
+            pattern="[A-Z]{3}" [ngClass]="{'is-invalid': isErrorDisplay(searchForm.controls['partNoKind'])}">
+          <span class="ml-sm-2 mr-sm-2">-</span>
+          <input [(ngModel)]="formConditions.partNoSerialNo" name="partNoSerialNo" type="text" class="form-control code_6" maxlength="5" minlength="5"
+            pattern="^[0-9]{4}0$" [ngClass]="{'is-invalid': isErrorDisplay(searchForm.controls['partNoSerialNo'])}">
+          <ng-container *ngIf="isErrorDisplay(searchForm.controls['partNoKind'])">
+            <div *ngIf="searchForm.controls['partNoKind'].errors?.pattern" class="invalid-feedback"
+              [translate]="'ERRORS.VALIDATE.PART_KIND_FORMAT'"></div>
+            <div *ngIf="searchForm.controls['partNoKind'].errors?.minlength" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'" [translateParams]="{name:'品種は', length:'3'}"></div>
+          </ng-container>
+          <ng-container *ngIf="isErrorDisplay(searchForm.controls['partNoSerialNo'])">
+            <div *ngIf="searchForm.controls['partNoSerialNo'].errors?.pattern" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.PATTERN_PART_NO_SERIAL_NO'"></div>
+            <div *ngIf="searchForm.controls['partNoSerialNo'].errors?.minlength" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'" [translateParams]="{name:'通番は', length:'5'}"></div>
+          </ng-container>
+          <ng-container *ngIf="!isErrorDisplay(searchForm.controls['partNoKind']) || !isErrorDisplay(searchForm.controls['partNoSerialNo'])">
+            <div *ngIf="searchForm.errors?.partNoKindEmpty" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.ANY_EMPTY'" [translateParams]='{name:"品種"}'></div>
+            <div *ngIf="searchForm.errors?.partNoSerialNoEmpty" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.ANY_EMPTY'" [translateParams]='{name:"通番"}'></div>
+          </ng-container>
+        </div>
+        <div class="col-sm-12 col-lg-6 form-group">
+          <span class="label">製品納期</span>
+          <div class="input-group">
+            <input class="form-control length_10" [(ngModel)]="formConditions.productCorrectionDeliveryAtFrom"
+              id="productCorrectionDeliveryAtFrom" placeholder="" name="productCorrectionDeliveryAtFrom" type="text"
+              (blur)="onBlurDate($event.target.value, 'productCorrectionDeliveryAtFrom');" appDateInput ngbDatepicker
+              #productCorrectionDeliveryAtFrom="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+              [ngClass]="{'is-invalid': isErrorDisplay(searchForm.controls['productCorrectionDeliveryAtFrom'])}">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" type="button"
+                (click)="productCorrectionDeliveryAtFrom.toggle()">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+          </div>
+          <span class="ml-2 mr-2">～</span>
+          <div class="input-group">
+            <input class="form-control length_10" [(ngModel)]="formConditions.productCorrectionDeliveryAtTo"
+              id="productCorrectionDeliveryAtTo" placeholder="" name="productCorrectionDeliveryAtTo" type="text"
+              (blur)="onBlurDate($event.target.value, 'productCorrectionDeliveryAtTo');" appDateInput ngbDatepicker
+              #productCorrectionDeliveryAtTo="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+              [ngClass]="{'is-invalid': isErrorDisplay(searchForm.controls['productCorrectionDeliveryAtTo'])}">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" type="button"
+                (click)="productCorrectionDeliveryAtTo.toggle()">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+          </div>
+          <ng-container *ngIf="isErrorDisplay(searchForm.controls['productCorrectionDeliveryAtFrom'])">
+            <div *ngIf="searchForm.controls['productCorrectionDeliveryAtFrom'].errors?.ngbDate?.invalid" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.DATE_FORMAT'"></div>
+          </ng-container>
+          <ng-container *ngIf="isErrorDisplay(searchForm.controls['productCorrectionDeliveryAtTo'])">
+            <div *ngIf="searchForm.controls['productCorrectionDeliveryAtTo'].errors?.ngbDate?.invalid" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.DATE_FORMAT'"></div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="row form-inline mb-2">
+        <div class="col-sm-12 col-lg-5 form-group">
+          <span class="label">対象</span>
+          <ng-container *ngFor="let qualityStatus of qualityStatusList; index as idx;">
+            <label class="checkbox-label">
+              <input type="checkbox" class="ml-sm-2" name="qualityStatus{{idx}}" id="qualityStatus{{idx}}"
+                [(ngModel)]="qualityStatus.selected" [value]="qualityStatus.type">{{qualityStatus.label}}
+            </label>
+          </ng-container>
+        </div>
+        <div class="col-sm-12 col-lg-6 form-group">
+          <span class="label">検査承認日</span>
+          <div class="input-group">
+            <input class="form-control length_10" [(ngModel)]="formConditions.approvalAtFrom" id="approvalAtFrom" placeholder=""
+              name="approvalAtFrom" type="text" appDateInput ngbDatepicker #approvalAtFrom="ngbDatepicker"
+              (blur)="onBlurDate($event.target.value, 'approvalAtFrom');" [showWeekNumbers]="true" maxlength="10"
+              [ngClass]="{'is-invalid': isErrorDisplay(searchForm.controls['approvalAtFrom'])}">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" type="button" (click)="approvalAtFrom.toggle()">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+          </div>
+          <span class="ml-2 mr-2">～</span>
+          <div class="input-group">
+            <input class="form-control length_10" [(ngModel)]="formConditions.approvalAtTo" id="approvalAtTo" placeholder=""
+            name="approvalAtTo" type="text" appDateInput ngbDatepicker #approvalAtTo="ngbDatepicker"
+            [ngClass]="{'is-invalid': isErrorDisplay(searchForm.controls['approvalAtTo'])}">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary calBtn" type="button" (click)="approvalAtTo.toggle()">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+          </div>
+          <ng-container *ngIf="isErrorDisplay(searchForm.controls['approvalAtFrom'])">
+            <div *ngIf="searchForm.controls['approvalAtFrom'].errors?.ngbDate?.invalid" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.DATE_FORMAT'"></div>
+          </ng-container>
+          <ng-container *ngIf="isErrorDisplay(searchForm.controls['approvalAtTo'])">
+            <div *ngIf="searchForm.controls['approvalAtTo'].errors?.ngbDate?.invalid" class="invalid-feedback d-block"
+              [translate]="'ERRORS.VALIDATE.DATE_FORMAT'"></div>
+          </ng-container>
+        </div>
+        <!-- 検索ボタン -->
+        <div class="col-sm-12 col-lg-1">
+          <input type="submit" class="btn btn-info" (click)="onSearch(searchForm)" value="検索">
+        </div>
+      </div>
+      <!-- メッセージエリア -->
+      <div class="row mb-2" *ngIf="message.body.error.code.length">
+        <div class="col-12">
+          <div class="overall-msg-area alert alert-danger p-1">
+            <div [translate]="message.body.error.code" [translateParams]="message.body.error.param"></div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!-- 検索結果-->
+  <div class="mt-1 mr-3 ml-4">
+    <div class="row ml-1">
+      <span class="font-color-red">赤</span>
+      <span>：未検査</span>&nbsp;
+      <span class="font-color-green ml-2">緑</span>
+      <span>：一部検査済</span>&nbsp;
+      <span class="font-color-blue ml-2">青</span>
+      <span>：検査済</span>
+    </div>
+    <!-- 一覧表示エリア -->
+    <div detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200" class="table-wrapper">
+      <table class="table sticky-table">
+        <thead>
+          <tr>
+            <th scope="col" class="width-105 text-center">品番</th>
+            <th scope="col" class="width-95 text-center">上代</th>
+            <th scope="col" class="product-name text-center">品名</th>
+            <th scope="col" class="width-85 text-center">発注No</th>
+            <th scope="col" class="width-95 text-center">発注数</th>
+            <th scope="col" class="mdf-staff-name text-center">製造担当</th>
+            <th scope="col" class="width-95 text-center">原産国</th>
+            <th scope="col" class="width-150 text-center">組成</th>
+            <th scope="col" class="quality-harmful-statuse text-center">有害</th>
+            <th scope="col" class="width-95 text-center">承認日</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of searchResultItems">
+            <td>
+              <span [ngClass]="fontColorChanged(item)">
+                {{item.partNo | partNoInput}}
+              </span>
+            </td>
+            <td class="text-right">{{item.retailPrice | number}}</td>
+            <td>
+              <span class="ellipsis">
+                <a [routerLink]="['/misleadingRepresentations', item.id, PATH.EDIT]">{{item.productName}}</a>
+              </span>
+            </td>
+            <td>{{item.orderNumber}}</td>
+            <td class="text-right">{{item.quantity | number}}</td>
+            <td>{{item.mdfStaffName}}</td>
+            <td>
+              <span [ngClass]="fontColorStatus(item.qualityCooStatus)">
+                {{item.cooName}}
+              </span>
+            </td>
+            <td>
+              <span class="ellipsis-no-cursor" [ngClass]="fontColorStatus(item.qualityCompositionStatus)">
+                {{item.compositionName}}
+              </span>
+            </td>
+            <td>
+              <span class="ellipsis-no-cursor" [ngClass]="fontColorStatus(item.qualityHarmfulStatus)">
+                <ng-container [ngSwitch]="item.qualityHarmfulStatus">
+                  <ng-container *ngSwitchCase=0>対象外</ng-container>
+                  <ng-container *ngSwitchCase=1 class="font-color-red">未提出</ng-container>
+                  <ng-container *ngSwitchCase=9 class="font-color-blue">提出済み</ng-container>
+                </ng-container>
+              </span>
+            </td>
+            <td>
+              {{item.approvalAt | date: "yyyy/MM/dd"}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

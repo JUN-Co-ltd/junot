@@ -1,0 +1,965 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-basic-title">生産ステータス登録</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+
+  <div class="container-fluid mb-2">
+    <div class="row">
+      <ol class="stepBar step9 mt-1 mb-0">
+        <li class="step" [ngClass]="{'current':sampleCompletionList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.SAMPLE}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.SAMPLE)">サン
+            <br>プル</button>
+        </li>
+        <li class="step" [ngClass]="{'current':specificationFixList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.SPECIFICATION_FIX}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.SPECIFICATION_FIX)">仕様
+            <br>確定</button>
+        </li>
+        <li class="step" [ngClass]="{'current':textureArrivalList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.TEXTURE_ARRIVAL}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.TEXTURE_ARRIVAL)">生地
+            <br>入荷</button>
+        </li>
+        <li class="step" [ngClass]="{'current':attachmentArrivalList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.ATTACHMENT_ARRIVAL}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.ATTACHMENT_ARRIVAL)">付属
+            <br>入荷</button>
+        </li>
+        <li class="step" [ngClass]="{'current':sewingInList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.SEWING_IN}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.SEWING_IN)">縫製中</button>
+        </li>
+        <li class="step" [ngClass]="{'current':sewInspectionList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.SEW_INSPECTION}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.SEW_INSPECTION)">縫製
+            <br>検品</button>
+        </li>
+        <li class="step" [ngClass]="{'current':inspectionList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.INSPECTION}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.INSPECTION)">検品</button>
+        </li>
+        <li class="step" [ngClass]="{'current':shipList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.SHIP}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.SHIP)">SHIP</button>
+        </li>
+        <li class="step" [ngClass]="{'current':distaArrivalList.length > 0, 'position':currentHistoryStatus===PRODUCTION_STATUS_TYPE.DISTA_ARRIVAL}">
+          <button type="button" class="btn btn-link float-right m-0 p-0" (click)="onChangeStatusSelect(PRODUCTION_STATUS_TYPE.DISTA_ARRIVAL)">DISTA
+            <br>入荷</button>
+        </li>
+      </ol>
+    </div>
+    <div class="row">
+      <!-- 日付項目 -->
+      <ol class="stepDate step9 mb-0">
+        <!-- サンプル -->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.sampleCompletionAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.sampleCompletionFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+
+        </li>
+        <!-- 仕様確定 -->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.specificationAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.specificationFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+        </li>
+        <!-- 生地入荷 -->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.textureArrivalAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.textureArrivalFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+        </li>
+        <!-- 附属入荷 -->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.attachmentArrivalAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.attachmentArrivalFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+        </li>
+        <!-- 縫製中 -->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.completionAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.completionFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+        </li>
+        <!-- 縫製検品 -->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.sewInspectionAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.sewInspectionFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+        </li>
+        <!-- 検品-->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.inspectionAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.inspectionFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+        </li>
+        <!-- SHIP -->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.customsClearanceAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.customsClearanceFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+        </li>
+        <!-- DISTA入荷 -->
+        <li class="step">
+          <div class=" float-right">
+            {{productionStatus?.distaArrivalAt | date:"yy/MM/dd"}}<br />
+            <span class="confirm">{{productionStatus?.distaArrivalFixAt | date:"yy/MM/dd"}}</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <ng-container class="control-label pt-1 d-flex align-items-start" [ngSwitch]="currentHistoryStatus">
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SAMPLE">サンプル</div>
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SPECIFICATION_FIX">仕様確定</div>
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.TEXTURE_ARRIVAL">生地入荷</div>
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.ATTACHMENT_ARRIVAL">付属入荷</div>
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SEWING_IN">縫製中</div>
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SEW_INSPECTION">縫製検品</div>
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.INSPECTION">検品</div>
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SHIP">SHIP</div>
+    <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.DISTA_ARRIVAL">DISTA入荷</div>
+  </ng-container>
+
+  <div class="container-fluid pb-0 pt-2">
+    <form [formGroup]="productionStatusForm">
+
+      <!-- 全項目未入力のカスタムエラーメッセージ -->
+      <div *ngIf="submitted && productionStatusForm.errors && productionStatusForm.errors['productionStatusRequired']"
+        class="invalid-feedback d-block empty-error-message" translate='{{"ERRORS.VALIDATE.EMPTY"}}'>
+      </div>
+
+      <ng-container [ngSwitch]="f.productionStatusType.value">
+        <!-- サンプル -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SAMPLE">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">サンプル上がり日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="sampleCompletionAt" (blur)="onBlurDate($event.target.value, 'sampleCompletionAt');"
+                  appDateInput ngbDatepicker formControlName="sampleCompletionAt" #sampleCompletionAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.sampleCompletionAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="sampleCompletionAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.sampleCompletionAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.sampleCompletionAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">サンプル上がり日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="sampleCompletionFixAt" (blur)="onBlurDate($event.target.value, 'sampleCompletionFixAt');"
+                  appDateInput ngbDatepicker formControlName="sampleCompletionFixAt" #sampleCompletionFixAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.sampleCompletionFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="sampleCompletionFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.sampleCompletionFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.sampleCompletionFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /サンプル -->
+        <!-- 仕様確定 -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SPECIFICATION_FIX">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">仕様確定日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="specificationAt" name="specificationAt"
+                  (blur)="onBlurDate($event.target.value, 'specificationAt');" appDateInput ngbDatepicker
+                  #specificationAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10" [ngClass]="{'is-invalid': submitted && f.specificationAt.errors}">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="specificationAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.specificationAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.specificationAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">仕様確定日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="specificationFixAt" (blur)="onBlurDate($event.target.value, 'specificationFixAt');"
+                  appDateInput ngbDatepicker formControlName="specificationFixAt" #specificationFixAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.specificationFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="specificationFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.specificationFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.specificationFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /仕様確定 -->
+        <!-- 生地入荷 -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.TEXTURE_ARRIVAL">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">生地入荷日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="textureArrivalAt" (blur)="onBlurDate($event.target.value, 'textureArrivalAt');"
+                  appDateInput ngbDatepicker formControlName="textureArrivalAt" #textureArrivalAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.textureArrivalAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="textureArrivalAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.textureArrivalAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.textureArrivalAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">生地入荷日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="textureArrivalFixAt" (blur)="onBlurDate($event.target.value, 'textureArrivalFixAt');"
+                  appDateInput ngbDatepicker formControlName="textureArrivalFixAt" #textureArrivalFixAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.textureArrivalFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="textureArrivalFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.textureArrivalFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.textureArrivalFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /生地入荷 -->
+        <!-- 付属入荷 -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.ATTACHMENT_ARRIVAL">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">付属入荷日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="attachmentArrivalAt" (blur)="onBlurDate($event.target.value, 'attachmentArrivalAt');"
+                  appDateInput ngbDatepicker formControlName="attachmentArrivalAt" #attachmentArrivalAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.attachmentArrivalAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="attachmentArrivalAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.attachmentArrivalAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.attachmentArrivalAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">付属入荷日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="attachmentArrivalFixAt" (blur)="onBlurDate($event.target.value, 'attachmentArrivalFixAt');"
+                  appDateInput ngbDatepicker formControlName="attachmentArrivalFixAt" #attachmentArrivalFixAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.attachmentArrivalFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="attachmentArrivalFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.attachmentArrivalFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.attachmentArrivalFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /付属入荷 -->
+        <!-- 縫製中 -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SEWING_IN">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">上がり予定日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="completionAt" (blur)="onBlurDate($event.target.value, 'completionAt');"
+                  appDateInput ngbDatepicker formControlName="completionAt" #completionAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.completionAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="completionAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.completionAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.completionAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">上がり予定日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="completionFixAt" (blur)="onBlurDate($event.target.value, 'completionFixAt');"
+                  appDateInput ngbDatepicker formControlName="completionFixAt" #completionFixAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.completionFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="completionFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.completionFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.completionFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">上がり総数</label>
+              <div class="input-group">
+                <input class="form-control length_12" type="text" appNumberInput name="completionCount" maxlength="9"
+                  formControlName="completionCount" [ngClass]="{ 'is-invalid': submitted && f.completionCount.errors }">
+                <div *ngIf="submitted && f.completionCount.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.completionCount.errors.pattern" translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /縫製中 -->
+        <!-- 縫製検品 -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SEW_INSPECTION">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">JUN到着日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="sewInspectionAt" name="sewInspectionAt"
+                  (blur)="onBlurDate($event.target.value, 'sewInspectionAt');" appDateInput ngbDatepicker
+                  #sewInspectionAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.sewInspectionAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="sewInspectionAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.sewInspectionAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.sewInspectionAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">JUN到着日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="sewInspectionFixAt"
+                  name="sewInspectionFixAt" (blur)="onBlurDate($event.target.value, 'sewInspectionFixAt');"
+                  appDateInput ngbDatepicker #sewInspectionFixAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+                  [ngClass]="{ 'is-invalid': submitted && f.sewInspectionFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="sewInspectionFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.sewInspectionFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.sewInspectionFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /縫製検品 -->
+        <!-- 検品 -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.INSPECTION">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-xl-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start text-2">上がり予定日</label>
+              <div class="input-group narrow-input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="completionAt" (blur)="onBlurDate($event.target.value, 'completionAt');"
+                  appDateInput ngbDatepicker formControlName="completionAt" #completionAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.completionAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="completionAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.completionAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.completionAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+              <label class="control-label pt-1 d-flex align-items-start text-2">検品実施日</label>
+              <div class="input-group narrow-input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="inspectionAt" name="inspectionAt"
+                  (blur)="onBlurDate($event.target.value, 'inspectionAt');" appDateInput ngbDatepicker #inspectionAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.inspectionAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="inspectionAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.inspectionAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.inspectionAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-xl-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start text-2">上がり予定日</label>
+              <div class="input-group narrow-input-group">
+                <input class="form-control length_10" placeholder="" type="text" name="completionFixAt" (blur)="onBlurDate($event.target.value, 'completionFixAt');"
+                  appDateInput ngbDatepicker formControlName="completionFixAt" #completionFixAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.completionFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="completionFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.completionFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.completionFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+              <label class="control-label pt-1 d-flex align-items-start text-2">検品実施日</label>
+              <div class="input-group narrow-input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="inspectionFixAt" name="inspectionFixAt"
+                  (blur)="onBlurDate($event.target.value, 'inspectionFixAt');" appDateInput ngbDatepicker
+                  #inspectionFixAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.inspectionFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="inspectionFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.inspectionFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.inspectionFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">上がり総数</label>
+              <div class="input-group">
+                <input class="form-control length_12" appNumberInput type="text" name="completionCount" maxlength="9"
+                  formControlName="completionCount" [ngClass]="{ 'is-invalid': submitted && f.completionCount.errors }">
+                <div *ngIf="submitted && f.completionCount.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.completionCount.errors.pattern" translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /検品 -->
+        <!-- ship -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.SHIP">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-xl-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start text-3">出港日</label>
+              <div class="input-group narrow-input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="leavePortAt" name="leavePortAt"
+                  (blur)="onBlurDate($event.target.value, 'leavePortAt');" appDateInput ngbDatepicker #leavePortAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.leavePortAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="leavePortAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.leavePortAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.leavePortAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+              <label class="control-label pt-1 d-flex align-items-start text-3">入港日</label>
+              <div class="input-group narrow-input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="enterPortAt" name="enterPortAt"
+                  (blur)="onBlurDate($event.target.value, 'enterPortAt');" appDateInput ngbDatepicker #enterPortAt="ngbDatepicker"
+                  [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.enterPortAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="enterPortAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.enterPortAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.enterPortAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+              <label class="control-label pt-1 d-flex align-items-start text-3">通関日</label>
+              <div class="input-group narrow-input-group right-aligned-calendar">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="customsClearanceAt"
+                  name="customsClearanceAt" (blur)="onBlurDate($event.target.value, 'customsClearanceAt');"
+                  appDateInput ngbDatepicker #customsClearanceAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+                  [ngClass]="{ 'is-invalid': submitted && f.customsClearanceAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="customsClearanceAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.customsClearanceAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.customsClearanceAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-xl-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start text-3">出港日</label>
+              <div class="input-group narrow-input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="leavePortFixAt" name="leavePortFixAt"
+                  (blur)="onBlurDate($event.target.value, 'leavePortFixAt');" appDateInput ngbDatepicker
+                  #leavePortFixAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.leavePortFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="leavePortFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.leavePortFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.leavePortFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+              <label class="control-label pt-1 d-flex align-items-start text-3">入港日</label>
+              <div class="input-group narrow-input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="enterPortFixAt" name="enterPortFixAt"
+                  (blur)="onBlurDate($event.target.value, 'enterPortFixAt');" appDateInput ngbDatepicker
+                  #enterPortFixAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.enterPortFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="enterPortFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.enterPortFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.enterPortFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                </div>
+              </div>
+              <label class="control-label pt-1 d-flex align-items-start text-3">通関日</label>
+              <div class="input-group narrow-input-group right-aligned-calendar">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="customsClearanceFixAt"
+                  name="customsClearanceFixAt" (blur)="onBlurDate($event.target.value, 'customsClearanceFixAt');"
+                  appDateInput ngbDatepicker #customsClearanceFixAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+                  [ngClass]="{ 'is-invalid': submitted && f.customsClearanceFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="customsClearanceFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.customsClearanceFixAt.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.customsClearanceFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /ship -->
+        <!-- DISTA入荷 -->
+        <div *ngSwitchCase="PRODUCTION_STATUS_TYPE.DISTA_ARRIVAL">
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">予定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">入荷日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="distaArrivalAt" name="distaArrivalAt"
+                  (blur)="onBlurDate($event.target.value, 'distaArrivalAt');" appDateInput ngbDatepicker
+                  #distaArrivalAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.distaArrivalAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="distaArrivalAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.distaArrivalAt.errors" class="invalid-feedback d-block">
+                  <span *ngIf="f.distaArrivalAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-1 form-group form-inline">
+              <label class="control-label pt-1 m-0 d-flex align-items-start">確定</label>
+            </div>
+            <div class="col-sm-11 form-group form-inline">
+              <label class="control-label pt-1 d-flex align-items-start">入荷日</label>
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" type="text" formControlName="distaArrivalFixAt"
+                  name="distaArrivalFixAt" (blur)="onBlurDate($event.target.value, 'distaArrivalFixAt');" appDateInput
+                  ngbDatepicker #distaArrivalFixAt="ngbDatepicker" [showWeekNumbers]="true" maxlength="10" [ngClass]="{ 'is-invalid': submitted && f.distaArrivalFixAt.errors }">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="distaArrivalFixAt.toggle()" type="button">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div *ngIf="submitted && f.distaArrivalFixAt.errors" class="invalid-feedback d-block">
+                  <span *ngIf="f.distaArrivalFixAt.errors.ngbDate" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /DISTA入荷 -->
+      </ng-container>
+      <div class="row mb-0">
+        <div class="col-sm-1 form-group form-inline">
+          <label class="control-label pt-1 d-flex align-items-start input-label-memo">メモ</label>
+        </div>
+        <div class="col-sm-9 form-group form-inline">
+          <div class="input-group">
+            <textarea rows="5" cols="45" class="form-control input-memo" name="memo" maxlength="600" formControlName="memo"
+              [ngClass]="{ 'is-invalid': submitted && f.memo.errors }"></textarea>
+          </div>
+          <div *ngIf="submitted && f.memo.errors" class="invalid-feedback d-block">
+            <div class="ml-4" *ngIf="f.memo.errors.maxlength" translate='{{"ERRORS.VALIDATE.LENGTH_NOT_MATCH"}}'
+              [translateParams]="{name:'', length:'20'}"></div>
+          </div>
+        </div>
+        <div class="col-sm-2 d-flex justify-content-end" *ngIf="isShowEdiButton">
+          <button type="submit" (click)="onSubmit()" class="btn btn-outline-dark mr-1 align-self-end" [attr.disabled]="isBtnLock?'':null">登録</button>
+        </div>
+      </div>
+      <div class="row mb-1 mt-1">
+        <div class="col-sm-12">
+          <div class="alert-danger" translate='{{overall_error_msg_code}}' *ngIf="overall_error_msg_code.length"></div>
+          <div class="alert-success" translate='{{overall_susses_msg_code}}' *ngIf="overall_susses_msg_code.length">
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="container-fluid pt-0 pb-0">
+    <label class="control-label mb-3 d-flex align-items-start">履歴</label>
+    <div *ngIf="searchLoading" class="search-loading">
+    </div>
+    <div *ngIf="!searchLoading" class="search-result">
+      <!-- サンプル -->
+      <ng-container [ngSwitch]="currentHistoryStatus">
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.SAMPLE">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date">登録日</th>
+                <th scope="col" class="date">サンプル上がり日</th>
+                <th scope="col" class="memo-lg">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of sampleCompletionList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.sampleCompletionAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="memo-lg" rowspan="2">
+                    <pre>{{item.memo}}</pre>
+                  </td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.sampleCompletionFixAt!=null}">
+                    {{item.sampleCompletionFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <!-- 仕様確定 -->
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.SPECIFICATION_FIX">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date">登録日</th>
+                <th scope="col" class="date">仕様確定日</th>
+                <th scope="col" class="memo-lg">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of specificationFixList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.specificationAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="memo-lg" rowspan="2">
+                    <pre>{{item.memo}}</pre>
+                  </td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.specificationFixAt!=null}">
+                    {{item.specificationFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <!-- 生地入荷 -->
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.TEXTURE_ARRIVAL">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date">登録日</th>
+                <th scope="col" class="date">生地入荷日</th>
+                <th scope="col" class="memo-lg">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of textureArrivalList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.textureArrivalAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="memo-lg" rowspan="2">
+                    <pre>{{item.memo}}</pre>
+                  </td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.textureArrivalFixAt!=null}">
+                    {{item.textureArrivalFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <!-- 付属入荷 -->
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.ATTACHMENT_ARRIVAL">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date" rowspan="2">登録日</th>
+                <th scope="col" class="date">付属入荷日</th>
+                <th scope="col" class="memo-lg" rowspan="2">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of attachmentArrivalList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.attachmentArrivalAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="memo-lg" rowspan="2">
+                    <pre>{{item.memo}}</pre>
+                  </td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.attachmentArrivalFixAt!=null}">
+                    {{item.attachmentArrivalFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <!-- 縫製中 -->
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.SEWING_IN">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date">登録日</th>
+                <th scope="col" class="date">上がり予定日</th>
+                <th scope="col" class="date">上がり総数</th>
+                <th scope="col" class="memo-md">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of sewingInList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">
+                    <div>{{item.completionAt | date:"yyyy/MM/dd"}}</div>
+                  </td>
+                  <td class="date" rowspan="2">
+                    <div>{{item.completionCount | numberInput}}</div>
+                  </td>
+                  <td class="memo-md" rowspan="2">
+                    <pre>{{item.memo}}</pre>
+                  </td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.completionFixAt!=null}">
+                    {{item.completionFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <!-- 縫製検品 -->
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.SEW_INSPECTION">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date">登録日</th>
+                <th scope="col" class="date">JUN到着日</th>
+                <th scope="col" class="memo-lg">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of sewInspectionList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.sewInspectionAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="memo-lg" rowspan="2">
+                    <pre>{{item.memo}}</pre>
+                  </td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.sewInspectionFixAt!=null}">
+                    {{item.sewInspectionFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <!-- 検品 -->
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.INSPECTION">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date">登録日</th>
+                <th scope="col" class="date">上がり予定日</th>
+                <th scope="col" class="date">検品実施日</th>
+                <th scope="col" class="date">上がり総数</th>
+                <th scope="col" class="memo-sm">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of inspectionList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.completionAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.inspectionAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date" rowspan="2" text-right>{{item.completionCount | numberInput}}</td>
+                  <td class="memo-sm" rowspan="2">{{item.memo}}</td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.inspectionFixAt!=null&&item.completionFixAt!=null}">
+                    {{item.completionFixAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date" [ngClass]="{'confirm':item.inspectionFixAt!=null&&item.completionFixAt!=null}">
+                    {{item.inspectionFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <!-- SHIP -->
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.SHIP">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date">登録日</th>
+                <th scope="col" class="date">出港日</th>
+                <th scope="col" class="date">入港日</th>
+                <th scope="col" class="date">通関日</th>
+                <th scope="col" class="memo-sm">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of shipList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.leavePortAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.enterPortAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.customsClearanceAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="memo-sm" rowspan="2">
+                    <pre>{{item.memo}}</pre>
+                  </td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.leavePortFixAt!=null&&item.enterPortFixAt!=null&&item.customsClearanceFixAt!=null}">
+                    {{item.leavePortFixAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date" [ngClass]="{'confirm':item.leavePortFixAt!=null&&item.enterPortFixAt!=null&&item.customsClearanceFixAt!=null}">
+                    {{item.enterPortFixAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date" [ngClass]="{'confirm':item.leavePortFixAt!=null&&item.enterPortFixAt!=null&&item.customsClearanceFixAt!=null}">
+                    {{item.customsClearanceFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+        <!-- DISTA入荷 -->
+        <ng-container *ngSwitchCase="PRODUCTION_STATUS_TYPE.DISTA_ARRIVAL">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col" class="date">登録日</th>
+                <th scope="col" class="date">入荷日</th>
+                <th scope="col_1" class="memo-lg">メモ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngFor="let item of distaArrivalList;">
+                <tr class="under_line">
+                  <td class="date" rowspan="2">{{item.createdAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="date">{{item.distaArrivalAt | date:"yyyy/MM/dd"}}</td>
+                  <td class="memo-lg" rowspan="2">
+                    <pre>{{item.memo}}</pre>
+                  </td>
+                </tr>
+                <tr class="under_line">
+                  <td class="date" [ngClass]="{'confirm':item.distaArrivalFixAt!=null}">
+                    {{item.distaArrivalFixAt | date:"yyyy/MM/dd"}}</td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>

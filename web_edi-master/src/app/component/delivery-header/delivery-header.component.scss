@@ -1,0 +1,66 @@
+table {
+  width: 100%;
+
+  &.table {
+    font-size: 16px;
+    width: 100%;
+    table-layout: fixed;
+
+    td.red-font {
+      color: #ff0000;
+    }
+  }
+}
+
+.badge-danger {
+  background-color: #dc3545 !important;
+}
+
+div.btn-cell {
+  height: 40px;
+
+  button {
+    width: 90px;
+  }
+}
+
+div.base-data-row {
+  margin-bottom: 5px;
+}
+
+select.custom-select {
+  min-width: 140px;
+  max-width: 200px;
+}
+
+.btn {
+  margin-right: 12px;
+}
+
+div.row label.checkbox-label {
+  cursor: pointer;
+  margin: auto;
+
+  input:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+div.b-unit-price {
+  display: contents;
+
+  span.b-unit-price-label {
+    padding-right: 20px;
+  }
+}
+
+// PRD_0033 add SIT start
+div.collapsed-text {
+  line-height: 38px;
+
+  a {
+    color: #007bff;
+    cursor: pointer;
+  }
+}
+// PRD_0033 add SIT end

@@ -1,0 +1,43 @@
+<ng-container *ngIf="visibled">
+  <!-- 検索 -->
+  <div class="mb-4">
+    <app-maker-return-list-form [isLoading]="isLoading" [stores]="stores"
+      [supplierName]="supplierName" [mdfStaffName]="mdfStaffName"
+      (clickSearchButton)="onClickSearchBtn($event)" (changeMaker)="onChangeMaker($event)">
+    </app-maker-return-list-form>
+  </div>
+
+  <div class="mb-2 ml-2 mr-2 mb-2" *ngIf="message.body.error.code.length">
+    <div class="alert alert-danger p-1 mb-0">
+      <div [translate]="message.body.error.code" [translateParams]="message.body.error.param"></div>
+    </div>
+  </div>
+
+  <!-- 一覧 -->
+  <div class="result ml-2 mr-2">
+    <app-maker-return-list-result (scrollToBottom)="onScrollToBottom($event)" (checkEvents)="onCheck($event)"
+    (clickDetailScreenInitLink)="onClickDetailScreenInitLink($event)"
+    ></app-maker-return-list-result>
+  </div>
+
+  <footer class="align-items-center">
+
+    <!-- 左ボタンエリア -->
+    <div class="footer-left">
+      <div class="d-none d-lg-block">
+        <button class="btn btn-info mr-0" (click)="onClickNew()" [disabled]="isLoading">新規登録</button>
+      </div>
+    </div>
+
+    <!-- メッセージエリア -->
+    <div class="footer-center ml-3">
+      <div class="alert-success" [translate]="message.footer.success.code"
+        [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length"></div>
+    </div>
+    <!-- 右ボタンエリア -->
+    <div class="footer-right">
+      <button class="btn btn-success mr-0" (click)="onLgSubmit()" type="button" [disabled]="noCheck">返品指示送信</button>
+    </div>
+  </footer>
+
+</ng-container>

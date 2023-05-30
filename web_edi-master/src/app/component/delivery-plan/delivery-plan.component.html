@@ -1,0 +1,297 @@
+<div class="invalid-feedback custom_error_msg" translate id="apiErrorInfo" name="errorInfo"></div>
+<form [formGroup]="mainForm" (ngSubmit)="onSubmit()">
+  <div class="container-fluid main">
+    <div class="row">
+      <div class="col-xl-12 title">
+        <p>{{itemData?.partNo | partNoInput}}&nbsp;{{itemData?.productName}}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-md-3">生産メーカー</div>
+          <div class="col-md-6 align-items-center">{{orderData?.mdfMakerName}}</div>
+          <!-- PRD_0145 #10776 JFE mod start-->
+          <div *ngIf="entryStatus===ENTRY_STATUS.REGISTERED" class="text-right">
+            <div class="text-center registered-label">納品予定登録済</div>
+          </div>
+          <!-- PRD_0145 #10776 JFE mod end-->
+        </div>
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-md-3">発注No</div>
+          <!-- PRD_0145 #10776 JFE mod start-->
+          <!--
+          <div class="col-md-6 align-items-center">{{orderData?.orderNumber}}</div>
+          -->
+          <div class="col-md-3 align-items-center">{{orderData?.orderNumber}}</div>
+          <!-- PRD_0181 JFE mod start-->
+          <!--
+          <div *ngIf="path===PATH.EDIT" class="col-md-3">生地発注番号(関連番号)</div>
+          <div *ngIf="path===PATH.EDIT" class="col-md-3 align-items-center">{{relationNumber}}</div>
+          -->
+          <div *ngIf="orderData.expenseItem==='04'" class="col-md-3">生地発注番号(関連番号)</div>
+          <div *ngIf="orderData.expenseItem==='04'" class="col-md-3 align-items-center">{{relationNumber}}</div>
+          <!-- PRD_0181 JFE mod end-->
+          <!-- PRD_0145 #10776 JFE mod end-->
+        </div>
+        <div class="row base-data-row d-flex align-items-center">
+          <div class="col-md-3">納品予定日</div>
+          <!-- PRD_0145 #10776 JFE mod start-->
+          <!--
+          <div class="col-md-6 align-items-center">{{orderData?.productDeliveryAt}}</div>
+          -->
+          <div class="col-md-3 align-items-center">{{orderData?.productDeliveryAt}}</div>
+          <!-- PRD_0181 JFE mod start-->
+          <!--
+          <div *ngIf="path===PATH.EDIT" class="col-md-3">実用尺</div>
+          <div *ngIf="path===PATH.EDIT" class="col-md-3 align-items-center">
+          -->
+          <div *ngIf="orderData.expenseItem==='04'" class="col-md-3">実用尺</div>
+          <div *ngIf="orderData.expenseItem==='04'" class="col-md-3 align-items-center">
+          <!-- PRD_0181 JFE mod end-->
+            <input type="tel" class="form-control length_10 text-right" formControlName="necessaryLengthActual"
+                name="necessaryLengthActual" maxlength="9" [ngClass]="{'is-invalid':submitted && f.necessaryLengthActual.errors}"/>
+              <ng-container *ngIf="submitted">
+                <div *ngIf="f.necessaryLengthActual.errors" class="invalid-feedback">
+                  <div *ngIf="f.necessaryLengthActual.errors.pattern" [translate]="'ERRORS.VALIDATE.NECESSARY_LENGTH_ACTUAL_PATTERN_NUMBER'"></div>
+        </div>
+              </ng-container>
+          </div>
+          <!-- PRD_0145 #10776 JFE mod end-->
+        </div>
+        <!-- PRD_0145 #10776 JFE mod start-->
+        <!--
+        <div *ngIf="entryStatus===ENTRY_STATUS.REGISTERED" class="text-right">
+          <div class="text-center registered-label">納品予定登録済</div>
+        </div>
+        -->
+        <!-- PRD_0145 #10776 JFE mod end-->
+      </div>
+    </div>
+    <!-- エラーメッセージ -->
+    <div class="row mt-3" *ngIf="submitted">
+      <div class="col-12">
+        <ng-container *ngIf="mainForm.errors">
+          <div *ngIf="mainForm.errors['deliveryPlanCutRateThresholdOver']" class="invalid-feedback d-block" [translate]="'ERRORS.VALIDATE.DELIVERY_PLAN_CUT_RATE_THRESHOLD_OVER'">
+          </div>
+          <div *ngIf="mainForm.errors['increaseOrDecreaseLotRateThresholdOver']" class="invalid-feedback d-block"
+            [translate]="'ERRORS.VALIDATE.INCREASE_OR_DECREASE_LOT_RATE_THRESHOLD_OVER'">
+          </div>
+          <!-- 関連チェックエラー -->
+          <div *ngIf="mainForm.errors['allDeliveryPlanLotRequired']" class="invalid-feedback d-block" [translate]="'ERRORS.VALIDATE.DELIVERY_PLAN_LOT_ALL_EMPTY'">
+          </div>
+          <div *ngIf="mainForm.errors['deliveryPlanLotRequired']" class="invalid-feedback d-block" [translate]="'ERRORS.VALIDATE.DELIVERY_PLAN_LOT_EMPTY'">
+          </div>
+        </ng-container>
+        <!-- 納品明細のエラー -->
+        <ng-container *ngIf="mainForm.get('deliveryPlanDetails').invalid">
+          <ng-container *ngFor="let deliveryPlanDetailErrorCode of deliveryPlanDetailErrorCodeList;">
+            <div class="invalid-feedback d-block" [translate]='deliveryPlanDetailErrorCode'>
+            </div>
+          </ng-container>
+        </ng-container>
+        <!-- 生産数のエラー -->
+        <ng-container *ngIf="mainForm.get('deliveryPlanCuts').invalid">
+          <ng-container *ngFor="let deliveryPlanCutErrorCode of deliveryPlanCutErrorCodeList;">
+            <div class="invalid-feedback d-block" [translate]='deliveryPlanCutErrorCode'>
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+    <div class="order-form-container">
+      <div class="table-heading-row">
+        <div class="grid-cell grid-width-s-double text-center">
+          <!-- カラー、サイズ -->
+        </div>
+        <div class="grid-cell grid-width-m text-center">
+          <p>発注数</p>
+        </div>
+        <div class="grid-cell grid-width-m-double text-center">
+          <p>生産数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center d-none d-md-block">
+          <p>納品済数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center d-none d-md-block">
+          <p>納品可能数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center d-none d-md-block">
+          <p>納品残数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center">
+          <p>増減産数</p>
+        </div>
+        <div class="grid-cell grid-width-m text-center">
+          <p>増減産率</p>
+        </div>
+        <div class="grid-cell delivery-plan-details-container text-left end-column-grid-cell">
+          <p>納品予定明細
+            <input type="button" (click)="onAddDetailForm(orderData)" class="btn btn-secondary btn-outline-dark badge-pill btn-sm"
+              value="追加" />
+          </p>
+        </div>
+      </div>
+      <div class="all-content-container">
+        <div class="order-sku-container">
+          <div class="order-sku-aggregate-row">
+            <div class="grid-cell grid-width-s text-center">
+              <p>カラー</p>
+            </div>
+            <div class="grid-cell grid-width-s text-center">
+              <p>サイズ</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 発注数集計 -->
+              <p>{{orderData?.quantity | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 生産数集計 -->
+              <p>{{calcDeliveryPlanCutLot() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 生産数(％)集計 -->
+              <!-- PRD_0191 JFE mod start-->
+              <!--
+              <p [ngClass]="{'red-font' : Math.abs(calcDeliveryPlanCutRate()) > f.threshold.value}">
+              -->
+              <p [ngClass]="{'red-font' : (orderData.expenseItem!=='04' && Math.abs(calcDeliveryPlanCutRate()) > f.threshold.value)
+                || (orderData.expenseItem==='04' && calcDeliveryPlanCutRate() > f.threshold.value)}">
+              <!-- PRD_0191 JFE mod end-->
+                {{calcDeliveryPlanCutRate()}}%</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right d-none d-md-block">
+              <!-- 納品済数集計 -->
+              <p>{{calcCompletedDelivery() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right d-none d-md-block">
+              <!-- 納品可能数集計 -->
+              <p>{{calcDeliverableDeliveryPlanLot() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right d-none d-md-block">
+              <!-- 納品残数集計 -->
+              <p>{{calcRemainingDeliveryPlanLot() | number}}</p>
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 増減産数集計 -->
+              {{calcIncreaseOrDecreaseLot() | number}}
+            </div>
+            <div class="grid-cell grid-width-m text-right">
+              <!-- 増減産率集計 -->
+              <p [ngClass]="{'red-font' : Math.abs(calcIncreaseOrDecreaseRate()) > f.threshold.value}">
+                {{calcIncreaseOrDecreaseRate()}}%</p>
+            </div>
+          </div>
+          <div class="order-sku-data-container" formArrayName="deliveryPlanCuts">
+            <!-- 納品予定裁断(行) -->
+            <ng-container *ngFor="let deliveryPlanCut of fDeliveryPlanCuts; let yIdx=index; let last=last;">
+              <div class="grid grid-height order-sku-cell-row" [formGroupName]="yIdx" [ngClass]="{'end-row-grid-cell':last}">
+                <!-- カラー -->
+                <div class="grid-cell grid-width-s text-right">
+                  <p>{{deliveryPlanCut.get('colorCode').value}}</p>
+                </div>
+                <!-- サイズ -->
+                <div class="grid-cell grid-width-s text-left">
+                  <p>{{deliveryPlanCut.get('size').value}}</p>
+                </div>
+                <!-- 発注数 -->
+                <div class="grid-cell grid-width-m text-right">
+                  <p>{{deliveryPlanCut.get('productOrderLot').value | number}}</p>
+                </div>
+                <div class="grid-input-cell grid-width-m text-right">
+                  <!-- 生産数 -->
+                  <input type="tel" class="form-control text-right" formControlName="deliveryPlanCutLot" maxlength="5"
+                    [ngClass]="{'is-invalid':submitted && deliveryPlanCut['controls']['deliveryPlanCutLot']['errors']}" />
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 生産数(％) -->
+                  <!-- PRD_0191 JFE mod start-->
+                  <!--
+                  <p [ngClass]="{'red-font' : Math.abs(calcDeliveryPlanCutRate(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value)) > f.threshold.value}">
+                  -->
+                  <p [ngClass]="{'red-font' : (orderData.expenseItem!=='04' && Math.abs(calcDeliveryPlanCutRate(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value)) > f.threshold.value)
+                    || (orderData.expenseItem==='04' && calcDeliveryPlanCutRate(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) > f.threshold.value)}">
+                  <!-- PRD_0191 JFE mod end-->
+                    {{calcDeliveryPlanCutRate(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value)}}%
+                  </p>
+                </div>
+                <div class="grid-cell grid-width-m text-right d-none d-md-block">
+                  <!-- 納品済数 -->
+                  <p>
+                    {{calcCompletedDelivery(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) | number}}
+                  </p>
+                </div>
+                <div class="grid-cell grid-width-m text-right d-none d-md-block">
+                  <!-- 納品可能数 -->
+                  <p>
+                    {{calcDeliverableDeliveryPlanLot(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) | number}}
+                  </p>
+                </div>
+                <div class="grid-cell grid-width-m text-right d-none d-md-block">
+                  <!-- 納品残数 -->
+                  <p>
+                    {{calcRemainingDeliveryPlanLot(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) | number}}
+                  </p>
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 増減産数 -->
+                  {{calcIncreaseOrDecreaseLot(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value) | number}}
+                </div>
+                <div class="grid-cell grid-width-m text-right">
+                  <!-- 増減産率 -->
+                  <p [ngClass]="{'red-font' : Math.abs(calcIncreaseOrDecreaseRate(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value)) > f.threshold.value}">
+                    {{calcIncreaseOrDecreaseRate(deliveryPlanCut.get('colorCode').value, deliveryPlanCut.get('size').value)}}%
+                  </p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <div class="delivery-plan-details-container end-column-grid-cell" formArrayName="deliveryPlanDetails">
+          <div class="input-plan-block">
+            <!-- 納品予定明細(列) -->
+            <ng-container *ngFor="let deliveryPlanDetail of fDeliveryPlanDetails;let xIdx=index;">
+              <div [formGroupName]="xIdx">
+                <div class="grid-input-cell grid-width-l text-right">
+                  <!-- 納品予定日 -->
+                  <input (blur)="onBlurDeliveryPlanAt($event.target.value, xIdx);" appDateInput type="text" class="form-control text-right"
+                    formControlName="deliveryPlanAt" maxlength="10" placeholder="yyyy/MM/dd" [ngClass]="{'is-invalid':submitted && deliveryPlanDetail['controls']['deliveryPlanAt']['errors']}">
+                </div>
+                <!-- 納品予定数(行) -->
+                <ng-container formArrayName="deliveryPlanSkus" *ngFor="let deliveryPlanSku of deliveryPlanDetail.get('deliveryPlanSkus')['controls'];let yIdx=index;">
+                  <div class="grid-input-cell grid-width-l text-right" [formGroupName]="yIdx">
+                    <input type="tel" class="form-control text-right" formControlName="deliveryPlanLot" maxlength="6"
+                      [ngClass]="{'is-invalid':submitted && deliveryPlanSku['controls']['deliveryPlanLot']['errors']}">
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row memo-row">
+      <div class="col-md-12 form-group">
+        <label>メモ</label>
+        <textarea class="form-control" formControlName="memo" maxlength="600"></textarea>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <ng-container *ngIf="isShowFooter">
+      <!-- メッセージエリア -->
+      <div class="footer-center ml-3">
+        <div class="alert-danger" translate='{{overall_error_msg_code}}' *ngIf="overall_error_msg_code.length"></div>
+        <div class="alert-success" translate='{{overall_susses_msg_code}}' *ngIf="overall_susses_msg_code.length">
+        </div>
+      </div>
+      <!-- 右ボタンエリア -->
+      <div class="footer-right">
+        <input *ngIf="path===PATH.NEW" type="submit" (click)="setSubmitType(SUBMIT_TYPE.ENTRY)" class=" btn btn-success mr-0"
+          name="button_submit" value="登録" [attr.disabled]="isBtnLock?'':null">
+        <input *ngIf="path===PATH.EDIT" type="submit" (click)="setSubmitType(SUBMIT_TYPE.UPDATE)" class=" btn btn-success  mr-0"
+          name="button_submit" value="更新" [attr.disabled]="isBtnLock?'':null">
+      </div>
+    </ng-container>
+  </footer>
+</form>

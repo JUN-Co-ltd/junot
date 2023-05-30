@@ -1,0 +1,214 @@
+<div class="container-fruid ml-3" *ngFor="let order of orderList; let i=index;">
+  <div class="row under_boder h-75">
+    <div class="col-sd-12 col-md-12 cl-xl-12">
+      <div class="container-fruid">
+        <ul class="cp_stepflow07 mt-2 mb-0">
+          <!-- 受注登録 -->
+          <!-- リンク：なし 色：オレンジ -->
+          <li class="completed"><span class="bubble"></span><span>受注登録</span></li>
+
+          <!-- 生産工程報告 -->
+          <!-- リンク：1.if(完納)リンクなし. 色：オレンジ  -->
+          <li *ngIf="isCompleteOrder(order);else linkProduct" class="completed"><span class="bubble"></span><span>生産工程登録</span></li>
+          <!-- リンク：2.elseリンクあり 色：if(生産ステータスデータが1件以上)オレンジ 2.elseピンク -->
+          <ng-template #linkProduct>
+            <li class="" [ngClass]="order.productionStatusCnt>0?'completed':'active'"><span class="bubble"></span>
+              <span><a href="javascript:void(0)" (click)="openProductStatusModal(order)">生産工程報告</a></span>
+          </li>
+          </ng-template>
+          <!-- 発注確定-->
+          <!-- リンク：1.if(完納)リンクなし. 色：オレンジ  -->
+          <li *ngIf="isCompleteOrder(order);else linkConfirmOrder" class="completed"><span class="bubble"></span><span>発注確定</span></li>
+          <ng-template #linkConfirmOrder>
+            <li class="" [ngClass]="isConfirmOrderOk(order)?'completed':'active'"><span class="bubble"></span>
+              <!-- 遷移先は統一で発注編集(EDIT)だが、initializeEditDisplay()で発注参照画面へのリダイレクトを行う -->
+              <!-- JUN権限：納品依頼なしAND未完納→EDIT、納品依頼ありOR完納→VIEW -->
+              <!-- メーカー権限：発注未確定→EDIT、発注確定済→VIEW -->
+              <span><a [routerLink]="['/orders',order.id,PATH.EDIT]">発注確定</a></span>
+            </li>
+          </ng-template>
+
+          <!-- 発注承認-->
+          <!-- リンク：リンクなし. 色：if(完納||発注承認済)オレンジ 2.else if(発注確定)ピンク 3.else グレー -->
+          <li *ngIf="isCompleteOrder(order);else linkAccseptOrder" class="completed"><span class="bubble"></span><span>発注承認</span></li>
+          <ng-template #linkAccseptOrder>
+            <li class="" [ngClass]="{'completed':isCompleteOrder(order)||isMdApprovalOk(order),
+            'active': !isCompleteOrder(order)&&!isMdApprovalOk(order)&&isConfirmOrderOk(order)}"><span class="bubble"></span>
+              <!-- メーカー権限または受注確定前 -->
+              <span *ngIf="affiliation===AUTH_SUPPLIERS || !isConfirmOrderOk(order) ; else authInternal">発注承認</span>
+              <!-- 受注確定後 -->
+              <ng-template #authInternal>
+                <span><a [routerLink]="['/orders',order.id,PATH.APPROVAL]">発注承認</a></span>
+              </ng-template>
+            </li>
+          </ng-template>
+
+          <!-- 資材発注 -->
+          <!-- リンク：1.if(完納)リンクなし 2.if(資材発注不可)リンクなし 3.if(受注未確定)リンクなし. 色：1.if(完納)オレンジ 2.elseグレー  -->
+          <li *ngIf="isCompleteOrder(order)||!order.materialOrderAvailable||!isConfirmOrderOk(order);else linkFukukitaruOrder"
+              class="" [ngClass]="{'completed':isCompleteOrder(order)}">
+            <span class="bubble"></span>
+            <span>資材発注</span>
+          </li>
+          <!-- リンク：4.elseリンクあり 色：1.if(資材発注済)オレンジ 2.elseピンク -->
+          <ng-template #linkFukukitaruOrder>
+            <li class="" [ngClass]="order.existsMaterialOrderConfirm?'completed':'active'"><span class="bubble"></span>
+              <span>
+                <a href="javascript:void(0)" (click)="openFukukitaruOrderModal(order)">資材発注</a>
+              </span>
+            </li>
+          </ng-template>
+
+          <!-- 検査書提出 -->
+          <!-- リンク：1.if(完納)リンクなし 2.if(受注未確定)リンクなし. 色：1.if(完納)オレンジ 2.elseグレー  -->
+          <li *ngIf="isCompleteOrder(order)||!isConfirmOrderOk(order);else linkFabricInspection" class=""
+            [ngClass]="{'completed':isCompleteOrder(order)}"><span class="bubble"></span>
+            <span>検査書提出</span>
+          </li>
+          <!-- リンク：3.elseリンクあり 色：if(優良誤認承認済)オレンジ 2.elseピンク -->
+          <ng-template #linkFabricInspection>
+            <li class="step" [ngClass]="isQualityApprovalOk(order)?'completed':'active'">
+              <span class="bubble"></span>
+              <span>
+              <!-- <a [routerLink]="['/fabricInspectionResults',PATH.NEW]">検査書提出</a> -->
+              検査書提出
+              </span>
+            </li>
+          </ng-template>
+
+          <!-- 優良誤認 -->
+          <!-- リンク：1.if(完納or優良誤認対象外or品番未確定)リンクなし 色：1.if(完納)オレンジ 2.elseグレー -->
+          <li *ngIf="isCompleteOrder(order)||isAllQualityStatusNonTarget(order)||!isConfirmPartOk(order) ;else linkMisleadingRepresentations"
+            class="" [ngClass]="{'completed':isCompleteOrder(order)}">
+            <span class="bubble"></span>
+            <span>優良誤認</span>
+          </li>
+          <!-- リンク：2.elseリンクあり. 色：if(納品予定明細データが1件以上)オレンジ 2.elseピンク -->
+          <ng-template #linkMisleadingRepresentations>
+            <li [ngClass]="isQualityApprovalOk(order)?'completed':'active'">
+              <span class="bubble"></span>
+              <!-- メーカー権限 -->
+              <span *ngIf="affiliation===AUTH_SUPPLIERS; else linkMisleadingRepresentationsAuthInternal">優良誤認</span>
+              <!-- メーカー権限以外 -->
+              <ng-template #linkMisleadingRepresentationsAuthInternal>
+                <span>
+                  <a [routerLink]="['/orders/misleadingRepresentations',order.partNoId,PATH.EDIT]">優良誤認</a>
+                </span>
+              </ng-template>
+            </li>
+          </ng-template>
+          <!-- 納品予定 -->
+          <!-- リンク：1.if(完納or発注承認が未承認)リンクなし 色：1.if(完納)オレンジ 2.elseグレー -->
+          <li *ngIf="isCompleteOrder(order)||!isMdApprovalOk(order);else linkDeliveryPlan" class=""
+            [ngClass]="{'completed':isCompleteOrder(order)}">
+            <span class="bubble"></span>
+            <span>納品予定</span>
+          </li>
+          <!-- リンク：2.elseリンクあり. 色：if(納品予定明細データが1件以上)オレンジ 2.elseピンク -->
+          <ng-template #linkDeliveryPlan>
+            <li class="step" [ngClass]="order.deliveryPlanDetailsCnt>0?'completed':'active'">
+              <span class="bubble"></span>
+              <span>
+                <!-- 納品予定Idが存在しなけば新規、あれば編集 -->
+                <a *ngIf="order.deliveryPlanId==null;else deliveryPlanEdit" [routerLink]="['/deliveryPlans', PATH.NEW]" [queryParams]="{orderId:order.id}">納品予定</a>
+                <ng-template #deliveryPlanEdit>
+                  <a [routerLink]="['/deliveryPlans', order.deliveryPlanId, PATH.EDIT]">納品予定</a>
+                </ng-template>
+              </span>
+            <!-- </li> -->
+          </ng-template>
+
+          <!-- 納品書発行 -->
+          <!-- リンク：1.if(完納or発注承認が未承認or(メーカー権限and納品予定明細テーブルにデータなし))リンクなし 色：1.if(完納)オレンジ 2.elseグレー -->
+          <li *ngIf="isCompleteOrder(order)||!isMdApprovalOk(order)||(affiliation===AUTH_SUPPLIERS && order.deliveryPlanDetailsCnt===0);
+            else linkDelivery" class="" [ngClass]="{'completed':isCompleteOrder(order)}">
+            <span class="bubble"></span>
+            <span>納品書発行</span>
+          </li>
+          <!-- リンク：2.elseリンクあり 色：1.if(納品依頼データが1件以上)オレンジ 2.elseピンク -->
+          <ng-template #linkDelivery>
+            <li class="" [ngClass]="getDeliverysCnt(order)>0?'completed':'active'">
+              <span class="bubble"></span>
+              <span>
+                <a [routerLink]="['/deliveries', PATH.NEW]" [queryParams]="{orderId:order.id}">納品書発行</a>
+              </span>
+            </li>
+          </ng-template>
+          <!-- 納品依頼承認 -->
+          <!-- リンク：1.if(完納)リンクなし 2.if(納品依頼0件)リンクなし 色：1.if(完納)オレンジ 2.elseグレー -->
+          <li *ngIf="isCompleteOrder(order)||getDeliverysCnt(order)===0;else linkDeliveryApproval" class=""
+            [ngClass]="{'completed':isCompleteOrder(order)}">
+            <span class="bubble"></span>
+            <span>納品依頼承認</span>
+          </li>
+          <!-- リンク：3.elseリンクあり 色：1.if(未承認0件)))ピンク 2.elseオレンジ -->
+          <ng-template #linkDeliveryApproval>
+            <li class="" [ngClass]="{'completed':getNotAcceptDeliveryList(order)?.length===0,'active':getNotAcceptDeliveryList(order)?.length>0}">
+              <span class="bubble"></span>
+              <span>
+                <a href="javascript:void(0)" (click)="openDeliveryListModal(order)">納品依頼承認</a>
+              </span>
+            </li>
+          </ng-template>
+          <!-- 完納-->
+          <!-- リンク：全てなし 色：1.if(完納)オレンジ 2.else if(納品情報の最終納品ステータスが最終納品であるデータが存在)ピンク 3.else グレー -->
+          <li class="" [ngClass]="{'completed':isCompleteOrder(order), 'active':!isCompleteOrder(order)&&isExsitsLastDeliveryStatus(order)}">
+            <span class="bubble"></span>
+            <span>完納</span>
+          </li>
+        </ul>
+        <div class="row">
+            <!-- 発注No -->
+            <div class="col-sd-3 col-md-3 col-xl-3 pt-1" *ngIf="isConfirmOrderOk(order)">
+              <span class="title">No:{{order.orderNumber}}&nbsp;</span>
+              <ng-container *ngIf="isAbleToDownloadFile(i)">
+                <button type="button" class="btn btn-link m-0 p-0 file-dl-btn"
+                  (click)="onFileDownload(order.orderFileInfo.fileNoId, i)">
+                  <fa-icon [icon]="['fas','file-pdf']" [fixedWidth]="false"></fa-icon>
+                  <span *ngIf="isMdApprovalOk(order); else elseConfirm">
+                    発注書
+                  </span>
+                  <ng-template #elseConfirm>
+                    受注書
+                  </ng-template>
+                </button>
+              </ng-container>
+            </div>
+            <!-- 品番・品名 -->
+            <div class="col-sd-9 col-md-9 col-xl-9 pt-xl-1">
+              <p class="title">
+                <!-- メーカー権限 -->
+                <a *ngIf="affiliation===AUTH_SUPPLIERS" [routerLink]="['/items', order.partNoId, PATH.EDIT]"
+                  [queryParams]="{viewMode:VIEW_MODE.ITEM_EDIT}"
+                  role="button">{{order.partNo | partNoInput}}&nbsp;{{order.productName}}</a>
+                <!-- JUN権限 -->
+                <a *ngIf="affiliation===AUTH_INTERNAL" [routerLink]="['/items', order.partNoId, PATH.EDIT]"
+                  [queryParams]="{viewMode:VIEW_MODE.PART_EDIT}"
+                  role="button">{{order.partNo | partNoInput}}&nbsp;{{order.productName}}</a>
+              </p>
+            </div>
+        </div>
+        <!-- ファイルダウンロードエラーメッセージ -->
+        <div *ngIf="fileDLErrorMessageCode != null && this.fileDLErrorIndex == i" class="file-dl-error-message-area" translate='{{fileDLErrorMessageCode}}'>
+        </div>
+        <div class="row">
+          <div class="col-sd-12 col-md-2 cl-xl-2">品番年度：{{order.year}}</div>
+          <div class="col-sd-12 col-md-3 cl-xl-3">発注日：{{order.productOrderAt | date: 'yyyy/MM/dd'}}</div>
+          <div class="col-sd-12 col-md-7 cl-xl-3">
+            納品日：{{order.productCorrectionDeliveryAt | date: 'yyyy/MM/dd'}}【{{order.productCorrectionDeliveryAt | monthly}}月度】</div>
+        </div>
+        <div class="row">
+          <div class="col-sd-12 col-md-12 cl-xl-8">生産メーカー：{{order.mdfMakerName}}</div>
+        </div>
+        <div class="row">
+          <div class="col-sd-12 col-md-3 cl-xl-3">
+            優良誤認(組成)：{{QUALITY_APPROVAL_STATUS.CODE_MAP[order.qualityCompositionStatus]}}</div>
+          <div class="col-sd-12 col-md-3 cl-xl-3">優良誤認(国)：{{QUALITY_APPROVAL_STATUS.CODE_MAP[order.qualityCooStatus]}}
+          </div>
+          <div class="col-sd-12 col-md-4 cl-xl-3">
+            優良誤認(有害物質)：{{QUALITY_APPROVAL_STATUS.CODE_MAP[order.qualityHarmfulStatus]}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,1480 @@
+<div class="ml-3 mb-3 invalid-feedback custom_error_msg" translate id="defaultErrorInfo" name="errorInfo"></div>
+<form [formGroup]="mainForm" *ngIf="isInitDataSetted" (ngSubmit)="submitHandler()">
+  <input class="form-control" type="hidden" formControlName="formViewMode" #formViewMode name="formViewMode" />
+  <div class="container-fluid main">
+    <div class="row">
+      <div class="col-xl-10">
+        <div class="">
+          <div class="title" id="anchor-item-or-part-info"
+            *ngIf="viewMode===VIEW_MODE.ITEM_NEW||viewMode===VIEW_MODE.ITEM_EDIT">商品情報</div>
+          <div class="title" id="anchor-item-or-part-info" *ngIf="viewMode===VIEW_MODE.PART_EDIT">品番情報</div>
+          <div class="row">
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group required" name="partNoGroup">
+              <label class="control-label">品番</label>
+            </div>
+            <div class="col-sm-12 col-lg-5 col-xl-5 form-group form-inline pr-0">
+              <!-- 品種-->
+              <input type="text" formControlName="partNoKind" name="partNoKind" #partNoKind class="form-control code_3"
+                (input)="partNoKind.value=partNoKind.value.toUpperCase();" (blur)="onBlurPartNoKind(partNoKind.value);"
+                [ngClass]="{'is-invalid':submitted && f.partNoKind.errors}" maxlength="3" [required]/>-
+              <!-- 通番-->
+              <input type="tel" formControlName="partNoSerialNo" name="partNoSerialNo" class="form-control code_6"
+                (blur)="setYear($event.target.value)" maxlength="5" minlength="5"
+                [ngClass]="{'is-invalid':submitted && f.partNoSerialNo.errors}" [required]/>-
+              <!-- サブシーズン -->
+              <select (change)="onChangeSeason($event.target.value)" formControlName="subSeasonCode" name="subSeasonCode" class="form-control"
+                [ngClass]="{'is-invalid':submitted && f.subSeasonCode.errors}"
+                [required]>
+                <option *ngFor="let season of SUB_SEASON_LIST;" [value]="season.id">{{season.value}}</option>
+              </select>-
+              <!-- 年度 -->
+              <input class="form-control code_4" placeholder="" type="tel" formControlName="year" name="year"
+                maxlength="4" minlength="4" [ngClass]="{'is-invalid':submitted && f.year.errors}"
+                [required]>
+            </div>
+            <!-- 商品の新規/更新モードの時に表示 -->
+            <div *ngIf="viewMode===VIEW_MODE.ITEM_NEW||viewMode===VIEW_MODE.ITEM_EDIT"
+              class="col-sm-12 col-lg-2 col-xl-3 form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="sample">&nbsp;サンプルとして登録する
+              </label>
+            </div>
+            <!-- 品番の更新モードの時に表示 -->
+            <div *ngIf="viewMode===VIEW_MODE.PART_EDIT" class="col-sm-12 col-lg-2 col-xl-5 form-group pl-0">
+              <label class="control-label">優良誤認</label>
+              <span class="misleading-representation-status">
+                組成：{{QUALITY_APPROVAL_STATUS.CODE_MAP[qualityCompositionStatus]}}
+              </span>
+              <span class="misleading-representation-status">
+                国：{{QUALITY_APPROVAL_STATUS.CODE_MAP[qualityCooStatus]}}
+              </span>
+              <span class="misleading-representation-status">
+                有害物質：{{QUALITY_APPROVAL_STATUS.CODE_MAP[qualityHarmfulStatus]}}
+                <fa-icon *ngIf="misleadingRepresentationFile.length > 0" [icon]="['far','file-alt']"></fa-icon>
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-lg-4 col-xl-2">
+            </div>
+            <div class="col-sm-12 col-lg-8 col-xl-10 form-group">
+              <!-- 品番のカスタムエラーメッセージ -->
+              <div class="invalid-feedback custom_error_msg" display="none" translate id="partNoErrorInfo"
+                name="errorInfo"></div>
+              <div *ngIf="registStatus===REGIST_STATUS.ITEM && orderDataList.length > 0"
+                  class="invalid-feedback d-block" [translate]='"INFO.ORDER_EXIST_DISABLE_PART_NO"'></div>
+              <ng-container *ngIf="submitted">
+                <!-- 品種のエラーメッセージ -->
+                <div *ngIf="f.partNoKind.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.partNoKind.errors.required" [translate]='"ERRORS.VALIDATE.ANY_EMPTY"' [translateParams]='{name:"品種"}'></div>
+                  <div *ngIf="f.partNoKind.errors.pattern" [translate]='"ERRORS.VALIDATE.PART_KIND_FORMAT"'></div>
+                </div>
+                <!-- 通番のエラーメッセージ -->
+                <div *ngIf="f.partNoSerialNo.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.partNoSerialNo.errors.required" [translate]="'ERRORS.VALIDATE.ANY_EMPTY'" [translateParams]='{name:"通番"}'>
+                  </div>
+                  <div *ngIf="f.partNoSerialNo.errors.minlength" [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'"
+                    [translateParams]="{name:'通番は', length:'5'}"></div>
+                  <div *ngIf="f.partNoSerialNo.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_PART_NO_SERIAL_NO'">
+                  </div>
+                </div>
+                <!-- シーズンのエラーメッセージ -->
+                <div *ngIf="f.subSeasonCode.errors||f.seasonCode.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.subSeasonCode.errors?.required||f.seasonCode.errors?.required" [translate]="'ERRORS.VALIDATE.ANY_EMPTY'" [translateParams]="{name:'シーズン'}">
+                  </div>
+                </div>
+                <!-- 年度のエラーメッセージ -->
+                <div *ngIf="f.year.errors" class="invalid-feedback d-block">
+                  <div *ngIf="f.year.errors.required" [translate]="'ERRORS.VALIDATE.ANY_EMPTY'" [translateParams]="{name:'年度'}"></div>
+                  <div *ngIf="f.year.errors.pattern" [translate]="'ERRORS.VALIDATE.YEAR_FORMAT'"></div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group required">
+              <label class="control-label">品名</label>
+            </div>
+            <div class="col-sm-12 col-lg-8 col-xl-10 form-group">
+              <input (blur)="onBlurProdNameInput($event.target.value)" type="text" class="form-control"
+                formControlName="productName" id="productName" name="productName" maxlength="100" required
+                [ngClass]="{'is-invalid': submitted && f.productName.errors}" />
+                <div *ngIf="submitted && f.productName.errors" class="invalid-feedback">
+                  <div *ngIf="f.productName.errors.pattern" translate='{{"ERRORS.VALIDATE.PATTERN_PRODUCT"}}'></div>
+                  <div *ngIf="f.productName.errors.required || f.productName.errors.whitespace"
+                  translate='{{"ERRORS.VALIDATE.EMPTY"}}'></div>
+                </div>
+                    <div>
+                <label class="note-label">※発注処理では先頭20文字までが表示されます</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group required">
+              <label class="control-label">品名(全角カナ)</label>
+            </div>
+            <div class="col-sm-12 col-lg-8 col-xl-10 form-group">
+              <input type="text" class="form-control" formControlName="productNameKana" id="productNameKana"
+                name="productNameKana" maxlength="200"
+                [ngClass]="{'is-invalid': submitted && f.productNameKana.errors}" />
+              <div *ngIf="submitted && f.productNameKana.errors" class="invalid-feedback">
+                <div *ngIf="f.productNameKana.errors.pattern" translate='{{"ERRORS.VALIDATE.PATTERN_KANA"}}'></div>
+                <div *ngIf="f.productNameKana.errors.required || f.productNameKana.errors.whitespace"
+                  translate='{{"ERRORS.VALIDATE.EMPTY"}}'></div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+              <label>仮発注日</label>
+            </div>
+            <!-- PRD_0023 mod JFE start -->
+            <div class="col-sm-12 col-lg-2 col-xl-3 form-group">
+            <!-- PRD_0023 mod JFE end -->
+              <ng-container>
+                <div class="input-group">
+                  <input class="form-control length_10" placeholder="" type="text" formControlName="proviOrderDate"
+                    name="proviOrderDate" (blur)="onBlurDate($event.target.value, 'proviOrderDate');" appDateInput
+                    ngbDatepicker #proviOrderDate="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+                    [ngClass]="{'is-invalid': submitted && f.proviOrderDate.errors}">
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary calBtn" (click)="proviOrderDate.toggle()" type="button"
+                      [attr.disabled]="registStatus===REGIST_STATUS.PART?'':null">
+                      <fa-icon icon="calendar-alt"></fa-icon>
+                    </button>
+                  </div>
+                  <ng-container *ngIf="submitted && f.proviOrderDate.errors">
+                    <div *ngIf="f.proviOrderDate.errors.ngbDate?.invalid" class="invalid-feedback"
+                      translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+            <!-- PRD_0023 && No_65 mod JFE start -->
+            <div class="col-sm-12 col-lg-2 col-xl-2 form-group">
+              <label>納品日</label>
+            </div>
+            <div class="col-sm-12 col-lg-2 col-xl-4 form-group" style="padding-left: 0px;">
+              <!-- PRD_0023 && No_65 mod JFE end -->
+              <ng-container>
+                <div class="input-group">
+                  <input class="form-control length_10" placeholder="" formControlName="preferredDeliveryDate"
+                    type="text" name="preferredDeliveryDate"
+                    (blur)="onBlurDate($event.target.value, 'preferredDeliveryDate'); setDeploymentDate(); setPendDate();"
+                    appDateInput ngbDatepicker #preferredDeliveryDate="ngbDatepicker" [showWeekNumbers]="true"
+                    maxlength="10" [minDate]="mainForm.value.proviOrderDate"
+                    (dateSelect)="setDeploymentDate(); setPendDate();"
+                    [ngClass]="{'is-invalid': submitted && f.preferredDeliveryDate.dirty && f.preferredDeliveryDate.errors}">
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary calBtn" (click)="preferredDeliveryDate.toggle()"
+                      type="button" [attr.disabled]="registStatus===REGIST_STATUS.PART?'':null">
+                      <fa-icon icon="calendar-alt"></fa-icon>
+                    </button>
+                  </div>
+                  <div *ngIf="submitted && f.preferredDeliveryDate.errors" class="invalid-feedback d-block">
+                    <div *ngIf="f.preferredDeliveryDate.errors?.ngbDate?.requiredBefore"
+                      translate='{{"ERRORS.VALIDATE.PREDELIVERY_DATE_OVER"}}'></div>
+                    <div *ngIf="f.preferredDeliveryDate.errors?.ngbDate?.invalid"
+                      translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <div class="row" *ngIf="viewMode===VIEW_MODE.PART_EDIT">
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group required">
+              <label class="control-label">投入日・週</label>
+            </div>
+            <!-- PRD_0023 && No_65 mod JFE start -->
+            <div class="col-sm-12 col-lg-3 col-xl-3 form-group form-inline">
+              <!-- PRD_0023 && No_65 mod JFE end -->
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" formControlName="deploymentDate" type="text"
+                  name="deploymentDate"
+                  (blur)="onBlurDate($event.target.value, 'deploymentDate'); setWeek('deployment'); setPendDate();"
+                  (dateSelect)="setWeek('deployment'); setPendDate();" appDateInput ngbDatepicker
+                  #deploymentDate="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+                  [ngClass]="{'is-invalid': submitted && f.deploymentDate.errors}" required>
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="deploymentDate.toggle()" type="button"
+                    [attr.disabled]="f.deploymentDate.disabled?'':null">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div class="input-group">
+                  <input class="form-control code_2" placeholder="" type="tel" formControlName="deploymentWeek"
+                    name="deploymentWeek" maxlength="2" (blur)="setWeekDate('deployment'); setPendDate();"
+                    [ngClass]="{'is-invalid': submitted && mainForm.errors && (f.deploymentWeek.errors || mainForm.errors.deploymentWeekNumberCorrect)}"
+                    required>
+                </div>
+                <ng-container *ngIf="submitted">
+                  <div *ngIf="f.deploymentDate.errors" class="invalid-feedback">
+                    <div *ngIf="f.deploymentDate.errors.required" [translate]='"ERRORS.VALIDATE.ANY_EMPTY"' [translateParams]='{name:"投入日"}'>
+                    </div>
+                    <div *ngIf="f.deploymentDate.errors.ngbDate?.invalid" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'>
+                    </div>
+                  </div>
+                  <div *ngIf="f.deploymentWeek.errors" class="invalid-feedback d-block">
+                    <div *ngIf="f.deploymentWeek.errors.required" [translate]='"ERRORS.VALIDATE.ANY_EMPTY"' [translateParams]='{name:"投入週"}'>
+                    </div>
+                  </div>
+                  <!-- 投入週番号のカスタムエラーメッセージ -->
+                  <div *ngIf="mainForm.errors && mainForm.errors['deploymentWeekNumberCorrect']"
+                    class="invalid-feedback d-block" translate='{{"ERRORS.VALIDATE.WEEK_OUTRANGE"}}'>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group required">
+              <label class="control-label">P終了日・週</label>
+            </div>
+            <!-- PRD_0023 && No_65 mod JFE start -->
+            <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline" style="padding-left: 0px;">
+              <!-- PRD_0023 && No_65 mod JFE end -->
+              <div class="input-group">
+                <input class="form-control length_10" placeholder="" formControlName="pendDate" type="text"
+                  name="pendDate" (blur)="onBlurDate($event.target.value, 'pendDate'); setWeek('pend')"
+                  (dateSelect)="setWeek('pend')" appDateInput ngbDatepicker #pendDate="ngbDatepicker"
+                  [showWeekNumbers]="true" [minDate]="mainForm.value.deploymentDate" maxlength="10"
+                  [ngClass]="{'is-invalid': submitted && f.pendDate.errors}" required>
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="pendDate.toggle()" type="button"
+                  [attr.disabled]="f.pendDate.disabled?'':null">
+                    <fa-icon icon="calendar-alt"></fa-icon>
+                  </button>
+                </div>
+                <div class="input-group">
+                  <input class="form-control code_2" placeholder="" type="tel" formControlName="pendWeek"
+                    name="pendWeek" (input)="setWeekDate('pend')" maxlength="2"
+                    [ngClass]="{'is-invalid': submitted && mainForm.errors && (f.pendWeek.errors || mainForm.errors.pendWeekNumberCorrect)}"
+                    required>
+                </div>
+                <ng-container *ngIf="submitted">
+                  <div *ngIf="f.pendDate.errors" class="invalid-feedback">
+                    <div *ngIf="f.pendDate.errors.required" [translate]='"ERRORS.VALIDATE.ANY_EMPTY"' [translateParams]='{name:"P終了日"}'></div>
+                    <div *ngIf="f.pendDate.errors.ngbDate?.requiredBefore" translate='{{"ERRORS.VALIDATE.PEND_DATE_OVER"}}'></div>
+                    <div *ngIf="f.pendDate.errors.ngbDate?.invalid" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+                  </div>
+                  <div *ngIf="f.pendWeek.errors" class="invalid-feedback d-block">
+                    <div *ngIf="f.pendWeek.errors.required" [translate]='"ERRORS.VALIDATE.ANY_EMPTY"' [translateParams]='{name:"P終了週"}'></div>
+                  </div>
+                  <div *ngIf="mainForm.errors" class="invalid-feedback d-block">
+                    <!-- 投入週 <=P 終了週のカスタムエラーメッセージ -->
+                    <div *ngIf="mainForm.errors['deploymentWeekLessOrEqualsPendWeek'] && f.deploymentWeek.dirty"
+                      translate='{{"ERRORS.VALIDATE.PEND_WEEK_OVER"}}'></div>
+                    <!-- P終了週番号のカスタムエラーメッセージ -->
+                    <div *ngIf="mainForm.errors['pendWeekNumberCorrect']" translate='{{"ERRORS.VALIDATE.WEEK_OUTRANGE"}}'>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="row form-group">
+          <!-- PRD_0023 && No_65 mod JFE start -->
+            <div class="col-sm-12 col-lg-2 col-xl-2 form-group d-flex align-items-center"
+              [ngClass]="{'required':(viewMode===VIEW_MODE.PART_EDIT||registStatus===REGIST_STATUS.PART)}">
+              <label class="control-label">上代(税無)</label>
+            </div>
+            <div class="col-sm-12 col-lg-3 col-xl-3 form-inline d-flex align-items-center">
+              <input type="tel" class="form-control length_10" appNumberInput formControlName="retailPrice"
+                name="retailPrice" maxlength="9" [ngClass]="{'is-invalid':submitted && f.retailPrice.errors}"
+                [required]="(viewMode===VIEW_MODE.PART_EDIT||registStatus===REGIST_STATUS.PART)" />
+              <div *ngIf="submitted && f.retailPrice.errors" class="invalid-feedback">
+                <div *ngIf="f.retailPrice.errors.required" [translate]='"ERRORS.VALIDATE.ANY_EMPTY"' [translateParams]='{name:"上代"}'></div>
+                <div *ngIf="f.retailPrice.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+              </div>
+            </div>
+
+            <div class="col-sm-12 col-lg-2 col-xl-2 mb-2 form-group d-flex align-items-center">
+              <label style="margin-right: 2px;">原価合計
+                <ng-container *ngIf="affiliation===AUTH_INTERNAL">・原価率</ng-container>
+              </label>
+            </div>
+            <div class="col-sm-12 col-lg-3 col-xl-5 mb-2 form-inline d-flex align-items-center" style="padding: 0px;">
+              <input disabled type="tel" class="form-control length_10" formControlName="totalCost"
+                name="totalCost" [value]="calculateTotal() > 0 ? calculateTotal() : ''"  maxlength="9" [ngClass]="{'is-invalid':submitted && f.totalCost.errors}" />
+                <div *ngIf="affiliation===AUTH_INTERNAL">
+                  <span class="ml-1" [ngClass]="{'red-font' : caluculateTotalCostCostRate() > 100}">({{caluculateTotalCostCostRate()}}%)</span>
+                </div>
+                <div *ngIf="submitted && mainForm.errors">
+                    <div *ngIf="mainForm?.errors['totalCostOverRetailPrice']" class="invalid-feedback d-block"
+                      [translate]='"ERRORS.VALIDATE.TOTAL_COST_OVER_RETAIL_PRICE"'>
+                    </div>
+                </div>
+
+          <!-- PRD_0023 && No_65 mod JFE end -->
+            </div>
+          </div>
+          <div class="row form-group">
+            <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 form-inline d-flex align-items-center" [ngStyle]="{'padding-right': '5px'}">
+              <label class="control-label">生地原価</label>
+              <!-- PRD_0118-01 mod JFE Start-->
+              <!--input disabled #matlVal type="tel" class="form-control length_10" formControlName="matlCost"
+                name="matlCost" maxlength="9" /-->
+              <!--PRD_0124-01 add JFE Start-->
+              <ng-container *ngIf="affiliation!=AUTH_SUPPLIERS">
+              <!--PRD_0124-01 add JFE END-->
+
+              <input type="tel" class="form-control length_10 mb-2" formControlName="matlCost"
+               name="matlCost" maxlength="9" [ngClass]="{'is-invalid':submitted && f.matlCost.errors}"/>
+              <div *ngIf="submitted && f.matlCost.errors" class="invalid-feedback">
+                <div *ngIf="f.matlCost.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+              </div>
+              <!--PRD_0124-02 add JFE Start-->
+              </ng-container>
+              <!--PRD_0124-02 add JFE END-->
+            <!-- PRD_0118-01 mod JFE END-->
+            </div>
+            <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 form-inline d-flex align-items-center" [ngStyle]="{'padding-right': '5px'}">
+              <label class="control-label">加工原価</label>
+              <!-- PRD_0118-02 mod JFE Start-->
+              <!--input disabled #processingVal type="tel" class="form-control length_10" formControlName="processingCost"
+                name="processingCost" maxlength="9"  /-->
+              <!--PRD_0124-03 add JFE Start-->
+              <ng-container *ngIf="affiliation!=AUTH_SUPPLIERS">
+              <!--PRD_0124-03 add JFE END-->
+              <input type="tel" class="form-control length_10" formControlName="processingCost"
+                name="processingCost" maxlength="9" [ngClass]="{'is-invalid':submitted && f.processingCost.errors}"/>
+              <div *ngIf="submitted && f.processingCost.errors" class="invalid-feedback">
+               <div *ngIf="f.processingCost.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+              </div>
+              <!--PRD_0124-04 add JFE Start-->
+              </ng-container>
+              <!--PRD_0124-04 add JFE END-->
+            <!-- PRD_0118-02 mod JFE END-->
+            </div>
+            <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 form-inline d-flex align-items-center" [ngStyle]="{'padding-right': '5px'}">
+              <label class="control-label">附属原価</label>
+              <!-- PRD_0118-03 mod JFE Start-->
+              <!--input disabled #accrVal type="tel" class="form-control length_10" formControlName="accessoriesCost"
+                name="accessoriesCost" maxlength="9"  /-->
+              <!--PRD_0124-05 add JFE Start-->
+              <ng-container *ngIf="affiliation!=AUTH_SUPPLIERS">
+              <!--PRD_0124-05 add JFE END-->
+              <input type="tel" class="form-control length_10" formControlName="accessoriesCost"
+                name="accessoriesCost" maxlength="9" [ngClass]="{'is-invalid':submitted && f.accessoriesCost.errors}"/>
+              <div *ngIf="submitted && f.accessoriesCost.errors" class="invalid-feedback">
+                <div *ngIf="f.accessoriesCost.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+              </div>
+              <!--PRD_0124-06 add JFE Start-->
+              </ng-container>
+              <!--PRD_0124-06 add JFE END-->
+            <!-- PRD_0118-03 mod JFE END-->
+            </div>
+            <div class="col-sm-12 col-lg-3 col-xl-3 mb-2 form-inline d-flex align-items-center" [ngStyle]="{'padding-right': '5px'}"
+              [ngClass]="{'required':(viewMode===VIEW_MODE.PART_EDIT||registStatus===REGIST_STATUS.PART)}">
+              <label class="control-label">その他</label>
+
+              <input type="tel" class="form-control length_10 mb-2" appNumberInput formControlName="otherCost"
+                name="otherCost" maxlength="9" [ngClass]="{'is-invalid':submitted && f.otherCost.errors}"
+                [required]="(viewMode===VIEW_MODE.PART_EDIT||registStatus===REGIST_STATUS.PART)" />
+              <div *ngIf="submitted && f.otherCost.errors" class="invalid-feedback">
+                <div *ngIf="f.otherCost.errors.required" [translate]='"ERRORS.VALIDATE.ANY_EMPTY"' [translateParams]='{name:"原価"}'></div>
+                <div *ngIf="f.otherCost.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+              </div>
+            </div>
+          </div>
+          <div class="title form-group" id="anchor-sku"
+            [ngClass]="{'required':(viewMode===VIEW_MODE.PART_EDIT||registStatus===REGIST_STATUS.PART)}">
+            <label class="control-label">色・サイズ</label>
+          </div>
+          <!-- 色・サイズのカスタムエラーメッセージ -->
+          <div class="invalid-feedback custom_error_msg" display="none" translate id="skuErrorInfo" name="errorInfo">
+          </div>
+          <div *ngIf="submitted && (f.skus.status==='INVALID')" class="invalid-feedback custom_error_msg d-block"
+            translate='{{"ERRORS.VALIDATE.PATTERN_COLORCODE"}}'></div>
+          <app-sku-select [parentForm]="mainForm" [skusValue]="skusValue" [isCopy]="isCopy" [viewMode]="viewMode"
+            [registStatus]="registStatus" [submitted]=submitted [partNoKind]="partNoKindConfirm" [sizeMasterList]="sizeMasterList"
+            (changeColor)="changeCompositon($event)" (deleteColor)="deleteComposition($event)">
+          </app-sku-select>
+          <!-- JAN/UPC -->
+          <ng-container *ngIf="affiliation===AUTH_INTERNAL && viewMode===VIEW_MODE.PART_EDIT">
+            <div class="title form-group required" id="anchor-article-number">
+              <label class="control-label">JAN/UPC</label>
+            </div>
+            <div class="row">
+              <div class="col-sm-12 col-lg-12 col-xl-12 form-group">
+                <label class="csr-pnt mr-3">
+                  <input type="radio" name="janType" formControlName="janType"
+                  [value]="JAN_TYPE.IN_HOUSE_JAN"
+                  (change)="onChangeJanTypeRadio(JAN_TYPE.IN_HOUSE_JAN)" />自社JAN
+                </label>
+                <label class="csr-pnt mr-3">
+                  <input type="radio" name="janType" formControlName="janType"
+                  [value]="JAN_TYPE.OTHER_JAN"
+                  (change)="onChangeJanTypeRadio(JAN_TYPE.OTHER_JAN)" />他社JAN
+                </label>
+                <label class="csr-pnt mr-3">
+                  <input type="radio" name="janType" formControlName="janType"
+                  [value]="JAN_TYPE.OTHER_UPC"
+                  (change)="onChangeJanTypeRadio(JAN_TYPE.OTHER_UPC)" />他社UPC
+                </label>
+              </div>
+            </div>
+            <div>
+              <app-article-number [parentForm]="mainForm" [isCopy]="isCopy" [registStatus]="registStatus" [submitted]=submitted>
+              </app-article-number>
+            </div>
+          </ng-container>
+          <div class="title form-group" id="anchor-compositon"
+            [ngClass]="{'required':(viewMode===VIEW_MODE.PART_EDIT||
+                          registStatus===REGIST_STATUS.PART)&&(f.compositionRequireCode.value===COMPOSITIONS_REQUIRED_TYPE.REQUIRED||f.compositionRequireCode.value===COMPOSITIONS_REQUIRED_TYPE.BOTH_REQUIRED)}">
+            <label class="control-label">混率</label>
+          </div>
+          <!-- 混率表示のチェックボックス -->
+          <div class="row composition-check">
+            <ng-container formArrayName="compositions">
+              <ng-container
+                *ngFor="let composition of fCtrlCompositions; let compositionIndex=index; let isFirst=first;">
+                <!-- first(共通)は表示しない -->
+                <div class="col-md-3" *ngIf="!isFirst" [formGroupName]="compositionIndex">
+                  <label class="checkbox-label">
+                    <input type="checkbox" formControlName="showCompositions"
+                      (click)="onCheckComposition(composition.get('colorCode').value, $event.target.checked)">&nbsp;{{composition.get('colorCode').value}}&nbsp;{{composition.get('colorName').value}}
+                  </label>
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+          <!-- 混率のカスタムエラーメッセージ -->
+          <div class="invalid-feedback custom_error_msg" display="none" translate id="compositionErrorInfo"
+            name="errorInfo"></div>
+          <div *ngIf="submitted" class="invalid-feedback custom_error_msg d-block">
+            <div *ngIf="f.compositions.status==='INVALID'" translate='{{"ERRORS.VALIDATE.COMPOSITIONS_PERCENT_RANGE"}}'>
+            </div>
+            <!-- 混率のAPIバリデーションエラーメッセージ -->
+            <ng-container *ngFor="let apiValidateError of apiValidateErrorsMap.get(RESOURCE_TYPE.COMPOSITION)">
+              <span class="d-block">{{apiValidateError.message}}</span>
+            </ng-container>
+          </div>
+          <!-- 混率Form -->
+          <ng-container formArrayName="compositions">
+            <div class="row">
+              <datalist id="partsMasterList">
+                <option *ngFor="let parts of partsMaster;" [value]="parts.partsName"></option>
+              </datalist>
+              <datalist id="compositionMasterList">
+                <option *ngFor="let compositionsMaster of compositionsMasterList;"
+                  [value]="compositionsMaster.item1"></option>
+              </datalist>
+              <ng-container
+                *ngFor="let composition of fCtrlCompositions; let compositionIndex=index; let isFirst=first;">
+                <!-- first(共通)は必ず表示 -->
+                <div class="col-md-6" [formGroupName]="compositionIndex"
+                  *ngIf="isFirst||composition.get('showCompositions').value==true">
+                  <p>{{composition.get('colorCode').value}}&nbsp;{{composition.get('colorName').value}}</p>
+                  <ng-container formArrayName="compositionDetailList"
+                    *ngFor="let lists of composition.get('compositionDetailList')['controls']; let compositionDetailIndex=index;">
+                    <div class="form-group form-inline" [formGroupName]="compositionDetailIndex">
+                      <!-- パーツ -->
+                      <input type="text" #cooName name="partsName" formControlName="partsName"
+                        (input)="onInputPartsName($event.target.value,compositionIndex,compositionDetailIndex)"
+                        autocomplete="on" list="partsMasterList" class="form-control parts-name-form" [required] />
+                      <!-- パーツのidをhiddenにする。名称が入力されたらidを設定 -->
+                      <input type="hidden" #partsCode name="partsCode" formControlName="partsCode"
+                        class="form-control" />
+                      <!-- 組成 -->
+                      <input type="text" #compositionName name="compositionName" formControlName="compositionName"
+                        (input)="onInputCompositionName($event.target.value,compositionIndex,compositionDetailIndex)"
+                        autocomplete="on" list="compositionMasterList" class="form-control composition-name-form"
+                        [required] />
+                      <!-- 組成のcodeをhiddenにする。名称が入力されたらcodeを設定 -->
+                      <input type="hidden" #compositionCode name="compositionCode" formControlName="compositionCode"
+                        class="form-control" />
+                      <!-- パーセント -->
+                      <input type="tel" formControlName="percent" class="form-control code_3" maxlength="3"
+                        [ngClass]="{'is-invalid':submitted && (mainForm.touched || mainForm.dirty) && lists['controls']['percent']['errors']?.pattern}" />%
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+          <div class="title form-group" id="anchor-misleading-representation">
+            <label class="control-label">生地検査結果</label>
+          </div>
+          <div>
+            <ng-container *ngFor="let file of misleadingRepresentationFile; let index=index;">
+              <ng-container *ngIf="file.mode!=DELETED_FILE">
+                <a href="javascript:void(0)"
+                  (click)="onMisleadingRepresentationFileDownlad(index)">{{file.file.fileName}}</a>
+                <span>{{file.file.memo}}&nbsp;</span>
+                <!--「優良誤認承認済み、納品依頼承認済み、全ての発注が完納」以外の場合はゴミ箱アイコンを表示-->
+                <a *ngIf="!(itemData.approvedMisleadingRepresentation || itemData.approvedDelivery || itemData.completedAllOrder)"
+                  (click)="onMisleadingRepresentationFileDeleted(index)" class="trash-icon">
+                  <fa-icon icon="trash-alt"></fa-icon>
+                </a>
+              </ng-container>
+            </ng-container>
+          </div>
+          <div class="title" id="anchor-mdf-maker">メーカー・原産国</div>
+          <div formArrayName="orderSuppliers">
+            <ng-container *ngFor="let supplierData of fCtrlSuppliers; let supplierIndex = index;">
+              <ng-container [formGroupName]="supplierIndex" *ngIf="supplierIndex == currentSupplierIndex">
+              <div class="row">
+                <div class="col-sm-12 col-lg-4 col-xl-2 form-group required">
+                  <label class="control-label">生産メーカー</label>
+                </div>
+                <div class="col-sm-12 col-lg-8 col-xl-10 form-group">
+                  <div class="input-group">
+                    <ng-container *ngIf="affiliation===AUTH_INTERNAL">
+                      <input type="tel" class="form-control code_6" formControlName="supplierCode" name="supplierCode"
+                        minlength="5" maxlength="5" (change)="onChangeMaker(SUPPLIER_TYPE.MDF_MAKER, supplierData)" required
+                        [ngClass]="{'is-invalid':submitted && (supplierData['controls'].supplierCode.errors || mainForm.errors?.makerExistence)}" />
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-secondary calBtn"
+                          (click)="openSearchSupplierModal(SUPPLIER_TYPE.MDF_MAKER, supplierData)" type="button"
+                          [disabled]="isMakerCodeModalDisabled">
+                          <fa-icon icon="search"></fa-icon>
+                        </button>
+                      </div>
+                    </ng-container>
+                    <!-- 権限が取引先の時にhiddenで値を渡す -->
+                    <ng-container *ngIf="affiliation===AUTH_SUPPLIERS">
+                      <input type="hidden" formControlName="supplierFactoryCode" [value]="company">
+                    </ng-container>
+                    <span>{{supplierData.get('supplierName').value}}</span>
+                    <ng-container *ngIf="submitted">
+                      <div *ngIf="supplierData['controls'].supplierCode.errors" class="invalid-feedback">
+                        <div *ngIf="supplierData['controls'].supplierCode.errors.required" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+                        <div *ngIf="supplierData['controls'].supplierCode.errors.minlength" [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'"
+                          [translateParams]="{name:'', length:'5'}"></div>
+                        <div *ngIf="supplierData['controls'].supplierCode.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+                      </div>
+                      <div
+                        *ngIf="!supplierData['controls'].supplierCode.errors&&mainForm.errors&&mainForm.errors['makerExistence']&&supplierData['controls'].supplierCode.dirty"
+                        class="invalid-feedback d-block" [translate]="'ERRORS.VALIDATE.MAKER_EXISTENCE'">
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                  <label>生産工場</label>
+                </div>
+                <div class="col-sm-12 col-lg-8 col-xl-10 form-group">
+                  <div class="input-group">
+                    <input type="tel" class="form-control code_6" formControlName="supplierFactoryCode"
+                      name="supplierFactoryCode" minlength="6" maxlength="6"
+                      (change)="onChangeFactory(SUPPLIER_TYPE.MDF_MAKER, supplierData)"
+                      [ngClass]="{'is-invalid':submitted&&(supplierData['controls'].supplierFactoryCode.errors||mainForm.errors?.mdfMakerFactoryExistence)}" />
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary calBtn"
+                        (click)="openSearchFactoryModal(SUPPLIER_TYPE.MDF_MAKER, supplierData )" type="button"
+                        [disabled]="isMakerFactoryModalDisabled">
+                        <fa-icon icon="search"></fa-icon>
+                      </button>
+                    </div>
+                    <span>{{supplierData.get('supplierFactoryName').value}}</span>
+                    <ng-container *ngIf="submitted">
+                      <div *ngIf="supplierData['controls'].supplierFactoryCode.errors" class="invalid-feedback">
+                        <div *ngIf="supplierData['controls'].supplierFactoryCode.errors.minlength" [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'"
+                          [translateParams]="{name:'', length:'6'}"></div>
+                        <div *ngIf="supplierData['controls'].supplierFactoryCode.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'">
+                        </div>
+                      </div>
+                      <div
+                        *ngIf="!supplierData['controls'].supplierFactoryCode.errors&&mainForm.errors&&mainForm.errors['mdfMakerFactoryExistence']&&supplierData['controls'].supplierFactoryCode.dirty"
+                        class="invalid-feedback d-block" [translate]="'ERRORS.VALIDATE.FACTORY_EXISTENCE'">
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                  <label>委託先工場</label>
+                </div>
+                <div class="col-sm-12 col-lg-8 col-xl-10 form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" formControlName="consignmentFactory" id="consignmentFactory" name="consignmentFactory" maxlength="100" />
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+          <div class="row">
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group"
+              [ngClass]="{'required':(viewMode===VIEW_MODE.PART_EDIT||registStatus===REGIST_STATUS.PART)}">
+              <label class="control-label">原産国</label>
+            </div>
+            <div class="col-sm-12 col-lg-8 col-xl-10 form-group">
+              <input type="text" #cooName name="cooName" formControlName="cooName"
+                (input)="onInputCooName(cooName.value)" autocomplete="on" list="cooMasterList"
+                class="form-control coo-name-form"
+                [ngClass]="{'is-invalid':submitted && (f.cooName.errors || f.cooCode.errors)}"
+                [required]="(viewMode===VIEW_MODE.PART_EDIT||registStatus===REGIST_STATUS.PART)"/>
+              <datalist id="cooMasterList">
+                <option *ngFor="let coo of cooMasterList;" [value]="coo.item2"></option>
+              </datalist>
+              <!-- 原産国コードをhiddenにする。名称が入力されたらコードを設定 -->
+              <input type="hidden" #cooCode name="cooCode" formControlName="cooCode" class="form-control"
+                [required]="(viewMode===VIEW_MODE.PART_EDIT||registStatus===REGIST_STATUS.PART)"/>
+              <div *ngIf="submitted" class="invalid-feedback">
+                <div *ngIf="f.cooName.errors?.required" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+                <div *ngIf="!f.cooName.errors&&f.cooCode.errors?.required"
+                  [translate]="'ERRORS.VALIDATE.COO_CODE_EXISTENCE'"></div>
+              </div>
+            </div>
+          </div>
+          <div class="title" id="anchor-planner">担当</div>
+          <div class="row">
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group required">
+              <label class="control-label">企画担当</label>
+            </div>
+            <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+              <div class="input-group">
+                <ng-container *ngIf="affiliation===AUTH_INTERNAL">
+                  <input class="form-control code_6" placeholder="" formControlName="plannerCode" type="text"
+                    name="plannerCode" minlength="6" maxlength="6" (change)="onChangeStaff(STAFF_TYPE.PLANNING)"
+                    [ngClass]="{'is-invalid':submitted && (f.plannerCode.errors || mainForm.errors?.plannerExistence)}"
+                    required />
+                </ng-container>
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="openSearchStaffModel(STAFF_TYPE.PLANNING)"
+                    type="button">
+                    <fa-icon icon="search"></fa-icon>
+                  </button>
+                </div>
+                <span>{{mainForm.value.plannerName}}</span>
+                <div class="staff-trash"
+                  *ngIf="mainForm.value.plannerName!=null&&affiliation===AUTH_SUPPLIERS">
+                  <a (click)="onStaffDeleted(STAFF_TYPE.PLANNING)" class="trash-icon">
+                    <fa-icon icon="trash-alt"></fa-icon>
+                  </a>
+                </div>
+                <ng-container *ngIf="submitted">
+                  <div *ngIf="f.plannerCode.errors" class="invalid-feedback d-block">
+                    <div *ngIf="f.plannerCode.errors.required" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+                    <div *ngIf="f.plannerCode.errors.minlength" [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'"
+                      [translateParams]="{name:'', length:'6'}"></div>
+                    <div *ngIf="f.plannerCode.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+                  </div>
+                  <div
+                    *ngIf="!f.plannerCode.errors&&mainForm.errors&&mainForm.errors['plannerExistence']&&f.plannerCode.dirty"
+                    class="invalid-feedback d-block" [translate]="'ERRORS.VALIDATE.STAFF_EXISTENCE'">
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group required">
+              <label class="control-label">製造担当</label>
+            </div>
+            <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+              <div class="input-group">
+                <ng-container *ngIf="affiliation===AUTH_INTERNAL">
+                  <input type="tel" class="form-control code_6" formControlName="mdfStaffCode" name="mdfStaffCode"
+                    minlength="6" maxlength="6" (change)="onChangeStaff(STAFF_TYPE.PRODUCTION)"
+                    [ngClass]="{'is-invalid':submitted&&(f.mdfStaffCode.errors||mainForm.errors?.mdfStaffExistence)}"
+                    required />
+                </ng-container>
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="openSearchStaffModel(STAFF_TYPE.PRODUCTION)"
+                    type="button" [disabled]="isMdfStaffDisabled">
+                    <fa-icon icon="search"></fa-icon>
+                  </button>
+                </div>
+                <span>{{mainForm.value.mdfStaffName}}</span>
+                <div class="staff-trash"
+                  *ngIf="!isMdfStaffDisabled&&mainForm.value.mdfStaffName!=null&&affiliation===AUTH_SUPPLIERS">
+                  <a (click)="onStaffDeleted(STAFF_TYPE.PRODUCTION)" class="trash-icon">
+                    <fa-icon icon="trash-alt"></fa-icon>
+                  </a>
+                </div>
+                <ng-container *ngIf="submitted">
+                  <div *ngIf="f.mdfStaffCode.errors" class="invalid-feedback d-block">
+                    <div *ngIf="f.mdfStaffCode.errors.required" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+                    <div *ngIf="f.mdfStaffCode.errors.minlength" [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'"
+                      [translateParams]="{name:'', length:'6'}"></div>
+                    <div *ngIf="f.mdfStaffCode.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+                  </div>
+                  <div
+                    *ngIf="!f.mdfStaffCode.errors&&mainForm.errors&&mainForm.errors['mdfStaffExistence']&&f.mdfStaffCode.dirty"
+                    class="invalid-feedback d-block" [translate]="'ERRORS.VALIDATE.STAFF_EXISTENCE'">
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+              <label>パターンナー</label>
+            </div>
+            <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+              <div class="input-group">
+                <ng-container *ngIf="affiliation===AUTH_INTERNAL">
+                  <input type="tel" class="form-control code_6" formControlName="patanerCode" name="patanerCode"
+                    minlength="6" maxlength="6" (change)="onChangeStaff(STAFF_TYPE.PATANER)"
+                    [ngClass]="{'is-invalid':submitted&&(f.patanerCode.errors||mainForm.errors?.patanerExistence)}" />
+                </ng-container>
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary calBtn" (click)="openSearchStaffModel(STAFF_TYPE.PATANER)"
+                    type="button">
+                    <fa-icon icon="search"></fa-icon>
+                  </button>
+                </div>
+                <span>{{mainForm.value.patanerName}}</span>
+                <div class="staff-trash"
+                  *ngIf="mainForm.value.patanerName!=null&&affiliation===AUTH_SUPPLIERS">
+                  <a (click)="onStaffDeleted(STAFF_TYPE.PATANER)" class="trash-icon">
+                    <fa-icon icon="trash-alt"></fa-icon>
+                  </a>
+                </div>
+                <ng-container *ngIf="submitted">
+                  <div *ngIf="f.patanerCode.errors" class="invalid-feedback d-block">
+                    <div *ngIf="f.patanerCode.errors.minlength" [translate]="'ERRORS.VALIDATE.LENGTH_NOT_MATCH'"
+                      [translateParams]="{name:'', length:'6'}"></div>
+                    <div *ngIf="f.patanerCode.errors.pattern" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+                  </div>
+                  <div
+                    *ngIf="!f.patanerCode.errors && mainForm.errors && mainForm.errors['patanerExistence'] && f.patanerCode.dirty"
+                    class="invalid-feedback d-block" [translate]="'ERRORS.VALIDATE.STAFF_EXISTENCE'">
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <ng-container *ngIf="viewMode===VIEW_MODE.PART_EDIT">
+              <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                <label>パターンNo</label>
+              </div>
+              <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                <div class="input-group">
+                  <input type="text" class="form-control" formControlName="patternNo" maxlength="10"
+                    [ngClass]="{'is-invalid':submitted && f.patternNo.errors}" />
+                </div>
+                <ng-container *ngIf="submitted && f.patternNo.errors">
+                  <div *ngIf="f.patternNo.errors.pattern" class="invalid-feedback d-block"
+                    [translate]="'ERRORS.VALIDATE.PATTERN_NO_KANA'"></div>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
+          <ng-container *ngIf="viewMode===VIEW_MODE.PART_EDIT">
+            <div class="title" id="anchor-marui">
+              丸井</div>
+            <div class="row">
+              <div class="col-sm-12 col-lg-4 col-xl-2 form-group"
+                [ngClass]="{'required': f.voiCode.value === VOI_TYPE.ONLINE || f.voiCode.value === VOI_TYPE.CATALOG}">
+                <label class="control-label">丸井品番</label>
+              </div>
+              <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                <div class="input-group">
+                  <select name="maruiGarmentNo" class="form-control" formControlName="maruiGarmentNo"
+                    [ngClass]="{'is-invalid':submitted && (f.maruiGarmentNo.errors || mainForm.errors?.maruiGarmentNoExistence)}">
+                    <option *ngFor="let marui of maruiMasterList;" [value]="marui.code3">{{marui.item1}}</option>
+                  </select>
+                </div>
+                <ng-container>
+                  <div *ngIf="f.maruiGarmentNo.errors">
+                    <div *ngIf="f.maruiGarmentNo.errors.required||f.maruiGarmentNo.errors.pattern" class="invalid-feedback d-block"
+                      [translate]='"ERRORS.VALIDATE.ANY_EMPTY"' [translateParams]='{name:"丸井品番"}'></div>
+                  </div>
+                  <div *ngIf="submitted && mainForm.errors && mainForm.errors['maruiGarmentNoExistence']" class="invalid-feedback d-block"
+                    [translate]="'ERRORS.VALIDATE.MARUI_EXISTENCE'"></div>
+                </ng-container>
+              </div>
+              <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                <label>Voi区分</label>
+              </div>
+              <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                <div class="input-group">
+                  <select name="voiCode" class="form-control" formControlName="voiCode">
+                    <option *ngFor="let voi of voiMasterList;" [value]="voi.code1">{{voi.item1}}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="title title-collapsed" id="anchor-statistics-info">
+              <a class="ml-0" (click)="isAnchorStatisticsCollapsed = !isAnchorStatisticsCollapsed"
+              [attr.aria-expanded]="!isAnchorStatisticsCollapsed" aria-controls="collapseAnchorStatisticsInfo">
+              <fa-icon [icon]="['fas',isAnchorStatisticsCollapsed?'angle-up':'angle-down']" [fixedWidth]="true"></fa-icon>統計情報</a>
+            </div>
+            <div id="collapseAnchorStatisticsInfo" [ngbCollapse]="!isAnchorStatisticsCollapsed">
+              <div class="row">
+                <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                  <label>素材</label>
+                </div>
+                <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                  <div class="input-group">
+                    <select name="materialCode" class="form-control" formControlName="materialCode">
+                      <option *ngFor="let material of materialMasterList;" [value]="material.code1">{{material.item1}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                  <label>ゾーン</label>
+                </div>
+                <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                  <div class="input-group">
+                    <select name="zoneCode" class="form-control" formControlName="zoneCode">
+                      <option *ngFor="let zone of zoneMasterList;" [value]="zone.code1">{{zone.item2}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                  <label>サブブランド</label>
+                </div>
+                <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                  <div class="input-group">
+                    <select name="subBrandCode" class="form-control" formControlName="subBrandCode">
+                      <option *ngFor="let subBland of subBlandMaster;" [value]="subBland.code2">{{subBland.item1}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                  <label>テイスト</label>
+                </div>
+                <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                  <div class="input-group">
+                    <select name="tasteCode" class="form-control" formControlName="tasteCode">
+                      <option *ngFor="let taste of tasteMasterList;" [value]="taste.code2">{{taste.item1}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-2 col-xl-2 form-group">
+                  <label>タイプ1</label>
+                </div>
+                <div class="col-sm-12 col-lg-2 col-xl-2 form-group form-inline">
+                  <div class="input-group">
+                    <select name="type1Code" class="form-control" formControlName="type1Code">
+                      <option *ngFor="let type1 of type1List;" [value]="type1.code1">{{type1.item1}}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-lg-2 col-xl-2 form-group">
+                  <label>タイプ2</label>
+                </div>
+                <div class="col-sm-12 col-lg-2 col-xl-2 form-group form-inline">
+                  <select name="type2Code" class="form-control" formControlName="type2Code">
+                    <option *ngFor="let type2 of type2List;" [value]="type2.code1">{{type2.item1}}</option>
+                  </select>
+                </div>
+                <div class="col-sm-12 col-lg-2 col-xl-2 form-group">
+                  <label>タイプ3</label>
+                </div>
+                <div class="col-sm-12 col-lg-2 col-xl-2 form-group form-inline">
+                  <select name="type3Code" class="form-control" formControlName="type3Code">
+                    <option *ngFor="let type3 of type3List;" [value]="type3.code1">{{type3.item1}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                  <label>展開</label>
+                </div>
+                <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                  <div class="input-group">
+                    <select name="outletCode" class="form-control" formControlName="outletCode">
+                      <option *ngFor="let outlet of outletMasterList;" [value]="outlet.code1">{{outlet.item1}}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-12 col-lg-4 col-xl-4 form-group form-inline">
+                  <label>
+                    <input type="checkbox" name="grabBag" class="form-control" formControlName="grabBag">福袋
+                  </label>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <div class="title" id="anchor-others">その他</div>
+          <!-- チェックボックス -->
+          <div class="row">
+            <ng-container *ngIf="viewMode===VIEW_MODE.PART_EDIT">
+              <div class="col-sm-12 col-lg-3 form-group form-inline">
+                <!-- 在庫管理区分 -->
+                <label>
+                  <input type="checkbox" name="inventoryManagementType" class="form-control"
+                    formControlName="inventoryManagementType">在庫管理
+                </label>
+              </div>
+              <div class="col-sm-12 col-lg-3 form-group form-inline">
+                <!-- 評価減区分 -->
+                <label>
+                  <input type="checkbox" name="devaluationType" class="form-control"
+                    formControlName="devaluationType">評価減
+                </label>
+              </div>
+              <div class="col-sm-12 col-lg-3 form-group form-inline">
+                <!-- 消化委託区分 -->
+                <label>
+                  <input type="checkbox" name="digestionCommissionType" class="form-control"
+                    formControlName="digestionCommissionType">消化委託商品
+                </label>
+              </div>
+              <!-- 軽減税率対象フラグ -->
+              <div class="col-sm-12 col-lg-3 form-group form-inline">
+                <label>
+                  <input type="checkbox" name="reducedTaxRateFlg" class="form-control"
+                    formControlName="reducedTaxRateFlg">軽減税率対象
+                </label>
+              </div>
+            </ng-container>
+          </div>
+          <div class="row">
+            <ng-container *ngIf="viewMode===VIEW_MODE.PART_EDIT">
+              <div class="col-sm-12 col-lg-4 col-xl-2 form-group d-flex align-items-start">
+                <label>メーカー品番</label>
+              </div>
+              <div class="col-sm-12 col-lg-3 col-xl-4 form-inline d-flex align-items-start">
+                <input type="text" class="form-control code_8" formControlName="makerGarmentNo" maxlength="8"
+                  [ngClass]="{'is-invalid':submitted && f.makerGarmentNo.errors}" />
+                <ng-container *ngIf="submitted && f.makerGarmentNo.errors">
+                  <div *ngIf="f.makerGarmentNo.errors.pattern" class="invalid-feedback"
+                    [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER_ALPHABET'"></div>
+                </ng-container>
+              </div>
+            </ng-container>
+            <div class="col-sm-12 col-lg-12 col-xl-12 form-group">
+              <label>見積ファイル</label>
+              <label class="btn btn-secondary btn-outline-dark badge-pill btn-sm">ファイルを選択
+                <!--完納または納品依頼承認済の場合は非活性-->
+                <input type="file" name="addFile" multiple (change)="onEstimatesFileSelect($event.target.files)"/>
+              </label>
+              <div>
+                <div *ngFor="let file of estimatesFile; let index=index;">
+                  <ng-container *ngIf="file.mode!=DELETED_FILE">
+                    <a href="javascript:void(0)" (click)="onEstimatesFileDownload(index)">{{file.fileName}}</a>
+                    <a (click)="onEstimatesFileDeleted(index)" class="trash-icon">
+                      <fa-icon icon="trash-alt"></fa-icon>
+                    </a>
+                  </ng-container>
+                </div>
+                <ng-container *ngIf="estimatesErrorMsgCode.length!==0">
+                  <div [translate]="estimatesErrorMsgCode" class="invalid-feedback d-block"></div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 form-group">
+              <label>取引メモ</label>
+              <textarea class="form-control" formControlName="memo" maxlength="120"></textarea>
+            </div>
+          </div>
+          <div class="row" *ngIf="viewMode===VIEW_MODE.PART_EDIT">
+            <div class="col-md-12 form-group">
+              <label>管理メモ</label>
+              <label>
+                <input type="checkbox" formControlName="itemMassageDisplay">店舗に表示する
+              </label>
+              <textarea class="form-control" formControlName="itemMassage" maxlength="50"></textarea>
+            </div>
+          </div>
+
+          <!-- フクキタル -->
+          <ng-container *ngIf="fukukitaruMaster!=null" formGroupName="fkItem">
+            <div class="title title-collapsed" id="anchor-wash-name">
+              <a class="ml-0" (click)="isWashNameTitleCollapsed = !isWashNameTitleCollapsed"
+                [attr.aria-expanded]="!isWashNameTitleCollapsed" aria-controls="collapseWashNameTitle">
+              <fa-icon [icon]="['fas',isWashNameTitleCollapsed?'angle-up':'angle-down']" [fixedWidth]="true"></fa-icon>洗濯ネーム</a>
+            </div>
+            <div id="collapseWashNameTitle" [ngbCollapse]="!isWashNameTitleCollapsed">
+              <div class="row">
+                <div class="col-sm-2 col-lg-2 col-xl-2 form-group">
+                  <label>テープ種類</label>
+                </div>
+                <div class="col-sm-2 col-lg-2 col-xl-2 form-group form-inline">
+                  <div class="input-group">
+                    <select name="tapeCode" class="form-control" formControlName="tapeCode" (change)="onChangeTape()">
+                      <option [value]=""></option>
+                      <option *ngFor="let data of tapeTypeList;" [value]="data.id">{{data.codeName}}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-2 col-lg-2 col-xl-2 form-group">
+                  <label>テープ巾</label>
+                </div>
+                <div class="col-sm-2 col-lg-2 col-xl-2 form-group form-inline">
+                  <div class="input-group">
+                    <select name="tapeWidthCode" class="form-control" formControlName="tapeWidthCode" (change)="onChangeTapeWidth()"
+                      [ngClass]="{'is-invalid':submitted && mainForm.controls.fkItem.errors && mainForm.controls.fkItem.errors['tapeCodeExistence']}">
+                      <option [value]=""></option>
+                      <option *ngFor="let data of tapeWideList;" [value]="data.id">{{data.codeName}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <ng-container *ngIf="submitted">
+                <div *ngIf="mainForm.controls.fkItem.errors && mainForm.controls.fkItem.errors['tapeCodeExistence']" class="invalid-feedback d-block">
+                  <div [translate]='"ERRORS.VALIDATE.TAPE_CODE_EXISTENCE"' [translateParams]='{tapeCodeValue:"SP6600", tapeWidthValue:"32mm"}'></div>
+                </div>
+              </ng-container>
+              <div class="row">
+                <div class="col-sm-3 col-lg-3 col-xl-3 form-group form-inline">
+                  <span class="checkbox-title">サイズ印字</span>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="printSize" class="form-control" formControlName="printSize">あり
+                  </label>
+                </div>
+                <div class="col-sm-3 col-lg-3 col-xl-3 form-group form-inline">
+                  <span class="checkbox-title">原産国印字</span>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="printCoo" class="form-control" formControlName="printCoo">あり
+                  </label>
+                </div>
+              </div>
+              <!-- 絵表示のチェックボックス -->
+              <div class="row">
+                <div class="col-sm-12 col-lg-12 col-xl-12 form-group">
+                  <label>絵表示</label>
+                </div>
+              </div>
+              <div class="row washPattern-check">
+                <ng-container formArrayName="washPatterns">
+                  <ng-container *ngFor="let washPattern of fCtrlWashPatterns; let washPatternIndex=index; let isFirst=first;">
+                    <!-- first(共通)は表示しない -->
+                    <div class="col-md-3" *ngIf="!isFirst" [formGroupName]="washPatternIndex">
+                      <label class="checkbox-label">
+                        <input type="checkbox" formControlName="showWashPattern"
+                          (click)="onCheckWashPattern(washPattern.get('colorCode').value, $event.target.checked)">
+                        &nbsp;{{washPattern.get('colorCode').value}}&nbsp;{{washPattern.get('colorName').value}}
+                      </label>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </div>
+              <!-- 絵表示Form -->
+              <ng-container formArrayName="washPatterns">
+                <div class="row">
+                  <ng-container *ngFor="let washPattern of fCtrlWashPatterns; let washPatternIndex=index; let isFirst=first;">
+                    <!-- first(共通)は必ず表示 -->
+                    <div class="col-md-3 pb-3" [formGroupName]="washPatternIndex"
+                      *ngIf="isFirst||washPattern.get('showWashPattern').value">
+                      <p>{{washPattern.get("colorCode").value}}&nbsp;{{washPattern.get("colorName").value}}</p>
+                      <select name="washPatternId" class="form-control" formControlName="washPatternId" (change)="onChangeWashPattern()"
+                        [ngClass]="{'is-invalid':submitted && mainForm.controls.fkItem.errors && mainForm.controls.fkItem.errors['washPatternExistence']}">
+                        <option [value]=""></option>
+                        <option *ngFor="let data of washPatternList;" [value]="data.id">{{data.codeName}}</option>
+                      </select>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="mainForm.controls.fkItem.errors && mainForm.controls.fkItem.errors['washPatternExistence']">
+                <div class="invalid-feedback d-block">
+                  <div [translate]='"ERRORS.VALIDATE.WASH_PATTERN_EXISTENCE"'
+                    [translateParams]='{appendicesTermValue:"F-901およびF-902", washPatternValue:"SF-212"}'></div>
+                </div>
+              </ng-container>
+              <div class="row">
+                <div class="col-sm-12 col-lg-12 col-xl-12 form-group">
+                  <label>洗濯ネーム　付記用語</label>
+                  <button class="btn btn-outline-secondary calBtn"
+                    (click)="openSearchAppendicesTermModal(FUKUKITARU_MASTER_TYPE.WASH_NAME_APPENDICES_TERM)" type="button">
+                    <fa-icon icon="search"></fa-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <ng-container formArrayName="washAppendicesTermByColorList">
+                  <ng-container *ngFor="let appendicesTermByColor of formWashAppendicesTermByColorList;">
+                    <ng-container
+                      *ngIf="appendicesTermByColor.appendicesTermList.length > 0">
+                      <div class="col-sm-3 col-lg-3 col-xl-3 form-group">
+                        <div>
+                          <span>{{appendicesTermByColor.colorCode}}&nbsp;{{appendicesTermByColor.colorName}}</span>
+                        </div>
+                        <div class="appendicesTermArea d-flex flex-column flex-wrap">
+                          <ng-container
+                            *ngFor="let appendicesTerm of appendicesTermByColor.appendicesTermList; let appendicesTermIndex=index;">
+                            <div class="d-block">
+                              <span>{{appendicesTerm.appendicesTermCodeName}}</span>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </div>
+            </div>
+            <div class="title title-collapsed" id="anchor-bottom-bill">
+              <a class="ml-0" (click)="isBottomBillTitleCollapsed = !isBottomBillTitleCollapsed"
+                [attr.aria-expanded]="!isBottomBillTitleCollapsed" aria-controls="collapseBottomBillTitle">
+              <fa-icon [icon]="['fas',isBottomBillTitleCollapsed?'angle-up':'angle-down']" [fixedWidth]="true"></fa-icon>下札</a>
+            </div>
+            <div id="collapseBottomBillTitle" [ngbCollapse]="!isBottomBillTitleCollapsed">
+                <ng-container *ngIf="materialOrderDisplayFlg.isDisplayCategoryCode">
+                  <div class="row">
+                    <div class="col-sm-12 col-lg-12 col-xl-12 form-group required">
+                      <label class="control-label">カテゴリコード</label>
+                    </div>
+                    <div class="col-sm-12 col-lg-12 col-xl-12 form-group form-inline">
+                      <div class="input-group">
+                        <label *ngFor="let category of categoryCodeList; let categoryIndex=index; let isFirst=first;">
+                          <input type="radio" [value]="category.id" class="form-control" name="categoryCode"
+                            formControlName="categoryCode"
+                            [checked]="category.id === formCategoryCode.value" />&nbsp;{{category.codeName}}
+                        </label>
+                        <ng-container *ngIf="submitted">
+                          <div *ngIf="formCategoryCode.invalid" class="is-invalid invalid-feedback d-block">
+                            <div [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              <div class="row">
+                <div class="col-sm-12 col-lg-12 col-xl-12 form-group">
+                  <label>アテンションタグ　付記用語</label>
+                  <button class="btn btn-outline-secondary calBtn"
+                    (click)="openSearchAppendicesTermModal(FUKUKITARU_MASTER_TYPE.ATTENTION_TAG_APPENDICES_TERM)" type="button">
+                    <fa-icon icon="search"></fa-icon>
+                  </button>
+                </div>
+              </div>
+
+              <div class="row">
+                  <ng-container formArrayName="attentionTags">
+                    <ng-container *ngFor="let appendicesTermByColor of formAttentionTagAppendicesTermByColorList;">
+                      <ng-container
+                        *ngIf="appendicesTermByColor.appendicesTermList.length > 0">
+                        <div class="col-sm-3 col-lg-3 col-xl-3 form-group">
+                          <div>
+                            <span>{{appendicesTermByColor.colorCode}}&nbsp;{{appendicesTermByColor.colorName}}</span>
+                          </div>
+                          <div class="appendicesTermArea d-flex flex-column flex-wrap">
+                            <ng-container
+                              *ngFor="let appendicesTerm of appendicesTermByColor.appendicesTermList; let appendicesTermIndex=index;">
+                              <div class="d-block">
+                                <span>{{appendicesTerm.appendicesTermCodeName}}</span>
+                              </div>
+                            </ng-container>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </ng-container>
+                  </ng-container>
+                </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-12 col-xl-12 form-group">
+                  <label>アテンションシールのシール種類</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-3 col-xl-4 form-group form-inline">
+                  <div class="input-group">
+                    <select name="stickerTypeCode" class="form-control" formControlName="stickerTypeCode">
+                      <option [value]=""></option>
+                      <option *ngFor="let data of attentionSealTypeList;" [value]="data.id">{{data.codeName}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-12 col-xl-12 form-group">
+                  <label>シールへの印字</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2 col-lg-2 col-xl-2 form-group form-inline">
+                  <span class="checkbox-title">絵表示</span>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="printWashPattern" class="form-control" formControlName="printWashPattern">あり
+                  </label>
+                </div>
+                <div class="col-sm-2 col-lg-2 col-xl-2 form-group form-inline">
+                  <span class="checkbox-title">付記用語</span>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="printAppendicesTerm" class="form-control" formControlName="printAppendicesTerm">あり
+                  </label>
+                </div>
+                <div class="col-sm-2 col-lg-2 col-xl-2 form-group form-inline">
+                  <span class="checkbox-title">品質</span>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="printParts" class="form-control" formControlName="printParts">あり
+                  </label>
+                </div>
+                <div class="col-sm-2 col-lg-2 col-xl-2 form-group form-inline paddig-0">
+                  <span class="checkbox-title">QRコード印字</span>
+                  <label class="checkbox-label">
+                    <input type="checkbox" name="printQrcode" class="form-control" formControlName="printQrcode">あり
+                  </label>
+                </div>
+                <ng-container *ngIf="materialOrderDisplayFlg.isDisplaySustainableMark">
+                  <div class="col-sm-4 col-lg-4 col-xl-4 form-group form-inline">
+                    <span class="checkbox-title">サスティナブルマーク印字</span>
+                    <label class="checkbox-label">
+                      <input type="checkbox" name="printSustainableMark" class="form-control" formControlName="printSustainableMark">あり
+                    </label>
+                  </div>
+                </ng-container>
+              </div>
+              <div class="row">
+                <div class="col-sm-12 col-lg-12 col-xl-12 form-group form-inline">
+                  <span class="recycle-mark-title">リサイクルマーク</span>
+                  <div class="input-group">
+                    <select name="recycleMark" class="form-control" formControlName="recycleMark">
+                      <option [value]=""></option>
+                      <option *ngFor="let data of recycleList;" [value]="data.id">{{data.codeName}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-container *ngIf="materialOrderDisplayFlg.isDisplayCnProductCategory || materialOrderDisplayFlg.isDisplayCnProductType">
+              <div class="title title-collapsed" id="anchor-cn">
+                <a class="ml-0" (click)="isCnTitleCollapsed = !isCnTitleCollapsed"
+                [attr.aria-expanded]="!isCnTitleCollapsed" aria-controls="collapseCnTitle">
+                <fa-icon [icon]="['fas',isCnTitleCollapsed?'angle-up':'angle-down']" [fixedWidth]="true"></fa-icon>洗濯ネーム・下札　中国内販情報</a>
+              </div>
+              <div id="collapseCnTitle" [ngbCollapse]="!isCnTitleCollapsed">
+                <div class="row">
+                  <ng-container *ngIf="materialOrderDisplayFlg.isDisplayCnProductCategory">
+                    <div class="col-sm-2 col-lg-2 col-xl-2 form-group">
+                      <label>製品分類</label>
+                    </div>
+                    <div class="col-sm-2 col-lg-2 col-xl-2 form-group form-inline">
+                      <div class="input-group">
+                        <select name="cnProductCategory" class="form-control" formControlName="cnProductCategory" (change)="onChangeCnProduct()">
+                          <option [value]=""></option>
+                          <option *ngFor="let data of cnProductCategoryList;" [value]="data.id">{{data.codeName}}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="materialOrderDisplayFlg.isDisplayCnProductType">
+                    <div class="col-sm-2 col-lg-2 col-xl-2 form-group">
+                      <label>製品種別</label>
+                    </div>
+                    <div class="col-sm-2 col-lg-2 col-xl-2 form-group form-inline">
+                      <div class="input-group">
+                        <select name="cnProductType" class="form-control" formControlName="cnProductType" (change)="onChangeCnProduct()">
+                          <option [value]=""></option>
+                          <option *ngFor="let data of cnProductTypeList;" [value]="data.id">{{data.codeName}}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12 col-lg-4 col-xl-2 form-group">
+                    <label>産地</label>
+                  </div>
+                  <div class="col-sm-12 col-lg-8 col-xl-10 form-group form-inline">
+                    <input type="text" name="cnProductCooName" class="form-control cn-product-coo-name" formControlName="cnProductCooName"
+                      disabled="true" />
+                    <label class="note-label">&nbsp;&nbsp;原産国を指定してください</label>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+      <div class="col-xl-2">
+        <div *ngIf="!isShowImage" id="dropArea" appFileDrop (fileDropEvent)="onFileSelect($event,true)"
+          (click)="onKickFileEvent()">
+          画像をドロップ
+          <input type="file" name="file" id="file" (change)="onFileSelect($event.target.files,true)">
+        </div>
+        <div id="output" #output></div>
+        <div *ngIf="tanzakuErrorMsgCode.length" class="invalid-feedback d-block">
+          <div [translate]="tanzakuErrorMsgCode"></div>
+        </div>
+        <div *ngIf="isShowImage" id="deleteMsg">
+          <span (click)="onDeleteImage()">削除する</span>
+        </div>
+        <div class="side">
+          <div class="bottom_10">
+            <!-- 商品情報切替ボタンは権限関係なく表示 -->
+            <!-- ユーザー権限、またはVIEW_MODE!=品番編集はactive -->
+            <button type="button" class="btn btn-outline-info btn-sm btn-block text-left" name="button_sidemenu"
+              [class.active]="affiliation===AUTH_SUPPLIERS||viewMode!==VIEW_MODE.PART_EDIT"
+              (click)="onViewChange(VIEW_MODE.ITEM_EDIT)">
+
+              <!-- メーカー権限またはVIEW_MODE!=品番更新の時はangle-rightアイコン、それ以外はcheck-squareアイコンを表示 -->
+              <ng-container
+                *ngIf="affiliation===AUTH_SUPPLIERS||viewMode!==VIEW_MODE.PART_EDIT; else junAndPartEditBlock">
+                <fa-icon [icon]="['fas','angle-right']" [fixedWidth]="true"></fa-icon>
+              </ng-container>
+              <ng-template #junAndPartEditBlock>
+                <fa-icon [icon]="['far','check-square']" [fixedWidth]="true"></fa-icon>
+              </ng-template>
+              商品情報<ng-container *ngIf="viewMode===VIEW_MODE.ITEM_NEW">登録</ng-container>
+            </button>
+            <!-- 品番情報切替ボタンはJUN権限かつVIEW_MODE!=商品登録のみ表示 -->
+            <ng-container *ngIf="affiliation===AUTH_INTERNAL&&!(viewMode===VIEW_MODE.ITEM_NEW)">
+              <button type="button" class="btn btn-outline-info btn-sm btn-block text-left" name="button_sidemenu"
+                [class.active]="viewMode===VIEW_MODE.PART_EDIT" [disabled]="viewMode===VIEW_MODE.ITEM_NEW"
+                (click)="onViewChange(VIEW_MODE.PART_EDIT)">
+
+                <!-- アイコンはVIEW_MODEに応じて表示-->
+                <ng-container [ngSwitch]="viewMode">
+                  <!-- VIEW_MODE=品番更新の時はangle-right-->
+                  <ng-container *ngSwitchCase="VIEW_MODE.PART_EDIT">
+                    <fa-icon [icon]="['fas','angle-right']" [fixedWidth]="true"></fa-icon>
+                  </ng-container>
+                  <!-- VIEW_MODE=商品更新の時-->
+                  <ng-container *ngSwitchCase="VIEW_MODE.ITEM_EDIT">
+                    <ng-container *ngIf="registStatus===REGIST_STATUS.PART; else partUnregisteredBlock">
+                      <!-- 品番登録済の時はcheck-square-->
+                      <fa-icon [icon]="['far','check-square']" [fixedWidth]="true"></fa-icon>
+                    </ng-container>
+                    <ng-template #partUnregisteredBlock>
+                      <!-- 品番登録未登録の時はsquare-->
+                      <fa-icon [icon]="['far','square']" [fixedWidth]="true"></fa-icon>
+                    </ng-template>
+                  </ng-container>
+                </ng-container>
+                品番情報
+              </button>
+            </ng-container>
+            <!-- メーカーはJUN権限かつ品番確定済みのときのみ表示 -->
+            <ng-container *ngIf="affiliation === AUTH_INTERNAL && registStatus === REGIST_STATUS.PART">
+              <button type="button" class="btn btn-outline-info btn-sm btn-block text-left" name="button_sidemenu"
+                (click)="isMakerCollapsed = !isMakerCollapsed" [attr.aria-expanded]="!isMakerCollapsed"
+                aria-controls="collapseMaker">
+                <fa-icon [icon]="['fas', isMakerCollapsed ? 'angle-up' : 'angle-down']" [fixedWidth]="true"></fa-icon>
+                メーカー
+              </button>
+              <div id="collapseMaker" [ngbCollapse]="!isMakerCollapsed">
+                <div class="card">
+                  <div class="card-body">
+                    <a href="javascript:void(0)" (click)="onAddSupplier(SUPPLIER_TYPE.MDF_MAKER)">
+                      <fa-icon [icon]="['far','plus-square']" [fixedWidth]="true"></fa-icon>
+                      メーカー追加
+                    </a>
+                    <ul class="side-oder-list">
+                      <li *ngFor="let orderSupplier of fCtrlSuppliers; index as idx;">
+                        <a href="javascript:void(0)" [style.font-weight]="idx === currentSupplierIndex? 'bold':''" (click)="displayMakerInfo(idx)">
+                          {{orderSupplier.get('supplierName').value}}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <!-- 新規受注登録ボタンはVIEW_MODE!=商品登録であれば無条件で活性-->
+            <!-- 消化委託商品が選択されている場合も非表示 -->
+            <!-- SKUが入力されていない場合は非活性となる -->
+            <ng-container *ngIf="!(viewMode===VIEW_MODE.ITEM_NEW) && f.digestionCommissionType.value===false">
+              <button type="button" class="btn mt-2 btn-outline-info btn-sm btn-block text-left" routerLink="/orders/new"
+                [disabled]="skusValue.length === 0"
+                [queryParams]="{partNoId:mainForm.value.id}" name="button_sidemenu">
+                <fa-icon [icon]="['far','plus-square']" [fixedWidth]="true"></fa-icon>
+                新規受注登録
+              </button>
+              <!--　品番に紐づく発注情報があれば表示 -->
+              <button type="button" class="btn btn-outline-info btn-sm btn-block text-left"
+                *ngIf="orderDataList.length > 0" name="button_sidemenu"
+                (click)="isCollapsed = !isCollapsed" [attr.aria-expanded]="!isCollapsed" aria-controls="collapseOrder">
+                <fa-icon [icon]="['fas',isCollapsed?'angle-up':'angle-down']" [fixedWidth]="true"></fa-icon>
+                登録済発注情報
+              </button>
+              <div id="collapseOrder" [ngbCollapse]="!isCollapsed">
+                <div class="card">
+                  <div class="card-body">
+                    <!-- 発注リストを発注ID昇順で表示 -->
+                    <ul *ngFor="let order of orderDataList;" class="side-oder-list">
+                      <li>
+                        <!-- 発注編集画面へ遷移 -->
+                        <a [routerLink]="['/orders', order.id, PATH.EDIT]">
+                          <!-- 受注未確定(発注承認ステータスがnullまたは0または4)の場合は、生産発注日を表示、それ以外は発注Noを表示 -->
+                          {{showOrderNoOrProductOrderAt(order)}}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <!-- ページ内リンク(項目へ遷移)-->
+          <input type="button" (click)="onScrollEvent('anchor-item-or-part-info')" class="btn btn_side"
+            name="button_sidemenu" value="品番情報" />
+          <input type="button" (click)="onScrollEvent('anchor-sku')" class="btn btn_side" name="button_sidemenu"
+            value="色・サイズ" />
+          <ng-container *ngIf="viewMode===VIEW_MODE.PART_EDIT">
+            <input type="button" (click)="onScrollEvent('anchor-article-number')" class="btn btn_side"
+              name="button_sidemenu" value="JAN/UPC" />
+          </ng-container>
+          <input type="button" (click)="onScrollEvent('anchor-compositon')" class="btn btn_side" name="button_sidemenu"
+            value="混率" />
+          <input type="button" (click)="onScrollEvent('anchor-misleading-representation')" class="btn btn_side"
+            name="button_sidemenu" value="生地検査結果" />
+          <input type="button" (click)="onScrollEvent('anchor-mdf-maker')" class="btn btn_side" name="button_sidemenu"
+            value="メーカー・原産国" />
+          <input type="button" (click)="onScrollEvent('anchor-planner')" class="btn btn_side" name="button_sidemenu"
+            value="担当" />
+          <ng-container *ngIf="viewMode===VIEW_MODE.PART_EDIT">
+            <input type="button" (click)="onScrollEvent('anchor-marui')" class="btn btn_side" name="button_sidemenu"
+              value="丸井" />
+            <input type="button" (click)="onScrollEvent('anchor-statistics-info')" class="btn btn_side"
+              name="button_sidemenu" value="統計情報" />
+          </ng-container>
+          <input type="button" (click)="onScrollEvent('anchor-others')" class="btn btn_side" name="button_sidemenu"
+            value="その他" />
+          <ng-container *ngIf="fukukitaruMaster!=null">
+            <input type="button" (click)="onScrollEvent('anchor-wash-name')" class="btn btn_side"
+              name="button_sidemenu" value="洗濯ネーム" />
+            <input type="button" (click)="onScrollEvent('anchor-bottom-bill')" class="btn btn_side"
+              name="button_sidemenu" value="下札" />
+            <ng-container *ngIf="materialOrderDisplayFlg.isDisplayCnProductCategory || materialOrderDisplayFlg.isDisplayCnProductType">
+              <button (click)="onScrollEvent('anchor-cn')" class="btn btn_side" name="button_sidemenu">洗濯ネーム・下札<br>中国内販情報</button>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <ng-container *ngIf="isShowFooter">
+      <!-- 左ボタンエリア -->
+      <div class="footer-left">
+        <div class="d-none d-lg-block">
+          <ng-container *ngIf="viewMode===VIEW_MODE.ITEM_EDIT || viewMode===VIEW_MODE.PART_EDIT">
+            <input type="button" [routerLink]="['/items', PATH.NEW]" class="btn btn-info mr-0" name="button_created"
+              [disabled]="isBtnLock" value="新規登録">
+              <input type="button" [routerLink]="['/items', PATH.NEW]" [queryParams]="{copyId:f.id.value}"
+              class="btn btn-info mr-0 ml-3" name="button_copy" [disabled]="isBtnLock || itemData.readOnly" value="コピー新規">
+            <ng-container *ngIf="registStatus===REGIST_STATUS.ITEM && orderDataList.length === 0">
+              <input type="button" (click)="onSubmitDelete()" class="btn btn-danger mr-0 ml-3" name="button_deleted"
+                [disabled]="isBtnLock || itemData.readOnly" value="削除">
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+      <!-- メッセージエリア -->
+      <div class="footer-center">
+        <div class="alert-danger" translate='{{overallErrorMsgCode}}' *ngIf="overallErrorMsgCode.length!==0">
+        </div>
+        <div class="alert-success" translate='{{overallSuccessMsgCode}}' *ngIf="overallSuccessMsgCode.length!==0">
+        </div>
+      </div>
+      <!-- 右ボタンエリア -->
+      <div class="footer-right">
+        <ng-container *ngIf="viewMode===VIEW_MODE.ITEM_NEW">
+          <ng-container *ngIf="affiliation===AUTH_INTERNAL">
+            <button type='submit' class="btn btn-success mr-0" (click)="setSubmitType(SUBMIT_TYPE.CONTINUE_TO_PART)"
+              name={{SUBMIT_TYPE.CONTINUE_TO_PART}} [disabled]="isBtnLock">続けて品番も登録</button>
+          </ng-container>
+          <button type='submit' class="btn btn-success mr-0 ml-3" (click)="setSubmitType(SUBMIT_TYPE.ENTRY)"
+            name={{SUBMIT_TYPE.ENTRY}} [disabled]="isBtnLock">登録</button>
+        </ng-container>
+        <ng-container *ngIf="(viewMode===VIEW_MODE.ITEM_EDIT || viewMode===VIEW_MODE.PART_EDIT)">
+          <button type='submit' class="btn btn-success mr-0" (click)="setSubmitType(SUBMIT_TYPE.UPDATE)"
+            name={{SUBMIT_TYPE.UPDATE}} [disabled]="isBtnLock || itemData.readOnly">更新</button>
+        </ng-container>
+        <!-- データの登録ステータスが商品で、画面表示モードが品番編集の場合 -->
+        <ng-container *ngIf="viewMode===VIEW_MODE.PART_EDIT && registStatus===REGIST_STATUS.ITEM">
+          <button type='submit' class="btn btn-success mr-0 ml-3" (click)="setSubmitType(SUBMIT_TYPE.UPDATE_TO_PART)"
+            name={{SUBMIT_TYPE.UPDATE_TO_PART}} [disabled]="isBtnLock || itemData.readOnly">品番として確定</button>
+        </ng-container>
+      </div>
+    </ng-container>
+  </footer>
+</form>

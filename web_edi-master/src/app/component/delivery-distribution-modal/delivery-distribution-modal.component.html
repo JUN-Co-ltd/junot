@@ -1,0 +1,65 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-basic-title">合計配分指定</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="distributionForm">
+    <div class="d-flex mb-4">
+      <div class="d-inline-block mr-auto">指定可能な配分数</div>
+      <div class="d-inline-block">{{totalDistributionValue}}</div>
+    </div>
+    <div class="d-flex mb-2">
+      <div class="d-inline-block mr-auto">
+        <label>
+          <input type="radio" formControlName="distributionType"
+            (change)="onChangeDistributionType(DELIVERY_DISTRIBUTION_SPECIFICATION_TYPE.DISTRIBUTION_RATE)"
+            [value]="DELIVERY_DISTRIBUTION_SPECIFICATION_TYPE.DISTRIBUTION_RATE" class=""
+            name="distributionType" />&nbsp;配分率(％)指定
+        </label>
+      </div>
+      <div class="d-inline-block">
+        <input type="tel" class="form-control text-right" formControlName="distributionRateValue"
+          [ngClass]="{'is-invalid': isErrorDisplay(f.distributionRateValue)}" maxlength="12">
+        <div class="d-inline-block">&nbsp;％</div>
+        <ng-container *ngIf="isErrorDisplay(f.distributionRateValue)">
+          <div *ngIf="f.distributionRateValue.errors.overSpecifiable" class="invalid-feedback errorMessage"
+            [translate]="'ERRORS.VALIDATE.DISTRIBUTION_SPECIFICATION_NOT_LESS_THAN'"
+            [translateParams]="{ name: '配分率', value: '100%' }">
+          </div>
+          <div *ngIf="f.distributionRateValue.errors.pattern" class="invalid-feedback"
+            [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER_NOT_LESS_THAN0'"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="d-flex">
+      <div class="d-inline-block mr-auto">
+        <label>
+          <input type="radio" formControlName="distributionType"
+            (change)="onChangeDistributionType(DELIVERY_DISTRIBUTION_SPECIFICATION_TYPE.DISTRIBUTION_NUMBER)"
+            [value]="DELIVERY_DISTRIBUTION_SPECIFICATION_TYPE.DISTRIBUTION_NUMBER" class=""
+            name="distributionType" />&nbsp;配分数指定
+        </label>
+      </div>
+      <div class="d-inline-block">
+        <input type="tel" class="form-control text-right" formControlName="distributionNumberValue"
+          [ngClass]="{'is-invalid': isErrorDisplay(f.distributionNumberValue)}" maxlength="12">
+        <div class="d-inline-block">&nbsp;個</div>
+        <ng-container *ngIf="isErrorDisplay(f.distributionNumberValue)">
+          <div *ngIf="f.distributionNumberValue.errors.overSpecifiable" class="invalid-feedback errorMessage"
+            [translate]="'ERRORS.VALIDATE.DISTRIBUTION_SPECIFICATION_NOT_LESS_THAN'"
+            [translateParams]="{ name: '配分数', value: '指定可能な配分数' }">
+          </div>
+          <div *ngIf="f.distributionNumberValue.errors.pattern" class="invalid-feedback"
+            [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER_NOT_LESS_THAN0'"></div>
+        </ng-container>
+      </div>
+    </div>
+    <br>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-dark" (click)="onSelect()"
+    [disabled]="isErrorDisplay(f.distributionRateValue) || isErrorDisplay(f.distributionNumberValue)">選択</button>
+</div>

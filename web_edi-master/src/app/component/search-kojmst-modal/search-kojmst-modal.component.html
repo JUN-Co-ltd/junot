@@ -1,0 +1,57 @@
+<div class="modal-header">
+	<div class="modal-title" id="modal-basic-title">生産工場検索</div>
+	<button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+		<span aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div class="modal-body">
+	<form [formGroup]="searchFormGroup">
+		<div class="search-condition">
+			<select class="custom-select form-control" formControlName="searchType">
+				<ng-container *ngFor="let searchType of searchTypes">
+					<option *ngIf="searchType.affiliation === affiliation" [value]="searchType.id">{{searchType.name}}</option>
+				</ng-container>
+			</select>
+			<input type="text" class="form-control" formControlName="searchText">
+		</div>
+		<div class="search-submit">
+			<button type="submit" (click)="onSearch()" class="btn btn-outline-dark" [disabled]="!searchFormGroup.valid || searchLoading">検索</button>
+		</div>
+	</form>
+	<hr>
+	<div *ngIf="searchLoading" class="search-loading">
+	</div>
+	<div *ngIf="!searchLoading" class="search-result">
+		<div *ngIf="searchResultItems.length == 0">
+			<p>検索結果がありません</p>
+		</div>
+		<table *ngIf="searchResultItems.length > 0">
+			<thead>
+				<tr>
+					<ng-container *ngIf="affiliation === AuthType.AUTH_INTERNAL">
+						<th scope="col" class="code-column-1">コード</th>
+						<th scope="col" class="name-column-1">名称</th>
+					</ng-container>
+					<ng-container *ngIf="affiliation === AuthType.AUTH_SUPPLIERS">
+						<th scope="col" class="name-column-2">名称</th>
+					</ng-container>
+				</tr>
+			</thead>
+			<tbody detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+				<tr *ngFor="let item of searchResultItems;" class="{{item.selected ? 'selected' : ''}}" (click)="onSelectRow(item)">
+					<ng-container *ngIf="affiliation === AuthType.AUTH_INTERNAL">
+						<td class="code-column-1">{{item.item.kojcd}}</td>
+						<td class="name-column-1">{{item.item.name}}</td>
+					</ng-container>
+					<ng-container *ngIf="affiliation === AuthType.AUTH_SUPPLIERS">
+						<td class="name-column-2">{{item.item.name}}</td>
+					</ng-container>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<br>
+</div>
+<div class="modal-footer">
+	<button type="button" *ngIf="searchResultItems.length > 0" class="btn btn-outline-dark" (click)="onSelect()" [disabled]="!selectedItem">選択</button>
+</div>

@@ -1,0 +1,39 @@
+{
+  "extends": "../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "app",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "app",
+      "kebab-case"
+    ],
+    "no-trailing-whitespace": [
+      true,
+      "always"
+    ],
+    "prefer-const": [
+      true,
+      {
+        "destructuring": "any"
+      }
+    ],
+    "semicolon": [
+      true,
+      "always"
+    ],
+    "space-before-function-paren": [
+      true,
+      "never"
+    ],
+    "quotemark": [
+      true,
+      "single"
+    ]
+  }
+}

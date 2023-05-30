@@ -1,0 +1,113 @@
+@import "variables";
+@import "mixins";
+
+/** テーブルの固定幅 */
+$width1:60px;
+$width2:95px;
+$width3:145px;
+
+label {
+  &.caption {
+    min-width: 100px;
+    margin-right: 10px;
+    justify-content: start;
+  }
+  &.caption-short {
+    @extend .caption;
+    min-width: 60px;
+  }
+  white-space: nowrap;
+
+}
+
+div.container-fluid {
+  margin-bottom: 60px;
+}
+
+select.custom-select {
+  width: unset;
+}
+
+div.row {
+  line-height: 36px;
+}
+
+div.table-wrapper {
+  border: $border;
+  overflow-y: scroll;
+  width: auto;
+  max-height: 400px;
+
+  table.sticky-table {
+    border: $border;
+    border-spacing: 0;
+    border-collapse: separate;
+    width: max-content;
+
+    thead th {
+      background-color: $thead-background-color;
+      /* 縦スクロール時に固定する */
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      /* tbody内のセルより手前に表示する */
+      z-index: 1;
+
+      &.fix-col {
+        /* ヘッダー行内の他のセルより手前に表示する */
+        z-index: 2;
+      }
+    }
+
+    td.fix-col {
+      /* 横スクロール時に固定する */
+      position: -webkit-sticky;
+      position: sticky;
+
+      background-color: $wihte;
+    }
+
+    .fix-col:nth-child(1) {
+      left: 0;
+    }
+
+    .fix-col:nth-child(2) {
+      left: $width3;
+    }
+
+    .fix-col:nth-child(3) {
+      left: $width3 + $width1;
+    }
+
+    .fix-col:nth-child(4) {
+      left: $width3 + $width1 + $width2;
+    }
+
+    th,
+    td {
+      font-size: 14px;
+      font-weight: normal;
+      height: 35px;
+      padding: 3px;
+      border-top: $border;
+      border-left: $border;
+      vertical-align: top;
+
+      &.not-first-color {
+        border-top: none;
+      }
+
+      &.width-1 {
+        width: $width1;
+      }
+
+      &.width-2 {
+        width: $width2;
+      }
+
+      &.width-3 {
+        width: $width3;
+      }
+    }
+  }
+}

@@ -1,0 +1,252 @@
+<div class="container-fluid">
+  <form #searchForm="ngForm" [appFromToCheck]="['arrivalAtFrom', 'arrivalAtTo']"
+    [appFromToCheck2]="['deliveryNumberFrom', 'deliveryNumberTo']"
+    [appFromToCheck3]="['correctionAtFrom', 'correctionAtTo']">
+
+    <!-- 1行目 -->
+    <div class="row form-inline">
+      <!-- ディスタ -->
+      <!-- PRD_0021 mod SIT start -->
+      <!--<div class="col-sm-12 col-lg-6 col-xl-6 form-group">-->
+      <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+      <!-- PRD_0021 mod SIT end -->
+        <select class="form-control" [(ngModel)]="formCondition.arrivalShop" name="arrivalShop">
+          <option *ngFor="let store of stores;" [value]="store.shpcd">{{store.name}}</option>
+        </select>
+      </div>
+
+      <!-- PRD_0021 add SIT start -->
+      <!-- メーカー -->
+      <div class="col-sm-6 col-lg-4 col-xl-3 form-group">
+        <label class="caption-short">メーカー</label>
+        <div class="input-group">
+          <input type="tel" class="form-control code_6" minlength="5" maxlength="5" pattern="^[0-9]+$"
+            (change)="onChangeMaker(mdfMakerCode.value)" [(ngModel)]="formCondition.mdfMakerCode" #mdfMakerCode
+            name="mdfMakerCode">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="openSearchSupplierModal(mdfMakerCode.value)"
+              type="button">
+              <fa-icon icon="search"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <span class="ml-2">{{mdfMakerName}}</span>
+        <!-- エラーメッセージ -->
+        <ng-container *ngIf="searchForm != null && searchForm.touched">
+          <div class="invalid-feedback d-block">
+            <div *ngIf="searchForm.controls.mdfMakerCode.errors?.pattern"
+              translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER"}}'></div>
+            <div *ngIf="searchForm.controls.mdfMakerCode.errors?.minlength"
+              translate='{{"ERRORS.VALIDATE.LENGTH_NOT_MATCH"}}' [translateParams]="{name:'', length:'5'}"></div>
+          </div>
+        </ng-container>
+      </div>
+      <!-- // ここまでメーカー -->
+      <!-- PRD_0021 add SIT end -->
+
+      <!-- 送信 -->
+      <div class="col-sm-6 col-lg-3 col-xl-2 mt-sm-2 mt-lg-0 form-group">
+        <label class="caption">送信</label>
+        <select class="custom-select" [(ngModel)]="formCondition.lgSendFlg" name="lgSendFlg">
+          <option *ngFor="let status of SEND_SELECT_VALUES" [value]="status.value">{{status.name}}</option>
+        </select>
+      </div>
+
+      <!-- 仕入 -->
+      <div class="col-sm-6 col-lg-3 col-xl-2 mt-sm-2 mt-lg-0 form-group">
+        <label class="caption-short">仕入</label>
+        <select class="custom-select" [(ngModel)]="formCondition.arrivalFlg" name="arrivalFlg">
+          <option *ngFor="let status of PURCHASE_SELECT_VALUES" [value]="status.value">{{status.name}}</option>
+        </select>
+      </div>
+    </div>
+    <!-- //ここまで1行目 -->
+
+    <!-- 2行目 -->
+    <!-- 納品日 -->
+    <div class="row mt-2 form-inline align-items-start">
+      <div class="col-md-12 col-lg-6 col-xl-6 form-group">
+
+        <label class="caption">納品日</label>
+        <div class="input-group">
+          <!-- 納品日 from -->
+          <input type="tel" class="length_10 form-control"
+            (blur)="onBlurDate($event.target.value, 'correctionAtFrom');" appDateInput ngbDatepicker
+            #correctionAtFromDate="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+            [(ngModel)]="formCondition.correctionAtFrom" name="correctionAtFrom">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="correctionAtFromDate.toggle()" type="button">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <span class="ml-2 mr-2">～</span>
+        <div class="input-group">
+          <!-- 納品日 to -->
+          <input type="tel" class="length_10 form-control" (blur)="onBlurDate($event.target.value, 'correctionAtTo');"
+            appDateInput ngbDatepicker #correctionAtToDate="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+            [(ngModel)]="formCondition.correctionAtTo" name="correctionAtTo">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="correctionAtToDate.toggle()" type="button">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- エラーメッセージ -->
+        <ng-container *ngIf="searchForm != null && searchForm.touched">
+          <div class="invalid-feedback d-block">
+            <div *ngIf="searchForm.controls.correctionAtFrom.errors?.ngbDate?.invalid
+              || searchForm.controls.correctionAtTo.errors?.ngbDate?.invalid"
+              translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></div>
+            <div *ngIf="searchForm.errors?.correctionAtFromOverTo" translate='{{"ERRORS.VALIDATE.DATE_FROM_OVER_TO"}}'>
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+      <!-- // ここまで納品日 -->
+
+      <!-- 納品No -->
+      <div class="col-md-12 col-lg-6 col-xl-6 mt-sm-2 mt-lg-0 form-group">
+
+        <label class="caption">納品No</label>
+        <!-- 納品No from -->
+        <div class="input-group">
+          <input type="tel" class="code_6 form-control" minlength="6" maxlength="6" pattern="^[0-9]+$"
+            [(ngModel)]="formCondition.deliveryNumberFrom" name="deliveryNumberFrom">
+        </div>
+        <span class="ml-2 mr-2">～</span>
+        <div class="input-group">
+          <!-- 納品No to -->
+          <input type="tel" class="code_6 form-control" minlength="6" maxlength="6" pattern="^[0-9]+$"
+            [(ngModel)]="formCondition.deliveryNumberTo" name="deliveryNumberTo">
+        </div>
+
+        <!-- エラーメッセージ -->
+        <ng-container *ngIf="searchForm != null && searchForm.touched">
+          <div class="invalid-feedback d-block">
+            <div *ngIf="searchForm.controls.deliveryNumberFrom.errors?.pattern
+              || searchForm.controls.deliveryNumberTo.errors?.pattern"
+              translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER"}}'></div>
+            <div *ngIf="(searchForm.controls.deliveryNumberFrom.errors?.minlength
+              || searchForm.controls.deliveryNumberTo.errors?.minlength);"
+              translate='{{"ERRORS.VALIDATE.LENGTH_NOT_MATCH"}}' [translateParams]="{name:'', length:'6'}"></div>
+            <div *ngIf="searchForm.errors?.deliveryNumberFromOverTo"
+              translate='{{"ERRORS.VALIDATE.NUMBER_FROM_OVER_TO"}}'></div>
+          </div>
+        </ng-container>
+
+      </div>
+      <!-- // ここまで納品No -->
+
+    </div>
+    <!-- //ここまで2行目 -->
+
+    <!-- 3行目 -->
+    <div class="row mt-2 form-inline align-items-start">
+      <!-- PRD_0021 mod SIT start -->
+      <!-- メーカー -->
+      <!--
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+
+        <label class="caption">メーカー</label>
+        <div class="input-group">
+          <input type="tel" class="form-control code_6" minlength="5" maxlength="5" pattern="^[0-9]+$"
+            (change)="onChangeMaker(mdfMakerCode.value)" [(ngModel)]="formCondition.mdfMakerCode" #mdfMakerCode
+            name="mdfMakerCode">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="openSearchSupplierModal(mdfMakerCode.value)"
+              type="button">
+              <fa-icon icon="search"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <span class="ml-2">{{mdfMakerName}}</span>
+        -->
+        <!-- エラーメッセージ -->
+        <!--
+        <ng-container *ngIf="searchForm != null && searchForm.touched">
+          <div class="invalid-feedback d-block">
+            <div *ngIf="searchForm.controls.mdfMakerCode.errors?.pattern"
+              translate='{{"ERRORS.VALIDATE.PATTERN_NUMBER"}}'></div>
+            <div *ngIf="searchForm.controls.mdfMakerCode.errors?.minlength"
+              translate='{{"ERRORS.VALIDATE.LENGTH_NOT_MATCH"}}' [translateParams]="{name:'', length:'5'}"></div>
+          </div>
+        </ng-container>
+      </div>
+      -->
+      <!-- // ここまでメーカー -->
+      <div class="col-sm-12 col-lg-6 col-xl-6 form-group">
+      <!-- 品番 -->
+        <div class="form-group">
+          <label class="caption">品番</label>
+          <div class="input-group">
+            <input type="text" class="form-control" maxlength="9" [(ngModel)]="formCondition.partNo" name="partNo">
+          </div>
+        </div>
+      <!-- // ここまで品番 -->
+
+      <!-- // ブランド -->
+        <div class="ml-3 form-group">
+          <label class="caption-short">ブランド</label>
+          <select class="form-control" [(ngModel)]="formCondition.brandCode" name="brandCode">
+            <option selected></option>
+            <option *ngFor="let brand of brands;" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </div>
+      </div>
+      <!-- // ここまでブランド -->
+      <!-- PRD_0021 add SIT end -->
+
+      <!-- // 入荷日 -->
+      <div class="col-sm-12 col-lg-6 col-xl-5 mt-sm-2 mt-lg-0 form-group">
+        <label class="caption">入荷日</label>
+        <div class="input-group">
+          <!-- 入荷日 from -->
+          <input type="tel" class="length_10 form-control" (blur)="onBlurDate($event.target.value, 'arrivalAtFrom');"
+            appDateInput ngbDatepicker #arrivalAtFromDate="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+            [(ngModel)]="formCondition.arrivalAtFrom" name="arrivalAtFrom">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="arrivalAtFromDate.toggle()" type="button">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <span class="ml-2 mr-2">～</span>
+        <!-- 入荷日 to -->
+        <div class="input-group">
+          <input type="tel" class="length_10 form-control" (blur)="onBlurDate($event.target.value, 'arrivalAtTo');"
+            appDateInput ngbDatepicker #arrivalAtToDate="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+            [(ngModel)]="formCondition.arrivalAtTo" name="arrivalAtTo">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="arrivalAtToDate.toggle()" type="button">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- エラーメッセージ -->
+        <ng-container *ngIf="searchForm != null && searchForm.touched">
+          <div class="invalid-feedback d-block">
+            <div *ngIf="searchForm.controls.arrivalAtFrom.errors?.ngbDate?.invalid
+              || searchForm.controls.arrivalAtTo.errors?.ngbDate?.invalid"
+              translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'>
+            </div>
+            <div *ngIf="searchForm.errors?.arrivalAtFromOverTo" translate='{{"ERRORS.VALIDATE.DATE_FROM_OVER_TO"}}'>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <!-- // ここまで入荷日 -->
+
+      <!-- 検索ボタン -->
+      <div class="col-sm-12 col-lg-12 col-xl-1 mt-lg-2 mt-xl-0 text-right">
+        <button class="btn btn-info" type="button" (click)="onSearch(searchForm)"
+        [disabled]="isLoading">検索</button>
+      </div>
+
+    </div>
+    <!-- //ここまで3行目 -->
+  </form>
+</div>

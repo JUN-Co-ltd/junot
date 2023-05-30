@@ -1,0 +1,29 @@
+ul {
+  width: 210px;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  background-color: #ffffff;
+
+  li {
+    text-align: left;
+
+    a {
+      display: block;
+      padding: 8px 16px;
+    }
+
+    a:hover {
+      background-color: #eeeeee;
+    }
+  }
+
+  li:last-child {
+    border-bottom: none;
+  }
+
+}
+
+.preparing {
+  font-size: 75%;
+}

@@ -1,0 +1,142 @@
+@import "mixins";
+
+$thead-th-hight: 30px;
+
+label {
+  &.caption {
+    min-width: 80px;
+    margin-right: 10px;
+    justify-content: start;
+  }
+  &.caption-short {
+    @extend .caption;
+    min-width: 50px;
+  }
+  white-space: nowrap;
+}
+
+div.container-fluid {
+  margin-bottom: 60px;
+}
+
+select.custom-select {
+  width: unset;
+}
+
+div.row {
+  line-height: 36px;
+
+  div.input-group-append {
+    height: fit-content;
+  }
+}
+
+div.table-wrapper {
+  overflow-y: scroll;
+  width: auto;
+  max-height: 480px;
+
+  table {
+    border: $border;
+    border-spacing: 0;
+    width: max-content;
+    border-collapse: separate;
+
+    thead {
+      th {
+        @include fix-thead-tr;
+        height: $thead-th-hight
+      }
+
+      tr.tr-2 th {
+        top: $thead-th-hight
+      }
+    }
+
+    tfoot {
+
+      th,
+      td {
+        @include fix-tfoot-tr;
+      }
+
+      td {
+        background-color: $wihte;
+      }
+    }
+
+    th {
+      &.not-first-color {
+        border-top: none;
+      }
+
+      &.width-60 {
+        max-width: 60px;
+        min-width: 60px;
+      }
+
+      &.width-95 {
+        max-width: 95px;
+        min-width: 95px;
+      }
+
+      &.width-150 {
+        max-width: 150px;
+        min-width: 150px;
+      }
+
+      &.width-245 {
+        max-width: 245px;
+        min-width: 245px;
+      }
+
+      &.width-280 {
+        max-width: 280px;
+        min-width: 280px;
+      }
+    }
+
+    td {
+      input {
+        flex: unset;
+
+        &.width-80 {
+          width: 80px;
+        }
+
+        &.width-180 {
+          width: 180px;
+        }
+      }
+
+      div {
+        &.input-group-append {
+          z-index: 0;
+        }
+
+        &.ellipsis {
+          width: 270px;
+          @include ellipsis
+        }
+
+        &.return-lot div.invalid-feedback {
+          display: block;
+          text-align: left;
+          max-width: fit-content;
+        }
+      }
+    }
+
+    th,
+    td {
+      font-size: 14px;
+      font-weight: normal;
+      height: 35px;
+      padding: 3px;
+      border-top: $border;
+      border-left: $border;
+      vertical-align: middle;
+      text-align: center;
+    }
+  }
+}

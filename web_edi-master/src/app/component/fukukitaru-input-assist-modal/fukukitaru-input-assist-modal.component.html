@@ -1,0 +1,39 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-basic-title">セット選択・登録</div>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="search-condition">
+    セットを選ぶ
+    <select class="custom-select form-control" (change)="changeSet($event.target.value)">
+      <ng-container *ngFor="let assistSet of listInputAssistSet">
+        <option [value]="assistSet.id">{{assistSet.setName}}</option>
+      </ng-container>
+    </select>
+  </div>
+  <hr>
+  <div class="result">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col" class="name-column-1">項目</th>
+        <th scope="col" class="code-column-1">コード</th>
+        <th scope="col" class="mate-column-1">資材名</th>
+      </tr>
+    </thead>
+    <tbody detect-scroll [bottomOffset]="200" [topOffset]="200">
+      <tr *ngFor="let item of listInputAssistSetDetails;">
+        <td class="name-column-2">{{F_MASTER_MATERIAL_TYPE_NAME.MASTER_MATERIAL_MAP[item.materialType]}}</td>
+        <td class="code-column-2">{{item.code}}</td>
+        <td class="mate-column-2">{{item.codeName}}</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <br>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-dark" (click)="onSelect()">選択</button>
+</div>

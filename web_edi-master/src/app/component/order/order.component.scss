@@ -1,0 +1,90 @@
+label {
+  &.caption {
+    min-width: 100px;
+    margin-right: 10px;
+    justify-content: start;
+  }
+  &.caption-short {
+    @extend .caption;
+    min-width: 40px;
+  }
+  white-space: nowrap;
+}
+
+span.red-font {
+  color: #ff0000;
+}
+
+button {
+  cursor: pointer;
+
+  &.file-dl-btn {
+    position: relative;
+    top: -3px;
+  }
+}
+
+span {
+  &.title {
+    font-weight: 550;
+    font-size: 18px;
+  }
+}
+
+select {
+  &.supplier-width{
+    width: 75%;
+  }
+}
+
+div {
+  &.title {
+    word-break: break-all;
+  }
+  &.red-font {
+    color: #ff0000;
+  }
+
+}
+
+.title-collapsed {
+  margin-left: -22px;
+  cursor: pointer;
+}
+
+.btn {
+  margin-right: 12px;
+}
+
+.order-number-position {
+  padding-right: 7%;
+  margin-top: 15px;
+  margin-bottom: 8px;
+}
+
+.file-dl-error-message-area {
+  color: red;
+  margin: 5px;
+}
+
+.order-confirm-pending-label {
+  color: #ffffff;
+  font-weight: 400;
+  background: #0a73fc;
+  transition: .4s;
+  margin-right: 0;
+  margin-left: auto;
+  border-radius: 1em;
+}
+
+footer {
+  // 左の固定
+  .footer-left {
+    max-width: 100px;
+  }
+
+  // 右の固定幅
+  .footer-right {
+    max-width: 140px;
+  }
+}

@@ -1,0 +1,369 @@
+<!-- 検索フォーム-->
+<div class="container-fluid">
+  <form #searchForm="ngForm">
+    <div class="row form-inline mb-2">
+      <div class="col-sm-12 col-md-6 col-xl-6 form-group">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <select class="custom-select" name="keywordType" [(ngModel)]="formConditions.keywordType"
+              #keywordType="ngModel" maxlenght="200" aria-label="">
+              <option [ngValue]="DELIVERY_KEYWORD_TYPE.NO_SELECT" [selected]="true">キーワード</option>
+              <option [ngValue]="DELIVERY_KEYWORD_TYPE.ITEM_NO">品番</option>
+              <option [ngValue]="DELIVERY_KEYWORD_TYPE.BRAND">ブランドコード</option>
+              <!-- PRD_0011 del SIT start -->
+              <!--<option [ngValue]="DELIVERY_KEYWORD_TYPE.DEPARTMENT_CODE">事業部</option>-->
+              <!-- PRD_0011 del SIT end -->
+            </select>
+          </div>
+          <input type="text" class="form-control" [(ngModel)]="formConditions.keyword" #keyword="ngModel" name="keyword"
+            aria-label="..." maxlength="100" />
+        </div>
+      </div>
+      <div class="col-sm-3 col-lg-3 form-group">
+        <span class="label">内訳</span>
+        <select class="custom-select form-control" name="carryType" [(ngModel)]="formConditions.carryType"
+          #carryType="ngModel" aria-label="">
+          <option [ngValue]="DELIVERY_CARRY_TYPE.NO_SELECT" [selected]="true"></option>
+          <option [ngValue]="DELIVERY_CARRY_TYPE.NORMAL">通常</option>
+          <option [ngValue]="DELIVERY_CARRY_TYPE.DIRECT">直送</option>
+          <!-- PRD_0104#7055 add JFE start -->
+          <option [ngValue]="DELIVERY_CARRY_TYPE.TC">TC</option>
+          <!-- PRD_0104#7055 add JFE end -->
+        </select>
+      </div>
+      <div class="col-sm-3 col-lg-3 form-group">
+        <span class="label-short">完納</span>
+        <select class="custom-select form-control" name="orderCompleteType"
+          [(ngModel)]="formConditions.orderCompleteType" #orderCompleteType="ngModel" aria-label="">
+          <option [ngValue]="DELIVERY_ORDER_COMPLETE_TYPE.NO_SELECT" [selected]="true"></option>
+          <option [ngValue]="DELIVERY_ORDER_COMPLETE_TYPE.INCOMPLETE">未完</option>
+          <option [ngValue]="DELIVERY_ORDER_COMPLETE_TYPE.COMPLETE">完納</option>
+        </select>
+      </div>
+    </div>
+    <div class="row form-inline mb-2">
+      <!-- PRD_0011 mod SIT start-->
+      <!--<div class="col-sm-12 col-lg-6 form-group">
+        <span class="label-short">仕入先</span>
+        <ng-container *ngIf="affiliation===AUTH_TYPE.AUTH_INTERNAL">
+        <div class="input-group">
+        <input type="tel" class="form-control length_10" #mdfMakerCode="ngModel"
+          [(ngModel)]="formConditions.mdfMakerCode" name="mdfMakerCode" maxlength="5" pattern="^[0-9]*$"
+          (change)="onChangeMaker(SUPPLIER_TYPE.MDF_MAKER)"
+          [ngClass]="{'is-invalid':mdfMakerCode.errors}"/>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary calBtn mr-3" (click)="openSearchSupplierModal()" type="button">
+            <fa-icon icon="search"></fa-icon>
+          </button>
+        </div>
+        <span>{{formConditions.mdfMakerName}}</span>
+        </div>
+        <div *ngIf="mdfMakerCode['errors']?.pattern" class="invalid-feedback d-block">
+          <div [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+        </div>
+        </ng-container>-->
+        <!-- 権限が取引先の時にhiddenで値を渡す -->
+        <!--
+        <ng-container *ngIf="affiliation===AUTH_TYPE.AUTH_SUPPLIERS">
+          <input type="hidden" #mdfMakerCode="ngModel" name="mdfMakerCode" [(ngModel)]="formConditions.mdfMakerCode" [value]="company">
+        </ng-container>
+      </div>
+    -->
+      <!-- 事業部 -->
+      <div class="col-sm-12 col-lg-6 form-group">
+        <span class="label-short">事業部</span>
+        <div class="input-group">
+          <select class="form-control" name="divisionCode"
+          [(ngModel)]="formConditions.departmentCode" #divisionCode="ngModel" aria-label="">
+          <option selected></option>
+          <option *ngFor="let division of departments;" [value]="division.code1">{{division.item2}}</option>
+          </select>
+        </div>
+      </div>
+      <!-- PRD_0011 mod SIT end -->
+      <div class="col-sm-3 col-lg-3 form-group">
+        <span class="label">仕入</span>
+        <select class="custom-select form-control" name="purchaseType"
+          [(ngModel)]="formConditions.purchasesType" #purchasesType="ngModel" aria-label="">
+          <option [ngValue]="DELIVERY_PURCHASES_TYPE.NO_SELECT" [selected]="true"></option>
+          <option [ngValue]="DELIVERY_PURCHASES_TYPE.UNPURCHASE">未仕入</option>
+          <option [ngValue]="DELIVERY_PURCHASES_TYPE.PURCHASE">仕入済</option>
+        </select>
+      </div>
+      <div class="col-sm-3 col-xl-3 form-group">
+        <span class="label-short">承認</span>
+        <select class="custom-select form-control" name="ApprovalType"
+          [(ngModel)]="formConditions.approvaldType" #approvalType="ngModel" aria-label="">
+          <option [ngValue]="DELIVERY_APPROVALD_TYPE.NO_SELECT" [selected]="true"></option>
+          <option [ngValue]="DELIVERY_APPROVALD_TYPE.UNAPPROVALD">未承認</option>
+          <option [ngValue]="DELIVERY_APPROVALD_TYPE.APPROVALD">承認済</option>
+        </select>
+      </div>
+    </div>
+    <div class="row form-inline mb-2">
+      <!-- PRD_0011 add SIT start -->
+      <div class="col-sm-12 col-lg-6 form-group">
+        <span class="label-short">仕入先</span>
+        <ng-container *ngIf="affiliation===AUTH_TYPE.AUTH_INTERNAL">
+        <div class="input-group">
+        <input type="tel" class="form-control length_10" #mdfMakerCode="ngModel"
+          [(ngModel)]="formConditions.mdfMakerCode" name="mdfMakerCode" maxlength="5" pattern="^[0-9]*$"
+          (change)="onChangeMaker(SUPPLIER_TYPE.MDF_MAKER)"
+          [ngClass]="{'is-invalid':mdfMakerCode.errors}"/>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary calBtn mr-3" (click)="openSearchSupplierModal()" type="button">
+            <fa-icon icon="search"></fa-icon>
+          </button>
+        </div>
+        <span>{{formConditions.mdfMakerName}}</span>
+        </div>
+        <div *ngIf="mdfMakerCode['errors']?.pattern" class="invalid-feedback d-block">
+          <div [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+        </div>
+        </ng-container>
+        <!-- 権限が取引先の時にhiddenで値を渡す -->
+        <ng-container *ngIf="affiliation===AUTH_TYPE.AUTH_SUPPLIERS">
+          <input type="hidden" #mdfMakerCode="ngModel" name="mdfMakerCode" [(ngModel)]="formConditions.mdfMakerCode" [value]="company">
+        </ng-container>
+      </div>
+      <!-- 事業部 -->
+      <!--
+      <div class="col-sm-12 col-lg-6 form-group">
+        <span class="label-short">事業部</span>
+        <div class="input-group">
+          <select class="form-control" name="divisionCode"
+          [(ngModel)]="formConditions.departmentCode" #divisionCode="ngModel" aria-label="">
+          <option selected></option>
+          <option *ngFor="let division of departments;" [value]="division.code1">{{division.item2}}</option>
+          </select>
+        </div>
+      </div>
+      -->
+      <!-- PRD_0011 add SIT end -->
+      <!-- PRD_0011 mod SIT start-->
+      <!--<div class="col-sm-3 col-lg-3 form-group offset-xl-6">-->
+      <div class="col-sm-3 col-lg-3 form-group">
+      <!-- PRD_0011 mod SIT end -->
+        <span class="label">出荷</span>
+        <select class="custom-select form-control" name="shipmentType"
+          [(ngModel)]="formConditions.shipmentType" #shipmentType="ngModel" aria-label="">
+          <option [ngValue]="DELIVERY_SHIPMENT_TYPE.NO_SELECT" [selected]="true"></option>
+          <option [ngValue]="DELIVERY_SHIPMENT_TYPE.UNSHIPMENT">未出荷</option>
+          <option [ngValue]="DELIVERY_SHIPMENT_TYPE.SHIPMENT">出荷済</option>
+        </select>
+      </div>
+      <!-- PRD_0037 mod SIT start -->
+      <!--<div class="col-sm-3 col-lg-3 form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="reAllocation"
+          [(ngModel)]="formConditions.reAllocation">要再配分を表示
+        </label>
+      </div>-->
+      <div class="col-sm-3 col-lg-3 form-group">
+          <span class="label-short">配分</span>
+          <select class="custom-select form-control" name="allocationStatusType"
+            [(ngModel)]="formConditions.allocationStatusType" #shipmentType="ngModel" aria-label="">
+            <option [ngValue]="DELIVERY_ALLOCATION_STATUS_TYPE.NO_SELECT" [selected]="true"></option>
+            <option [ngValue]="DELIVERY_ALLOCATION_STATUS_TYPE.UNALLOCATED">未配分</option>
+            <option [ngValue]="DELIVERY_ALLOCATION_STATUS_TYPE.ALLOCATED">配分済</option>
+            <!-- PRD_0087 mod SIT start -->
+            <!--<option [ngValue]="DELIVERY_ALLOCATION_STATUS_TYPE.REALLOCATION">再配分</option>-->
+            <option [ngValue]="DELIVERY_ALLOCATION_STATUS_TYPE.REALLOCATION">要再配分</option>
+            <!-- PRD_0087 mod SIT end -->
+            <option [ngValue]="DELIVERY_ALLOCATION_STATUS_TYPE.PURCHASEUNALLOCATED">入荷済未配分</option>
+          </select>
+        </div>
+      <!-- PRD_0037 mod SIT end -->
+    </div>
+    <div class="row form-inline mb-2">
+      <div class='col-sm-12 col-lg-6 form-group'>
+        <span class="label-short">納品日</span>
+        <div class="input-group">
+          <input type="tel" name="deliveryAtFrom" maxlength="10"
+            (blur)="onBlurDate($event.target.value, 'deliveryAtFrom');" class="form-control length_10"
+            [(ngModel)]="formConditions.deliveryAtFrom" appDateInput ngbDatepicker #deliveryAtFrom="ngbDatepicker"
+            [showWeekNumbers]="true" [ngClass]="{'is-invalid':searchForm.controls['deliveryAtFrom']?.errors}">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="deliveryAtFrom.toggle()" type="button">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <span class="ml-2 mr-2">～</span>
+        <div class="input-group">
+          <input type="tel" name="deliveryAtTo" maxlength="10" (blur)="onBlurDate($event.target.value, 'deliveryAtTo');"
+            class="form-control length_10" [(ngModel)]="formConditions.deliveryAtTo" appDateInput ngbDatepicker
+            #deliveryAtTo="ngbDatepicker" [showWeekNumbers]="true" [ngClass]="{'is-invalid':searchForm.controls['deliveryAtTo']?.errors}">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="deliveryAtTo.toggle()" type="button">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <div *ngIf="searchForm.controls['deliveryAtFrom']?.errors || searchForm.controls['deliveryAtTo']?.errors"
+          class="invalid-feedback d-block">
+          <span *ngIf="searchForm.controls['deliveryAtFrom']?.errors?.ngbDate?.invalid || searchForm.controls['deliveryAtTo']?.errors?.ngbDate?.invalid"
+          translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></span>
+        </div>
+      </div>
+      <div class='col-sm-12 col-lg-6 form-group'>
+        <span class="label">納品番号</span>
+        <div class="input-group">
+          <input type="tel" class="form-control length_12" #deliveryNumberFrom="ngModel"
+            [(ngModel)]="formConditions.deliveryNumberFrom" name="deliveryNumberFrom" maxlength="6"
+            pattern="^[0-9]*$" [ngClass]="{'is-invalid':deliveryNumberFrom.errors}">
+        </div>
+        <span class="ml-2 mr-2">～</span>
+        <div class="input-group">
+        <input type="tel" class="form-control length_12" #deliveryNumberTo="ngModel"
+          [(ngModel)]="formConditions.deliveryNumberTo" name="deliveryNumberTo" maxlength="6"
+          pattern="^[0-9]*$" [ngClass]="{'is-invalid':deliveryNumberTo.errors}">
+        </div>
+        <div *ngIf="deliveryNumberFrom['errors']?.pattern||deliveryNumberTo['errors']?.pattern" class="invalid-feedback d-block">
+          <div [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row form-inline mb-2">
+      <div class='col-sm-12 col-lg-6 form-group'>
+        <span class="label-short">発注番号</span>
+        <div class="input-group">
+          <input type="tel" class="form-control length_12" #orderNumberFrom="ngModel"
+            [(ngModel)]="formConditions.orderNumberFrom" name="orderNumberFrom" maxlength="6"
+            pattern="^[0-9]*$" [ngClass]="{'is-invalid':orderNumberFrom.errors}">
+          <span class="ml-2 mr-2">～</span>
+          <input type="tel" class="form-control length_12" #orderNumberTo="ngModel"
+            [(ngModel)]="formConditions.orderNumberTo" name="orderNumberTo" maxlength="6"
+            pattern="^[0-9]*$" [ngClass]="{'is-invalid':orderNumberTo.errors}">
+        </div>
+        <div *ngIf="orderNumberFrom['errors']?.pattern||orderNumberTo['errors']?.pattern" class="invalid-feedback d-block">
+          <div [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+        </div>
+      </div>
+      <div class='col-sm-12 col-lg-5 form-group'>
+        <span class="label">納品依頼番号</span>
+        <div class="input-group">
+          <input type="tel" class="form-control length_12" #deliveryRequestNumberFrom="ngModel"
+            [(ngModel)]="formConditions.deliveryRequestNumberFrom" name="deliveryRequestNumberFrom" maxlength="6"
+            pattern="^[0-9]*$" [ngClass]="{'is-invalid':deliveryRequestNumberFrom.errors}">
+            <span class="ml-2 mr-2">～</span>
+          <input type="tel" class="form-control length_12" #deliveryRequestNumberTo="ngModel"
+            [(ngModel)]="formConditions.deliveryRequestNumberTo" name="deliveryRequestNumberTo" maxlength="6"
+            pattern="^[0-9]*$" [ngClass]="{'is-invalid':deliveryRequestNumberTo.errors}">
+        </div>
+        <div *ngIf="deliveryRequestNumberFrom['errors']?.pattern||deliveryRequestNumberTo['errors']?.pattern" class="invalid-feedback d-block">
+          <div [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+        </div>
+      </div>
+      <!-- 検索ボタン -->
+      <div class="col-sm-12 col-lg-1">
+        <input type="button" (click)="onSearch(searchForm)" class="btn btn-info" name="button_submit" value="検索">
+      </div>
+    </div>
+    <div class="row">
+      <!-- エラーメッセージ -->
+      <div class="col-xl-8 ml-3 mt-3 mb-3">
+        <div class="invalid-feedback custom_error_msg" translate id="defaultErrorInfo" name="errorInfo"></div>
+        <div class="overall-msg-area alert alert-danger p-1" *ngIf="overallMsgCode.length > 0">
+          <span translate='{{overallMsgCode}}'></span>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- 検索結果-->
+<div class="mt-3 mr-3 ml-4">
+  <div class="table table-wrapper" detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+    <table class="sticky-table">
+      <thead>
+        <tr>
+          <!-- PRD_0087 mod SIT start -->
+          <!--<th scope="col" class="width-3 text-center">状態</th>-->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <th scope="col" class="width-4 text-center">状態</th> -->
+          <th scope="col" class="width-2 text-center">状態</th>
+          <!-- PRD_0127 #9837 mod JFE end -->
+          <!-- PRD_0087 mod SIT end -->
+          <th scope="col" class="width-4 text-center">品番</th>
+          <th scope="col" class="width-7 text-center">品名</th>
+          <!-- PRD_0052 add SIT start -->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <th scope="col" class="width-4 text-center">発注No</th> -->
+          <th scope="col" class="width-3 text-center">発注No</th>
+          <!-- PRD_0127 #9837 mod JFE end -->
+          <!-- PRD_0052 add SIT end -->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <th scope="col" class="width-3 text-center">回数</th> -->
+          <th scope="col" class="width-2 text-center">回数</th>
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <th scope="col" class="width-4 text-center">発注数量</th>
+          <th scope="col" class="width-4 text-center">引取数</th>
+          <!-- PRD_0003 add SIT start-->
+          <th scope="col" class="width-4 text-center">仕入数</th>
+          <!-- PRD_0003 add SIT end-->
+          <th scope="col" class="width-4 text-center">配分数</th>
+          <!-- PRD_0127 #9837 add JFE start -->
+          <th scope="col" class="width-2 text-center">納品先</th>
+          <!-- PRD_0127 #9837 add JFE end -->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <th scope="col" class="width-3 text-center">完納</th> -->
+          <th scope="col" class="width-2 text-center">完納</th>
+          <!-- PRD_0127 #9837 mod JFE end -->
+          <th scope="col" class="width-4 text-center">納品日</th>
+      </thead>
+      <tbody detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+        <tr *ngFor="let deliverySearchResult of deliverySearchResultList;">
+          <!-- PRD_0087 mod SIT start -->
+          <!--<td class="width-3 text-center" [ngClass]="setAllocationStatusCls(deliverySearchResult.allocationStatus)">-->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <td class="width-4 text-center" [ngClass]="setAllocationStatusCls(deliverySearchResult.allocationStatus)"> -->
+          <td class="width-2 text-center" [ngClass]="setAllocationStatusCls(deliverySearchResult.allocationStatus)">
+          <!-- PRD_0127 #9837 mod JFE end -->
+          <!-- PRD_0087 mod SIT end -->
+            {{deliverySearchResult.allocationStatus}}
+          </td><!-- 配分状態 -->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <td class="width-5 pl-2">　 -->
+          <td class="width-4 pl-2">　
+          <!-- PRD_0127 #9837 mod JFE end -->
+            <!-- リンク付き品番。承認済みはVIEW、未承認はEDIT -->
+            <a [routerLink]="['/deliverySearchList/deliveries/', deliverySearchResult.deliveryId,
+            deliverySearchResult.deliveryApproveStatus === DELIVERY_APPROVAL_STATUS.ACCEPT ? PATH.VIEW : PATH.EDIT]"
+              [queryParams]="{orderId:deliverySearchResult.orderId}">{{deliverySearchResult.partNo|partNoInput}}</a>
+          </td>
+          <td class="width-7 pl-2 pr-2">
+            <div  class="ellipsis" placement="top" ngbTooltip="{{deliverySearchResult.productName}}">
+              {{deliverySearchResult.productName}}
+            </div>
+          </td><!-- 品名 -->
+          <!-- PRD_0052 add SIT start -->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <td class="width-4 text-center">{{deliverySearchResult.orderNumber}}</td>発注No -->
+          <td class="width-3 text-center">{{deliverySearchResult.orderNumber}}</td><!-- 発注No -->
+          <!-- PRD_0127 #9837 mod JFE end -->
+          <!-- PRD_0052 add SIT end -->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <td class="width-3 text-center">{{deliverySearchResult.deliveryCount | deliveryCount}}</td>回数 -->
+          <td class="width-2 text-center">{{deliverySearchResult.deliveryCount | deliveryCount}}</td><!-- 回数 -->
+          <!-- PRD_0127 #9837 mod JFE end -->
+          <td class="width-4 text-right pr-2">{{deliverySearchResult.quantity|numberInput}}</td><!-- 発注数量 -->
+          <td class="width-4 text-right pr-2">{{deliverySearchResult.transactionLot|numberInput}}</td><!-- 引取数 -->
+          <!-- PRD_0003 add SIT start-->
+          <td class="width-4 text-right pr-2">{{deliverySearchResult.fixArrivalCount|numberInput}}</td><!-- 仕入数 -->
+          <!-- PRD_0003 add SIT end-->
+          <td class="width-4 text-right pr-2">{{deliverySearchResult.allocationLot|numberInput}}</td><!-- 配分数 -->
+          <!-- PRD_0127 #9837 add JFE start -->
+          <td class="width-2 text-center">{{deliverySearchResult.companyName}}</td><!-- 納品先 -->
+          <!-- PRD_0127 #9837 add JFE end -->
+          <!-- PRD_0127 #9837 mod JFE start -->
+          <!-- <td class="width-3 text-center"> -->
+          <td class="width-2 text-center">
+          <!-- PRD_0127 #9837 mod JFE end -->
+            <span *ngIf="deliverySearchResult.orderCompleteFlg">○</span>
+          </td><!-- 完納 -->
+          <td class="width-4 pl-2">{{deliverySearchResult.correctionAt|dateInput}}</td><!-- 納品日 -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

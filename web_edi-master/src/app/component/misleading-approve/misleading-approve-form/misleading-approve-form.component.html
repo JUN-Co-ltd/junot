@@ -1,0 +1,21 @@
+<div [formGroup]="group">
+  <div class="row no-gutters">
+    <div class="col-lg-1"></div>
+    <div class="col-sm-3 col-lg-3">検査承認者</div>
+    <div class="col-sm-3 col-lg-3">検査承認日</div>
+    <div class="col-sm-4 col-lg-5">備考</div>
+  </div>
+  <div class="row no-gutters">
+    <div class="col-sm-2 col-lg-1">
+      <label class="checkbox">
+        <input type="checkbox" (change)="onCheck($event.target.checked)" formControlName="check"
+          [attr.disabled]="isDisable?true:null">
+      </label>
+    </div>
+    <div class="col-sm-3 col-lg-3">{{getControlLabel('approvalUserName')}}</div>
+    <div class="col-sm-3 col-lg-3">{{getControlLabel('approvalAt')}}</div>
+    <div class="col-sm-4 col-lg-5 form-group">
+      <input type="text" class="form-control" formControlName="memo" [attr.disabled]="isDisable?true:null">
+    </div>
+  </div>
+</div>

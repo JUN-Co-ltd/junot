@@ -1,0 +1,55 @@
+<tr [ngClass]="recordCls">
+  <td class="width-1 fix-col" [ngClass]="{'child-exists':childExists}" (click)="onOpenOrCloseChild()">
+    <fa-icon *ngIf="childExists" [icon]="['fa',isOpenChild?'minus-circle':'plus-circle']" [fixedWidth]="true">
+    </fa-icon>
+  </td><!-- 開閉列 -->
+  <td class="width-2 fix-col text-right">{{deliveryAtMonthly}}</td><!-- 月度 -->
+  <td class="width-2 fix-col text-right">{{mdWeek|mdWeek}}</td><!-- 納品週 -->
+  <td class="width-3 fix-col">　
+    <a [routerLink]="['/delische/deliveries', PATH.NEW]" [queryParams]="{orderId:orderId}">{{partNo|partNoInput}}</a>
+  </td><!-- 品番 -->
+  <td class="width-7 ellipsis" [ngClass]="qualityStatusCls" placement="top" ngbTooltip="{{productName}}">{{productName}}</td><!-- 品名 -->
+  <td class="width-3 text-right">{{calculateRetailPrice|numberInput}}</td><!-- 上代合計 -->
+  <td class="width-3 text-right">{{calculateProductCost|numberInput}}</td><!-- 原価合計 -->
+  <td class="width-2" *ngIf="isOpeningDeliverySku">{{colorCode}}</td><!-- カラー -->
+  <td class="width-2" *ngIf="isOpeningDeliverySku">{{size}}</td><!-- サイズ -->
+  <td class="width-2">{{season}}</td><!-- シーズン -->
+  <!-- PRD_0146 #10776 add JFE start -->
+  <td class="width-2">{{expenseItem}}</td><!-- 費目 -->
+  <td class="width-3 text-right">{{orderNumber}}</td><!-- 発注No -->
+  <td class="width-3 text-right">{{relationNumber}}</td><!-- 関連No -->
+  <!-- PRD_0146 #10776 add JFE end -->
+  <td class="width-7 ellipsis" placement="top" ngbTooltip="{{mdfMakerName}}">{{mdfMakerName}}</td><!-- メーカー -->
+  <td class="width-3 text-right" [ngClass]="orderApproveStatusCls">{{productOrderAt|dateInput}}</td><!-- 発注日 -->
+  <td class="width-2 text-center">
+    <div [ngClass]="{'csr-pnt':delischeRecordType===ORDER}" (click)="openProductStatusModal()">
+      <fa-icon class="alert-icon" *ngIf="productionStatus===PROD_ST_LATE" [icon]="['fa','exclamation-circle']"
+        [fixedWidth]="true" placement="top" ngbTooltip="予定より確定が遅れている生産工程があります">
+      </fa-icon>
+      <span *ngIf="productionStatus===PROD_ST_NO_LATE">○</span>
+      <span *ngIf="productionStatus===PROD_ST_NO_DATA">×</span>
+    </div>
+  </td><!-- 生産工程 -->
+  <td class="width-3 text-right">{{productDeliveryAt|dateInput}}</td><!-- 発注納期 -->
+  <td class="width-3 text-center" *ngIf="delischeRecordType===ORDER;else notOrderDeliveryAt;">
+    <fa-icon class="alert-icon" *ngIf="lateDeliveryAtCnt>0" [icon]="['fa','exclamation-circle']" [fixedWidth]="true"
+      placement="top" ngbTooltip="発注納期より納品日が遅れている納品依頼があります">
+    </fa-icon>
+  </td><!-- 納品日(発注レコード) -->
+  <ng-template #notOrderDeliveryAt>
+    <td class="width-4 text-right" [ngClass]="{'late-Delivery-at':lateDeliveryAtFlg===LATE}">
+      {{deliveryAt}}<ng-container *ngIf="delischeRecordType===DERIVERY_REQUEST">({{deliveryCount|deliveryCount}})</ng-container>
+    </td><!-- 納品日(発注レコード以外) -->
+  </ng-template>
+  <td class="width-3 text-right">{{productOrderLot|numberInput}}</td><!-- 発注数 -->
+  <td class="width-3 text-right">{{deliveryLot|numberInput}}</td><!-- 納品依頼数 -->
+  <td class="width-3 text-right">{{arrivalLot|numberInput}}</td><!-- 仕入実数 -->
+  <td class="width-3 text-right">{{orderRemainingLot|numberInput}}</td><!-- 発注残 -->
+  <td class="width-3 text-right">{{posSalesQuantity|numberInput}}</td><!-- 売上数 -->
+  <td class="width-3 text-right">{{stockQuantity|numberInput}}</td><!-- 在庫数 -->
+  <td class="width-3 text-right">{{retailPrice|numberInput}}</td><!-- 上代単価 -->
+  <td class="width-3 text-right">{{productCost|numberInput}}</td><!-- 原価単価 -->
+  <td class="width-3 text-right">
+    <ng-container *ngIf="delischeRecordType===ORDER">{{costRate}}％</ng-container>
+  </td><!-- 原価率 -->
+</tr>

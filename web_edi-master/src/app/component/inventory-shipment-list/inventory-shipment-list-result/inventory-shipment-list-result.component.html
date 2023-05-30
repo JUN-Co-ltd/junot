@@ -1,0 +1,65 @@
+<form *ngIf="resultForm$ | async as resultForm" [formGroup]="resultForm">
+  <div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200"
+    [topOffset]="200">
+    <table class="sticky-table">
+      <thead>
+        <tr>
+          <th scope="col" class="width-36"></th>
+          <th scope="col" class="width-100">出荷日</th>
+          <th scope="col" class="width-100">指示元</th>
+          <th scope="col" class="width-200">ブランド</th>
+          <th scope="col" class="width-40">課</th>
+          <th scope="col" class="width-100">品番</th>
+          <th scope="col" class="width-200">品名</th>
+          <th scope="col" class="width-100">数量</th>
+          <th scope="col" class="width-100">上代金額</th>
+        </tr>
+      </thead>
+      <tbody detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200"
+        formArrayName="inventoryShipmentConfirms">
+        <tr *ngFor="let inventoryShipment of resultForm.get('inventoryShipmentConfirms')['controls']; index as idx;" [formGroupName]="idx">
+          <!-- チェックボックス -->
+          <td>
+            <div class="d-flex justify-content-center align-items-center">
+              <input type="checkbox" formControlName="check" (change)="onCheck()">
+            </div>
+          </td>
+          <!-- 出荷日 -->
+          <td class="text-center">
+            {{inventoryShipment.value.cargoAt | date: "yyyy/MM/dd"}}
+          </td>
+          <!-- 指示元 -->
+          <td class="text-center">
+           {{inventoryShipment.value.instructorSystem | instructorSystemType}}
+          </td>
+          <!-- ブランド -->
+          <td class="text-left">
+            {{inventoryShipment.value.brandCode}}&ensp;{{inventoryShipment.value.brandName}}
+          </td>
+          <!-- 課コード -->
+          <td class="text-center">
+            {{inventoryShipment.value.divisionCode}}
+          </td>
+          <!-- 品番 -->
+          <td class="text-center">
+            {{inventoryShipment.value.partNo}}
+          </td>
+          <!-- 品名 -->
+          <td class="text-left">
+            <div class="ellipsis" placement="top" ngbTooltip="{{inventoryShipment.value.productName}}">
+              {{inventoryShipment.value.productName}}
+            </div>
+          </td>
+          <!-- 数量 -->
+          <td class="text-right">
+            {{inventoryShipment.value.deliveryLotSum | number}}
+          </td>
+          <!-- 上代金額-->
+          <td class="text-right">
+            {{inventoryShipment.value.retailPriceSum | number}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</form>

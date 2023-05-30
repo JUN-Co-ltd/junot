@@ -1,0 +1,455 @@
+<div class="row top-area">
+  <form class="col-9" #searchForm="ngForm">
+    <div class="row">
+      <div class="form-inline col-xl-6">
+        <div class="input-group">
+          <span class="input-group-addon col-xl-2 title">品番</span>
+          <input type="text" name="partNo" #inputPartNo="ngModel" class="form-control"
+            [(ngModel)]="formConditions.partNo" maxlength="9">
+        </div>
+      </div>
+      <div class="form-inline col-xl-6">
+        <div class="input-group">
+          <span class="input-group-addon col-xl-2 title">メーカー</span>
+          <input type="text" name="mdfMaker" class="form-control" [(ngModel)]="formConditions.mdfMaker" maxlength="20">
+        </div>
+      </div>
+    </div>
+
+    <div id="collapseAnchorSearchItems" [ngbCollapse]="isSearchItemsCollapsed">
+
+      <div class="row">
+        <div class="form-inline col-xl-6">
+          <div class="input-group">
+            <span class="input-group-addon col-xl-2 title">事業部</span>
+            <select class="form-control" name="divisionCode"
+              [(ngModel)]="formConditions.divisionCode" #inputDivisionCode="ngModel" aria-label="">
+              <option selected></option>
+              <option *ngFor="let division of divisionMasterList;" [value]="division.id">{{division.value}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-inline col-xl-6">
+          <div class="input-group">
+            <span class="input-group-addon col-xl-2 title">ブランド</span>
+            <input type="text" name="brandCode" class="form-control" [(ngModel)]="formConditions.brandCode"
+              maxlength="100">
+          </div>
+        </div>
+        <div class="form-inline col-xl-6">
+          <div class="input-group">
+            <span class="input-group-addon col-xl-2 title">アイテム</span>
+            <input type="text" name="itemCode" #inputItemCode="ngModel" class="form-control"
+              [(ngModel)]="formConditions.itemCode" maxlength="100">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-inline col-xl-6">
+          <div class="input-group">
+            <span class="input-group-addon col-xl-2 title">製造担当</span>
+            <input type="text" name="mdfStaff" class="form-control" [(ngModel)]="formConditions.mdfStaff" maxlength="20">
+          </div>
+        </div>
+        <div class="form-inline col-xl-6">
+          <div class="input-group">
+            <span class="input-group-addon col-xl-2 title">シーズン</span>
+            <ng-container *ngFor="let season of seasonList; index as idx;">
+              <label class="checkbox-label">
+                <input type="checkbox" name="season{{idx}}" id="season{{idx}}" [(ngModel)]="season.selected" [value]="season.id">{{season.value}}
+              </label>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-check form-check-inline col-xl-6">
+          <div class="radio-block" (click)="onChangeSearchRadio()">
+            <input type="radio" [value]="SEARCH_TYPE_ORDER" class="form-check-input" [(ngModel)]="formConditions.searchSelect" id="searchRadioSelectOrder" name="searchRadioSelect">
+            <label class="form-check-label" for="searchRadioSelectOrder">発注検索</label>
+          </div>
+        </div>
+        <div class="form-check form-check-inline col-xl-6">
+          <div class="radio-block" (click)="onChangeSearchRadio()">
+            <input type="radio" [value]="SEARCH_TYPE_DERIVERY" class="form-check-input" [(ngModel)]="formConditions.searchSelect" id="searchRadioSelectDelivery" name="searchRadioSelect">
+            <label class="form-check-label" for="searchRadioSelectDelivery">納品検索</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class='form-inline col-xl-6 padding-right0'>
+          <div class="input-group">
+            <span class="input-group-addon col-xl-2 title">生産納期</span>
+            <input type="tel" name="productDeliveryAtFrom" maxlength="10" (blur)="onBlurDate($event.target.value, 'productDeliveryAtFrom');" class="form-control length_10"
+              [(ngModel)]="formConditions.productDeliveryAtFrom" appDateInput ngbDatepicker #productDeliveryAtFrom="ngbDatepicker" [showWeekNumbers]="true"
+              [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER">
+            <div class="input-group-append margin-right0">
+              <button class="btn btn-outline-secondary calBtn" (click)="productDeliveryAtFrom.toggle()" type="button" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+            <span class="period-center">
+              ～
+            </span>
+            <input type="tel" name="productDeliveryAtTo" maxlength="10" (blur)="onBlurDate($event.target.value, 'productDeliveryAtTo');" class="form-control length_10"
+              [(ngModel)]="formConditions.productDeliveryAtTo" appDateInput ngbDatepicker #productDeliveryAtTo="ngbDatepicker" [showWeekNumbers]="true"
+              [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER">
+            <div class="input-group-append margin-right0">
+              <button class="btn btn-outline-secondary calBtn" (click)="productDeliveryAtTo.toggle()" type="button" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class='col-xl-6 form-inline padding-right0'>
+          <div class="input-group">
+            <span class="input-group-addon col-xl-2 title">納品日</span>
+            <input type="tel" name="deliveryAtFrom" maxlength="10" (blur)="onBlurDate($event.target.value, 'deliveryAtFrom');" class="form-control length_10"
+              [(ngModel)]="formConditions.deliveryAtFrom" appDateInput ngbDatepicker #deliveryAtFrom="ngbDatepicker" [showWeekNumbers]="true"
+              [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY">
+            <div class="input-group-append margin-right0">
+              <button class="btn btn-outline-secondary calBtn" (click)="deliveryAtFrom.toggle()" type="button" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+            <span class="period-center">
+              ～
+            </span>
+            <input type="tel" name="deliveryAtTo" maxlength="10" (blur)="onBlurDate($event.target.value, 'deliveryAtTo');" class="form-control length_10"
+              [(ngModel)]="formConditions.deliveryAtTo" appDateInput ngbDatepicker #deliveryAtTo="ngbDatepicker" [showWeekNumbers]="true"
+              [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY">
+            <div class="input-group-append margin-right0">
+              <button class="btn btn-outline-secondary calBtn" (click)="deliveryAtTo.toggle()" type="button" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY">
+                <fa-icon icon="calendar-alt"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="showValidationError" class="row">
+        <div *ngIf="searchForm.controls['productDeliveryAtFrom']?.errors || searchForm.controls['productDeliveryAtTo']?.errors
+          || searchForm.controls['deliveryAtFrom']?.errors || searchForm.controls['deliveryAtTo']?.errors"
+          class="invalid-feedback d-block col-xl-6">
+          <span *ngIf="searchForm.controls['productDeliveryAtFrom']?.errors?.ngbDate?.invalid || searchForm.controls['productDeliveryAtTo']?.errors?.ngbDate?.invalid" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></span>
+        </div>
+        <div *ngIf="searchForm.controls['deliveryAtFrom']?.errors || searchForm.controls['deliveryAtTo']?.errors"
+          class="invalid-feedback d-block col-xl-6">
+          <span *ngIf="searchForm.controls['deliveryAtFrom']?.errors?.ngbDate?.invalid || searchForm.controls['deliveryAtTo']?.errors?.ngbDate?.invalid" translate='{{"ERRORS.VALIDATE.DATE_FORMAT"}}'></span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sd-12 col-md-12 col-xl-6 form-inline d-flex align-items-start">
+          <div class="form-group">
+            <label class="tilte">年度/月度</label>
+            <div class="input-group">
+              <input type="tel" class="form-control code_6" name="productDeliveryAtMonthlyYearFrom"
+                [(ngModel)]="formConditions.productDeliveryAtMonthlyYearFrom" #productDeliveryAtMonthlyYearFrom="ngModel"
+                aria-label="" maxlength="4" pattern="^2[0-9]{3}$" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER"
+                [ngClass]="{'is-invalid':productDeliveryAtMonthlyYearFrom.errors}">
+              <div class="input-group-append">
+                <select class="custom-select form-control" name="productDeliveryAtMonthlyFrom"
+                  [(ngModel)]="formConditions.productDeliveryAtMonthlyFrom" #productDeliveryAtMonthlyFrom="ngModel"
+                  aria-label="" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER||productDeliveryAtMonthlyYearFrom.value?.length!==4">
+                  <option selected></option>
+                  <option *ngFor="let month of [1,2,3,4,5,6,7,8,9,10,11,12];">{{month}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group period-center">
+              ～
+            </div>
+            <div class="form-group input-group">
+              <input type="tel" class="form-control code_6" name="productDeliveryAtMonthlyYearTo"
+                [(ngModel)]="formConditions.productDeliveryAtMonthlyYearTo" #productDeliveryAtMonthlyYearTo="ngModel"
+                aria-label="" maxlength="4" pattern="^2[0-9]{3}$" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER"
+                [ngClass]="{'is-invalid':productDeliveryAtMonthlyYearTo.errors}">
+              <div class="input-group-append">
+                <select class="custom-select form-control" name="productDeliveryAtMonthlyTo"
+                  [(ngModel)]="formConditions.productDeliveryAtMonthlyTo" #productDeliveryAtMonthlyTo="ngModel" aria-label=""
+                  [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER||productDeliveryAtMonthlyYearTo.value?.length!==4">
+                  <option selected></option>
+                  <option *ngFor="let month of [1,2,3,4,5,6,7,8,9,10,11,12];">{{month}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="productDeliveryAtMonthlyYearTo['errors']?.pattern||productDeliveryAtMonthlyYearFrom['errors']?.pattern" class="invalid-feedback d-block">
+            <div [translate]="'ERRORS.VALIDATE.YEAR_FORMAT'"></div>
+          </div>
+        </div>
+        <div class="col-sd-12 col-md-12 col-xl-6 form-inline d-flex align-items-start">
+          <div class="form-group">
+            <label class="tilte">年度/納品週</label>
+            <div class="input-group">
+              <input type="tel" class="form-control code_6" name="mdWeekYearFrom" [(ngModel)]="formConditions.mdWeekYearFrom"
+                #mdWeekYearFrom="ngModel" aria-label="" maxlength="4" pattern="^2[0-9]{3}$" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY"
+                [ngClass]="{'is-invalid':mdWeekYearFrom.errors}">
+              <input type="tel" class="form-control code_3" name="mdWeekFrom" [(ngModel)]="formConditions.mdWeekFrom" #mdWeekFrom="ngModel"
+                aria-label="" maxlength="2" pattern="^[0-9]{1,2}$" [ngClass]="{'is-invalid':mdWeekFrom.errors}"
+                [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY||mdWeekYearFrom.value?.length!==4">
+            </div>
+            <div class="form-group md-week period-center">
+              ～
+            </div>
+            <div class="form-group input-group">
+              <input type="tel" class="form-control code_6" name="mdWeekYearTo" [(ngModel)]="formConditions.mdWeekYearTo"
+                #mdWeekYearTo="ngModel" aria-label="" maxlength="4" pattern="^2[0-9]{3}$" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY"
+                [ngClass]="{'is-invalid':mdWeekYearTo.errors}">
+              <input type="tel" class="form-control code_3" name="mdWeekTo" [(ngModel)]="formConditions.mdWeekTo"
+                #mdWeekTo="ngModel" aria-label="" maxlength="2" pattern="^[0-9]{1,2}$"
+                [ngClass]="{'is-invalid':mdWeekTo.errors}" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY||mdWeekYearTo.value?.length!==4">
+            </div>
+          </div>
+          <div *ngIf="mdWeekYearFrom['errors']?.pattern||mdWeekYearTo['errors']?.pattern" class="invalid-feedback d-block">
+            <div [translate]="'ERRORS.VALIDATE.YEAR_FORMAT'"></div>
+          </div>
+          <div *ngIf="mdWeekFrom['errors']?.pattern||mdWeekTo['errors']?.pattern" class="invalid-feedback d-block">
+            <div [translate]="'ERRORS.VALIDATE.WEEK_OUTRANGE'"></div>
+          </div>
+        </div>
+      </div>
+      <!-- PRD_0146 #10776 JFE add start-->
+      <div class="row">
+        <div class="form-inline col-xl-6">
+          <div class="form-group">
+            <span class="input-group-addon col-xl-2 title">費目</span>
+            <select class="custom-select form-control" name="expenseItem"
+            [(ngModel)]="formConditions.expenseItem" #expenseItem="ngModel" aria-label="">
+              <option selected></option>
+              <option value="01">製品発注</option>
+              <option value="04">縫製発注</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- PRD_0146 #10776 JFE add end-->
+
+      <div class="row">
+        <div class="form-inline col-xl-6">
+          <div class="checkbox">
+            <label class="checkbox-label">
+              <input type="checkbox" name="excludeCompleteOrder" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER"
+                [(ngModel)]="formConditions.excludeCompleteOrder">&nbsp;完納は対象外
+            </label>
+          </div>
+          <div class="checkbox">
+            <label class="checkbox-label">
+              <input type="checkbox" name="existsOrderRemaining" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_ORDER"
+                [(ngModel)]="formConditions.existsOrderRemaining">&nbsp;発注残あり
+            </label>
+          </div>
+        </div>
+        <div class="form-inline col-xl-6">
+          <div class="checkbox">
+            <label class="checkbox-label">
+              <input type="checkbox" name="deliveryAtLate" [disabled]="formConditions.searchSelect!==SEARCH_TYPE_DERIVERY"
+                [(ngModel)]="formConditions.deliveryAtLateFlg">&nbsp;納期遅れ
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row button-block">
+      <div class="col-xl-6 collapsed-text">
+        <a class="ml-0" (click)="isSearchItemsCollapsed = !isSearchItemsCollapsed; onSaveSearchItemsCollapsed();" [attr.aria-expanded]="!isSearchItemsCollapsed" aria-controls="collapseAnchorSearchItems">
+        <fa-icon [icon]="['fas',isSearchItemsCollapsed?'plus-circle':'minus-circle']" [fixedWidth]="true"></fa-icon>{{isSearchItemsCollapsed?'詳細条件を表示':'詳細条件を隠す'}}</a>
+      </div>
+      <div class="col-xl-6">
+        <input type="button" class="btn btn-info float-right" value="検索" (click)="onSearch(searchForm)" [disabled]="isSearchBtnLock">
+      </div>
+    </div>
+  </form>
+
+  <div class="col-xl-3">
+    <div class="calculate-area">
+      <div class="calculate-row">
+        <div class="col-xl-3 heading-cell">上代合計</div>
+        <div class="data-cell">{{retailPriceSum|numberInput}}</div>
+      </div>
+      <div class="calculate-row">
+        <div class="col-xl-3 heading-cell">原価合計</div>
+        <div class="data-cell">{{productCostSum|numberInput}}</div>
+      </div>
+      <div class="calculate-row">
+        <div class="col-xl-3 heading-cell">原価率</div>
+        <div class="data-cell">{{productCostSum|rate: retailPriceSum}}％</div>
+      </div>
+    </div>
+    <div class="file-area">
+      <div class="file-title-area">
+        <div class="title">デリスケファイル</div>
+        <fa-icon [icon]="['fas','sync-alt']" [fixedWidth]="true" (click)="onGetDelischeFile()"></fa-icon>
+        <div class="file-create">
+          <input type="button" class="btn btn-info" value="ファイル作成" (click)="onFileCreate(searchForm)">
+        </div>
+      </div>
+      <div *ngIf="delischeFile!=null" class="file-link-area">
+        <div *ngIf="delischeFile.status===CNT_ERROR||delischeFile.status===OTHER_ERROR; else delischeFileExists"
+          [translate]="delischeFile.status===CNT_ERROR?'ERRORS.400_DS_01':'ERRORS.400_DS_09'">
+        </div>
+        <ng-template #delischeFileExists>
+          <button type="button"class="btn btn-link" (click)="onFileDownLoad(delischeFile.fileNoId)" [disabled]="delischeFile.status!==COMPLETE_CREATE">
+            {{delischeFile.createdAt}}
+            <span *ngIf="delischeFile.status===CREATING">(作成中)</span>
+            <fa-icon *ngIf="delischeFile.status===COMPLETE_CREATE" [icon]="['fas','file-download']" [fixedWidth]="true"></fa-icon>
+          </button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overall-msg-area alert alert-danger p-1" *ngIf="overallMsgCode.length > 0">
+  <span translate='{{overallMsgCode}}'></span>
+</div>
+<div class="table-wrapper" detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+  <table class="sticky-table">
+    <thead>
+      <tr>
+        <th scope="col" class="width-1 fix-col"></th><!-- 開閉列 -->
+        <th scope="col" class="width-2 fix-col sort" (click)="onSort(SORT_COLUMN_TYPE.DELIVERY_AT_MONTHLY)">
+          <span>月度</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.DELIVERY_AT_MONTHLY" [sorting]="sorting"></app-sort-icon>
+        </th>
+        <th scope="col" class="width-2 fix-col sort" (click)="onSort(SORT_COLUMN_TYPE.MD_WEEK)">
+          <span>納品週</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.MD_WEEK" [sorting]="sorting"></app-sort-icon>
+        </th>
+        <th scope="col" class="width-3 fix-col sort" (click)="onSort(SORT_COLUMN_TYPE.PART_NO)">
+          <span>品番</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.PART_NO" [sorting]="sorting"></app-sort-icon>
+        </th>
+        <th scope="col" class="width-7 sort" (click)="onSort(SORT_COLUMN_TYPE.PRODUCT_NAME)">
+          <span>品名</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.PRODUCT_NAME" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-2">
+          <span>上代合計</span>
+        </th>
+        <th scope="col" class="width-2">
+          <span>原価合計</span>
+        </th>
+        <th scope="col" class="width-2" *ngIf="openingDeliverySkuNum>0">
+          <span>カラー</span>
+        </th>
+        <th scope="col" class="width-2" *ngIf="openingDeliverySkuNum>0">
+          <span>サイズ</span>
+        </th>
+        <th scope="col" class="width-2 sort" (click)="onSort(SORT_COLUMN_TYPE.SEASON)">
+          <span class="title">シー<br>ズン</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.SEASON" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <!-- PRD_0146 #10776 add JFE start -->
+        <th scope="col" class="width-2" (click)="onSort(SORT_COLUMN_TYPE.EXPENSE_ITEM)">
+          <span>費目</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.EXPENSE_ITEM" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-3" (click)="onSort(SORT_COLUMN_TYPE.ORDER_NUMBER)">
+          <span>発注No</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.ORDER_NUMBER" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-3" (click)="onSort(SORT_COLUMN_TYPE.RELATION_NUMBER)">
+          <span>関連No</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.RELATION_NUMBER" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <!-- PRD_0146 #10776 add JFE end -->
+        <th scope="col" class="width-7 sort" (click)="onSort(SORT_COLUMN_TYPE.MAKER)">
+          <span>メーカー</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.MAKER" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-3 sort" (click)="onSort(SORT_COLUMN_TYPE.PRODUCT_ORDER_AT)">
+          <span>生産<br>発注日</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.PRODUCT_ORDER_AT" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-2">
+          <span>生産<br>工程</span>
+        </th>
+        <th scope="col" class="width-3 sort" (click)="onSort(SORT_COLUMN_TYPE.PRODUCT_DELIVERY_AT)">
+          <span>生産納期</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.PRODUCT_DELIVERY_AT" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-4">
+          <span>納品日</span>
+        </th>
+        <th scope="col" class="width-2 sort" (click)="onSort(SORT_COLUMN_TYPE.QUANTITY)">
+          <span>発注数</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.QUANTITY" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-2 sort" (click)="onSort(SORT_COLUMN_TYPE.DELIVERY_LOT)">
+          <span>納品<br>依頼数</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.DELIVERY_LOT" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-2 sort" (click)="onSort(SORT_COLUMN_TYPE.ARRIVAL_LOT)">
+          <span>仕入実数</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.ARRIVAL_LOT" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-2 sort" (click)="onSort(SORT_COLUMN_TYPE.ORDER_REMAINING_LOT)">
+          <span>発注残</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.ORDER_REMAINING_LOT" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-2 sort" (click)="onSort(SORT_COLUMN_TYPE.NET_SALES_QUANTITY)">
+          <span>売上数</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.NET_SALES_QUANTITY" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-2 sort" (click)="onSort(SORT_COLUMN_TYPE.STOCK_QUANTITY)">
+          <span>在庫数</span>
+          <app-sort-icon [columnType]="SORT_COLUMN_TYPE.STOCK_QUANTITY" [sorting]="sorting">
+          </app-sort-icon>
+        </th>
+        <th scope="col" class="width-2">
+          <span>上代単価</span>
+        </th>
+        <th scope="col" class="width-2">
+          <span>原価単価</span>
+        </th>
+        <th scope="col" class="width-2">
+          <span>原価率</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody detect-scroll (onScroll)="onScroll($event)" [bottomOffset]="200" [topOffset]="200">
+      <ng-container *ngFor="let delischeOrder of delischeOrderList;">
+        <app-delische-record [delischeRecordType]="ORDER" [delischeOrder]="delischeOrder" [isOpenChild]="delischeOrder.isOpenChild"
+          [productCompleteOrder]="delischeOrder.productCompleteOrder" [isOpeningDeliverySku]="openingDeliverySkuNum>0"
+          (openOrCloseChild)="onOpenOrCloseOrderChild(delischeOrder)">
+        </app-delische-record>
+        <ng-container *ngIf="delischeOrder.isOpenChild;">
+          <ng-container *ngFor="let delischeDeliveryRequest of delischeOrder.delischeDeliveryRequestList;">
+            <app-delische-record [delischeRecordType]="DERIVERY_REQUEST"
+              [delischeDeliveryRequest]="delischeDeliveryRequest" [isOpenChild]="delischeDeliveryRequest.isOpenChild"
+              [productCompleteOrder]="delischeOrder.productCompleteOrder" [isOpeningDeliverySku]="openingDeliverySkuNum>0"
+              (openOrCloseChild)="onOpenOrCloseDeliveryRequestChild(delischeDeliveryRequest, delischeOrder)">
+            </app-delische-record>
+            <ng-container *ngIf="delischeDeliveryRequest.isOpenChild;">
+              <ng-container *ngFor="let delischeDeliverySku of delischeDeliveryRequest.delischeDeliverySkuList;">
+                <app-delische-record [delischeRecordType]="DERIVERY_SKU" [delischeDeliverySku]="delischeDeliverySku"
+                  [isOpeningDeliverySku]="openingDeliverySkuNum>0" [productCompleteOrder]="delischeOrder.productCompleteOrder">
+                </app-delische-record>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

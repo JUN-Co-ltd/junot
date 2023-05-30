@@ -1,0 +1,571 @@
+<form [formGroup]="mainForm" *ngIf="!invisibled">
+  <div class="container-fluid">
+    <div class="row">
+      <ng-container *ngFor="let kbn of reckbnList; index as idx;">
+        <div class="form-check form-check-inline col-xl-1 required" (click)="onChangeReckbnRadio(kbn.value)">
+          <label class="form-check-label control-label">
+            <input type="radio" class="form-check-input" formControlName="reckbn" name="reckbn" id="reckbn{{idx}}"
+              required [value]="kbn.value" [checked]="kbn.checked">{{kbn.label}}
+          </label>
+        </div>
+      </ng-container>
+    </div>
+    <div class="row">
+      <div class="col-xl-1 form-group required">
+        <label class="sireCode control-label">仕入先 </label>
+      </div>
+      <div class="col-xl-2 form-group required">
+        <input class="form-control" formControlName="sireCode" id="sireCode" name="sireCode" placeholder=""
+          type="text" minlength="5" maxlength="5" required [ngClass]="{'is-invalid': isErrorDisplay(f.sireCode)}"
+          (blur)="onBlurSireCode($event.target.value)" />
+        <ng-container *ngIf="isErrorDisplay(f.sireCode)">
+          <div *ngIf="f.sireCode.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'">
+          </div>
+          <div *ngIf="f.sireCode.errors.minlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_SHORTAGE'" [translateParams]="{ length:f.sireCode.errors.minlength.requiredLength, name:'' }"></div>
+          <div *ngIf="f.sireCode.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+        </ng-container>
+      </div>
+      <div class="col-xl-1 form-group">
+        <label class="kojCode control-label">工場 </label>
+      </div>
+      <div class="col-xl-2 form-group">
+        <input class="form-control" formControlName="kojCode" id="kojCode" name="kojCode" placeholder=""
+          type="text" minlength="6" maxlength="6" required [ngClass]="{'is-invalid': isErrorDisplay(f.kojCode)}"/>
+        <ng-container *ngIf="isErrorDisplay(f.kojCode)">
+          <div *ngIf="f.kojCode.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'">
+          </div>
+          <div *ngIf="f.kojCode.errors.minlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_SHORTAGE'" [translateParams]="{ length:f.kojCode.errors.minlength.requiredLength, name:'' }"></div>
+          <div *ngIf="f.kojCode.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="title-middle">
+        <b>基本情報</b>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle"></div>
+      <div class="title-short"></div>
+      <ng-container *ngFor="let kbn of inOutList; index as idx;">
+        <div class="form-check form-check-inline col-xl-1 required" (click)="onChangeInOutRadio(kbn.value)">
+          <label class="form-check-label control-label">
+            <input type="radio" class="form-check-input" formControlName="inOut" name="inOut" id="inOut{{idx}}"
+              required [value]="kbn.value" [checked]="kbn.checked">{{kbn.label}}
+          </label>
+        </div>
+      </ng-container>
+      <div class="red">正式名 国内：全角20文字 国外：全半角(全角30文字分)</div>
+    </div>
+    <div class="red text-margin-left">省略名 国内：全角10文字 国外：全半角(全角10文字分)</div>
+    <div class="row">
+      <div class="title-middle">
+        <label class="kojName">仕入先名 </label>
+      </div>
+      <div class="title-short required">
+        <label class="kojName control-label">正式名 </label>
+      </div>
+      <div class="col-xl-4 form-group required">
+        <input class="form-control" formControlName="kojName" id="kojName" name="kojName" placeholder="" type="text"
+          required [ngClass]="{'is-invalid': isErrorDisplay(f.kojName)}" />
+        <ng-container *ngIf="isErrorDisplay(f.kojName)">
+          <div *ngIf="f.kojName.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.kojName.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.kojName.errors.maxlength.requiredLength }"></div>
+          <div *ngIf="f.kojName.errors.pattern && f.reckbn.value==='3'"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.FORMAT'" [translateParams]="{ name:'ＳＰＯＴ◯◯' }"></div>
+          <div *ngIf="f.kojName.errors.pattern && f.reckbn.value!='3'"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_PRODUCT'"></div>
+        </ng-container>
+      </div>
+      <div class="col-xl-2 form-group required">
+        <label class="sirkbn control-label">仕入先区分 </label>
+      </div>
+      <div class="col-xl-2 form-group required">
+        <select class="form-control" formControlName="sirkbn"
+          name="sirkbn" id="sirkbn" required [ngClass]="{'is-invalid': isErrorDisplay(f.sirkbn)}" required>
+          <option selected></option>
+          <option *ngFor="let sirkbn of sirkbnList;" [value]="sirkbn.kbn">{{sirkbn.kbn}}：{{sirkbn.value}}</option>
+        </select>
+        <ng-container *ngIf="isErrorDisplay(f.sirkbn)">
+          <div *ngIf="f.sirkbn.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.NO_SELECT'"></div>
+          <div *ngIf="f.sirkbn.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.IN_CASE_NOT_MATCH'" [translateParams]="{ name:'仕入先'+f.sireCode.value, value:'この区分' }"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle"></div>
+      <div class="title-short required">
+        <label class="skojName control-label">略名 </label>
+      </div>
+      <div class="col-xl-4 form-group required">
+        <input class="form-control" formControlName="skojName" id="skojName" name="skojName" placeholder="" type="text"
+          required [ngClass]="{'is-invalid': isErrorDisplay(f.skojName)}" />
+        <ng-container *ngIf="isErrorDisplay(f.skojName)">
+          <div *ngIf="f.skojName.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.skojName.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.skojName.errors.maxlength.requiredLength }"></div>
+          <div *ngIf="f.skojName.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_PRODUCT'"></div>
+        </ng-container>
+      </div>
+      <div class="col-xl-2 form-group">
+        <label class="kojName">管轄仕入先 </label>
+      </div>
+      <div class="col-xl-3 form-group">
+        <input class="form-control" formControlName="knktSire" id="knktSire" name="knktSire" placeholder="" type="text"
+          [ngClass]="{'is-invalid': isErrorDisplay(f.knktSire)}" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle"></div>
+      <div class="title-short">
+        <label class="yubin control-label">郵便番号 </label>
+      </div>
+      <div class="col-xl-4 form-group">
+        <input class="form-control" formControlName="yubin" id="yubin" name="yubin" placeholder=""
+          type="text" maxlength="8" [ngClass]="{'is-invalid': isErrorDisplay(f.yubin)}" />
+        <ng-container *ngIf="isErrorDisplay(f.yubin)">
+          <div *ngIf="f.yubin.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.yubin.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.FORMAT'" [translateParams]="{ name:'◯◯◯-◯◯◯◯' }"></div>
+        </ng-container>
+      </div>
+      <div class="col-xl-2">
+        <label class="tel1 control-label">電話番号 </label>
+      </div>
+      <div class="col-xl-3 form-group">
+        <input class="form-control" formControlName="tel1" id="tel1" name="tel1" placeholder=""
+          type="text" maxlength="13" [ngClass]="{'is-invalid': isErrorDisplay(f.tel1)}" />
+        <ng-container *ngIf="isErrorDisplay(f.tel1)">
+          <div *ngIf="f.tel1.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.tel1.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.tel1.errors.maxlength.requiredLength }"></div>
+          <div *ngIf="f.tel1.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_PRODUCT'"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle"></div>
+      <div class="title-short">
+        <label class="add1">住所 </label>
+      </div>
+      <div class="col-xl-4 form-group">
+        <input class="form-control" formControlName="add1" id="add1" name="add1" placeholder="" type="text"
+          maxlength="20" [ngClass]="{'is-invalid': isErrorDisplay(f.add1)}" />
+        <ng-container *ngIf="isErrorDisplay(f.add1)">
+          <div *ngIf="f.add1.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.add1.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.add1.errors.maxlength.requiredLength }"></div>
+          <div *ngIf="f.add1.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_PRODUCT'"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle"></div>
+      <div class="title-short"></div>
+      <div class="col-xl-4 form-group">
+        <input class="form-control" formControlName="add2" id="add2" name="add2" placeholder="" type="text"
+          maxlength="20" [ngClass]="{'is-invalid': isErrorDisplay(f.add2)}" />
+        <ng-container *ngIf="isErrorDisplay(f.add2)">
+          <div *ngIf="f.add2.errors.whitespace"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.add2.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.add2.errors.maxlength.requiredLength }"></div>
+          <div *ngIf="f.add2.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_PRODUCT'"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle"></div>
+      <div class="title-short"></div>
+      <div class="col-xl-4 form-group">
+        <input class="form-control" formControlName="add3" id="add3" name="add3" placeholder="" type="text"
+          maxlength="14" [ngClass]="{'is-invalid': isErrorDisplay(f.add3)}" />
+        <ng-container *ngIf="isErrorDisplay(f.add3)">
+          <div *ngIf="f.add3.errors.whitespace"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.add3.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.add3.errors.maxlength.requiredLength }"></div>
+          <div *ngIf="f.add3.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_PRODUCT'"></div>
+        </ng-container>
+      </div>
+      <div class="col-xl-2">
+        <label class="yugaikbn control-label">有害物質対応区分 </label>
+      </div>
+      <div class="col-xl-2 form-group">
+        <select class="form-control" formControlName="yugaikbn"
+          name="yugaikbn" id="yugaikbn" [ngClass]="{'is-invalid': isErrorDisplay(f.yugaikbn)}">
+          <option selected></option>
+          <option *ngFor="let yugaikbn of yugaikbnList;" [value]="yugaikbn.kbn">{{yugaikbn.kbn}}：{{yugaikbn.value}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle"></div>
+      <div class="title-short"></div>
+      <div class="col-xl-4 form-group"></div>
+      <div class="col-xl-2">有害物質対応日付</div>
+      <div class="col-xl-3 input-group">
+        <input (blur)="onBlurDate($event.target.value, 'yugaiymd');"
+          class="form-control length_10" placeholder="" type="text"
+          formControlName="yugaiymd" name="yugaiymd" appDateInput ngbDatepicker
+          #yugaiymd="ngbDatepicker" [showWeekNumbers]="true" maxlength="10"
+          [ngClass]="{'is-invalid':submitted && f.yugaiymd.errors}">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary calBtn" (click)="yugaiymd.toggle()" type="button">
+            <fa-icon icon="calendar-alt"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle">
+        <b>その他情報</b>
+      </div>
+    </div>
+    <div class="title-middle float-div">管轄ブランド</div>
+    <div class="float-div form-group">
+    <table>
+      <tr>
+        <td class="brand">
+          <select class="form-control" formControlName="brand1" name="brand1">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand2" name="brand2">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand3" name="brand3">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand4" name="brand4">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand5" name="brand5">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand6" name="brand6">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand7" name="brand7">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand8" name="brand8">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand9" name="brand9">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand10" name="brand10">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="brand">
+          <select class="form-control" formControlName="brand11" name="brand11">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand12" name="brand12">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand13" name="brand13">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand14" name="brand14">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand15" name="brand15">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand16" name="brand16">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand17" name="brand17">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand18" name="brand18">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand19" name="brand19">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand20" name="brand20">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td class="brand">
+          <select class="form-control" formControlName="brand21" name="brand21">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand22" name="brand22">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand23" name="brand23">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand24" name="brand24">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand25" name="brand25">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand26" name="brand26">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand27" name="brand27">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand28" name="brand28">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand29" name="brand29">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+        <td class="brand">
+          <select class="form-control" formControlName="brand30" name="brand30">
+            <option selected></option>
+            <option *ngFor="let brand of brandmstList" [value]="brand.brandCode">{{brand.brandCode}}</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+    </div>
+    <div class="float-div border div-margin-left">
+      <table class="hkbn-table">
+        <tr>
+          <td class="hkbn-title" rowspan="4" valign="top">発注区分</td>
+          <td class="hkbn">
+              <label class="checkbox-label">
+                <input type="checkbox" class="ml-sm-2" formControlName="hkiji" name="hkiji" id="hkiji">&nbsp;生地メーカー
+              </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="hkbn">
+            <label class="checkbox-label">
+              <input type="checkbox" class="ml-sm-2" formControlName="hseihin" name="hseihin" id="hseihin">&nbsp;製品／縫製メーカー
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="hkbn">
+            <label class="checkbox-label">
+              <input type="checkbox" class="ml-sm-2" formControlName="hnefuda" name="hnefuda" id="hnefuda">&nbsp;値札発注先
+            </label>
+          </td>
+        </tr>
+        <tr>
+          <td class="hkbn">
+            <label class="checkbox-label">
+              <input type="checkbox" class="ml-sm-2" formControlName="hfuzoku" name="hfuzoku" id="hfuzoku">&nbsp;附属品メーカー
+            </label>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="row float-clear">
+      <div class="title-middle"></div>
+      <div class="col-xl-2">送付方法</div>
+      <div class="col-xl-8">メールアドレス</div>
+    </div>
+    <div class="row">
+      <div class="title-middle">発注書</div>
+      <div class="col-xl-2 form-group">
+        <select (change)="onChangeHsofkbn($event.target.value)" class="form-control" formControlName="hsofkbn"
+          name="hsofkbn" id="hsofkbn" [ngClass]="{'is-invalid': isErrorDisplay(f.hsofkbn)}">
+          <option selected></option>
+          <option *ngFor="let sofkbn of sofkbnList;" [value]="sofkbn.kbn">{{sofkbn.value}}</option>
+        </select>
+      </div>
+      <div class="col-xl-8 form-group">
+        <input class="form-control" formControlName="hemail1" id="hemail1" name="hemail1" placeholder="" type="text"
+          maxlength="100" [ngClass]="{'is-invalid': isErrorDisplay(f.hemail1)}" (blur)="onBlurMailAddress($event.target.value, 'hemail1')"/>
+        <ng-container *ngIf="isErrorDisplay(f.hemail1)">
+          <div *ngIf="f.hemail1.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.hemail1.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.FORMAT'" [translateParams]="{ name:'メールアドレス（カンマ区切り）' }"></div>
+          <div *ngIf="f.hemail1.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.hemail1.errors.maxlength.requiredLength }"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle">納品依頼</div>
+      <div class="col-xl-2 form-group">
+        <select (change)="onChangeNsofkbn($event.target.value)" class="form-control" formControlName="nsofkbn"
+          name="nsofkbn" id="nsofkbn" [ngClass]="{'is-invalid': isErrorDisplay(f.nsofkbn)}">
+          <option selected></option>
+          <option *ngFor="let sofkbn of sofkbnList;" [value]="sofkbn.kbn">{{sofkbn.value}}</option>
+        </select>
+      </div>
+      <div class="col-xl-8 form-group">
+        <input class="form-control" formControlName="nemail1" id="nemail1" name="nemail1" placeholder="" type="text"
+          maxlength="100" [ngClass]="{'is-invalid': isErrorDisplay(f.nemail1)}" (blur)="onBlurMailAddress($event.target.value, 'nemail1')"/>
+        <ng-container *ngIf="isErrorDisplay(f.nemail1)">
+          <div *ngIf="f.nemail1.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.nemail1.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.FORMAT'" [translateParams]="{ name:'メールアドレス（カンマ区切り）' }"></div>
+          <div *ngIf="f.nemail1.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.nemail1.errors.maxlength.requiredLength }"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="title-middle bottom">受領書</div>
+      <div class="col-xl-2 bottom form-group">
+        <select (change)="onChangeYsofkbn($event.target.value)" class="form-control" formControlName="ysofkbn"
+          name="ysofkbn" id="ysofkbn" [ngClass]="{'is-invalid': isErrorDisplay(f.ysofkbn)}">
+          <option selected></option>
+          <option *ngFor="let sofkbn of sofkbnList;" [value]="sofkbn.kbn">{{sofkbn.value}}</option>
+        </select>
+      </div>
+      <div class="col-xl-8 bottom form-group">
+        <input class="form-control" formControlName="yemail1" id="yemail1" name="yemail1" placeholder="" type="text"
+          maxlength="100" [ngClass]="{'is-invalid': isErrorDisplay(f.yemail1)}" (blur)="onBlurMailAddress($event.target.value, 'yemail1')"/>
+        <ng-container *ngIf="isErrorDisplay(f.yemail1)">
+          <div *ngIf="f.yemail1.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.yemail1.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.FORMAT'" [translateParams]="{ name:'メールアドレス（カンマ区切り）' }"></div>
+          <div *ngIf="f.yemail1.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.yemail1.errors.maxlength.requiredLength }"></div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <!-- 左ボタンエリア -->
+    <div class="footer-left">
+      <ng-container *ngIf="(path === PATH.EDIT)">
+        <button type="button" class="btn btn-info mr-0 ml-3" [disabled]="disabled"
+          [routerLink]="['/maint/sires/new']">新規登録</button>
+        <button type="button" class="btn btn-info mr-0 ml-3" [disabled]="disabled"
+          [routerLink]="['/maint/sires/new']" [queryParams]="{sireCode:f.sireCode.value, kojCode:f.kojCode.value}">コピー新規</button>
+        <button type="button" class="btn btn-danger mr-0 ml-3" [disabled]="disabled" (click)="onDelete()">削除</button>
+      </ng-container>
+    </div>
+    <!-- メッセージエリア -->
+    <div class="footer-center">
+      <div class="alert-success mr-2" [translate]="message.footer.success.code"
+        [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length"></div>
+      <div class="alert-danger mr-2" [translate]="message.footer.error.code"
+        [translateParams]="message.footer.error.param" *ngIf="message.footer.error.code.length"></div>
+    </div>
+    <!-- 右ボタンエリア -->
+    <div class="footer-right">
+      <ng-container *ngIf="(path === PATH.NEW)">
+        <button type="submit" class="btn btn-info mr-0 ml-3" [disabled]="disabled" (click)="onEntry()">登録</button>
+      </ng-container>
+      <ng-container *ngIf="(path === PATH.EDIT)">
+        <button type="submit" class="btn btn-success mr-0 ml-3" [disabled]="disabled" (click)="onUpdate()">更新</button>
+      </ng-container>
+    </div>
+  </footer>
+</form>

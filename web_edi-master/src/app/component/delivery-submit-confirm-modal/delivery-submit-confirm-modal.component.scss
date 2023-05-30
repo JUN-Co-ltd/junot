@@ -1,0 +1,46 @@
+div.modal-body {
+  padding-top: 5px;
+  padding-bottom: 0;
+
+  div.confirm-message {
+    border-bottom: solid 1px #eeeeee;
+    margin-bottom: 15px;
+
+    p {
+      span.exclamation {
+        font-weight: bold;
+        color: red;
+      }
+    }
+  }
+
+  div.check-box-row {
+    height: 60px;
+
+    label {
+      cursor: pointer;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      padding: 5px 8px 5px 0;
+    }
+  }
+}
+
+div.modal-footer {
+  display: flex;
+  margin-right: 25px;
+
+  div.btn-row {
+    display: flex;
+    margin: 0;
+    padding: 0;
+
+    div button {
+      width: 140px;
+
+      &.btn-cancel {
+        margin-left: 15%;
+      }
+    }
+  }
+}

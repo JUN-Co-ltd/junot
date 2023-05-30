@@ -1,0 +1,13 @@
+::ng-deep .logo-image {
+  background-image: url(../app/assets/images/JUNoT_green.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 232px;
+  height: 62px;
+  margin: auto;
+}
+
+::ng-deep #header {
+  background-color: #f4fff4;
+}

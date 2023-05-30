@@ -1,0 +1,60 @@
+div.search-result {
+  height: 80vh;
+
+  table {
+    width: 100%;
+
+    tbody {
+      display: block;
+      overflow-y: scroll;
+      height: 80vh;
+  
+      tr {
+        border-bottom: 1px solid rgba(171, 171, 171, 0.664);
+
+        &:hover {
+          background-color: #e2e6ea;
+        }
+
+        td {
+          &.column-1 {
+            width: 1200px;
+
+
+            div.contents {
+              display: flex;
+
+              div.status {
+                width: 250px;
+              }
+            }
+          }
+
+          &.column-2 {
+            width: 100px;
+          }
+        }
+      }
+    }
+  }
+}
+
+footer {
+  // 左の固定
+  .footer-left {
+    max-width: 290px;
+  }
+}
+
+span.new-mark {
+  padding-top: 7px;
+  color: red;
+  font-weight: bold;
+  margin-right: 15px;
+  font-size: 17px;
+}
+
+.title {
+  word-wrap: break-word;
+  word-break: break-all;
+}

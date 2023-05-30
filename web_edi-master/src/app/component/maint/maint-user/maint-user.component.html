@@ -1,0 +1,158 @@
+<form [formGroup]="mainForm" *ngIf="!invisibled">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-lg-2 col-xl-2 form-group required">
+        <label class="accountName control-label">ログインID : </label>
+      </div>
+      <div class="col-sm-12 col-lg-3 col-xl-3 form-group required">
+        <input class="form-control" formControlName="accountName" id="accountName" name="accountName" placeholder=""
+          type="text" minlength="6" maxlength="8" required [ngClass]="{'is-invalid': isErrorDisplay(f.accountName)}" />
+        <ng-container *ngIf="isErrorDisplay(f.accountName)">
+          <div *ngIf="f.accountName.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'">
+          </div>
+          <div *ngIf="f.accountName.errors.minlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_SHORTAGE'" [translateParams]="{ length:f.accountName.errors.minlength.requiredLength, name:'' }"></div>
+          <div *ngIf="f.accountName.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.accountName.errors.maxlength.requiredLength }"></div>
+          <div *ngIf="f.accountName.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+        </ng-container>
+      </div>
+      <div class="col-sm-12 col-lg-2 col-xl-2 form-group" [class.required]="path === PATH.NEW">
+        <label class="password control-label">パスワード : </label>
+      </div>
+      <div class="col-sm-12 col-lg-3 col-xl-3 form-group required">
+        <input class="form-control" formControlName="password" id="password" name="password" placeholder=""
+          type="password" minlength="4" maxlength="20" [required]="path === PATH.NEW" autocomplete="new-password"
+          [ngClass]="{'is-invalid': isErrorDisplay(f.password)}" />
+        <ng-container *ngIf="isErrorDisplay(f.password)">
+          <div *ngIf="f.password.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'">
+          </div>
+          <div *ngIf="f.password.errors.minlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_SHORTAGE'" [translateParams]="{length:f.password.errors.minlength.requiredLength, name:'' }"></div>
+          <div *ngIf="f.password.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.password.errors.maxlength.requiredLength }"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-lg-2 col-xl-2 form-group required">
+        <label class="authorities control-label">権限 : </label>
+      </div>
+      <div class="col-sm-12 col-lg-3 col-xl-3 form-group required">
+        <select (change)="onChangeAuthority($event.target.value)" class="form-control" formControlName="authorities"
+          name="authorities" id="authorities" [ngClass]="{'is-invalid': isErrorDisplay(f.authorities)}" required>
+          <option [value]="AUTHORITY_TYPES.JUN">{{ 'AUTHORITY.' + AUTHORITY.ROLE_JUN | translate }}</option>
+          <option [value]="AUTHORITY_TYPES.DISTA">{{ 'AUTHORITY.' + AUTHORITY.ROLE_DISTA | translate }}</option>
+          <option [value]="AUTHORITY_TYPES.MAKER">{{ 'AUTHORITY.' + AUTHORITY.ROLE_MAKER | translate }}</option>
+          <option [value]="AUTHORITY_TYPES.ADMIN">{{ 'AUTHORITY.' + AUTHORITY.ROLE_ADMIN | translate }}</option>
+        </select>
+        <ng-container *ngIf="isErrorDisplay(f.authorities)">
+          <div *ngIf="f.authorities.errors.required"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.NO_SELECT'"></div>
+        </ng-container>
+      </div>
+      <div class="col-sm-12 col-lg-2 col-xl-2 form-group required" [class.required]="!companyCodeDisabled">
+        <label class="companyCode control-label">会社コード : </label>
+      </div>
+      <div class="col-sm-12 col-lg-5 col-xl-5 form-group required">
+        <div class="input-group">
+          <input type="text" class="form-control code_6" formControlName="companyCode" name="companyCode" minlength="5"
+            maxlength="6" (change)="onChangeMaker($event.target.value, SUPPLIER_TYPE.MDF_MAKER)" [required]="!companyCodeDisabled"
+            [ngClass]="{'is-invalid':isErrorDisplay(f.companyCode)}"/>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary calBtn" (click)="openSearchSupplierModal(SUPPLIER_TYPE.MDF_MAKER)"
+              type="button" [disabled]="disabled || companyCodeDisabled">
+              <fa-icon icon="search"></fa-icon>
+            </button>
+          </div>
+          <span class="makerName">{{ f.makerName.value }}</span>
+          <ng-container *ngIf="isErrorDisplay(f.companyCode)">
+            <div *ngIf="f.companyCode.errors.required"
+              class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+            <div *ngIf="f.companyCode.errors.minlength"
+              class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_SHORTAGE'" [translateParams]="{ length:f.companyCode.errors.minlength.requiredLength, name:'' }"></div>
+            <div *ngIf="f.companyCode.errors.maxlength"
+              class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.companyCode.errors.maxlength.requiredLength }"></div>
+            <div *ngIf="f.companyCode.errors.pattern"
+              class="invalid-feedback" [translate]="'ERRORS.VALIDATE.PATTERN_NUMBER'"></div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-lg-2 col-xl-2 form-group">
+        <label class="name">名前 : </label>
+      </div>
+      <div class="col-sm-12 col-lg-10 col-xl-10 form-group">
+        <input class="form-control" formControlName="name" id="name" name="name" placeholder="" type="text"
+          maxlength="100" [ngClass]="{'is-invalid': isErrorDisplay(f.name)}" />
+        <ng-container *ngIf="isErrorDisplay(f.name)">
+          <div *ngIf="f.name.errors.whitespace"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.EMPTY'"></div>
+          <div *ngIf="f.name.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.name.errors.maxlength.requiredLength }"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-lg-2 col-xl-2 form-group">
+        <label class="mailAddress">メールアドレス : </label>
+      </div>
+      <div class="col-sm-12 col-lg-10 col-xl-10 form-group">
+        <textarea class="form-control text-height placeholder-default" formControlName="mailAddress" id="mailAddress" name="mailAddress"
+          placeholder="例) address1@example.com,address2@example.com,address3@example.com" type="text" maxlength="600"
+          [ngClass]="{'is-invalid': isErrorDisplay(f.mailAddress)}"
+          (blur)="onBlurMailAddress($event.target.value)"></textarea>
+        <ng-container *ngIf="isErrorDisplay(f.mailAddress)">
+          <div *ngIf="f.mailAddress.errors.pattern"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.FORMAT'" [translateParams]="{ name:'メールアドレス（カンマ区切り）' }"></div>
+          <div *ngIf="f.mailAddress.errors.maxlength"
+            class="invalid-feedback" [translate]="'ERRORS.VALIDATE.LENGTH_EXCEED'" [translateParams]="{ length:f.mailAddress.errors.maxlength.requiredLength }"></div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-lg-2 col-xl-2 form-group">
+        <label class="enabled">ログイン : </label>
+      </div>
+      <div class="col-sm-12 col-lg-3 col-xl-3 form-group">
+        <label class="checkbox-label">
+          <input class="btn btn-info" formControlName="enabled" id="enabled" name="enabled" type="checkbox"
+            [ngClass]="{'is-invalid': isErrorDisplay(f.enabled)}" />&nbsp;有効
+        </label>
+        <ng-container *ngIf="(!f.enabled.value)">
+          <span class="enabled badge badge-danger">ログイン無効</span>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <!-- 左ボタンエリア -->
+    <div class="footer-left">
+      <ng-container *ngIf="(path === PATH.EDIT)">
+        <button type="button" class="btn btn-info mr-0 ml-3" [disabled]="disabled"
+          [routerLink]="['/maint/users/new']">新規登録</button>
+        <button type="button" class="btn btn-danger mr-0 ml-3" [disabled]="disabled" (click)="onDelete()">削除</button>
+      </ng-container>
+    </div>
+    <!-- メッセージエリア -->
+    <div class="footer-center">
+      <div class="alert-success mr-2" [translate]="message.footer.success.code"
+        [translateParams]="message.footer.success.param" *ngIf="message.footer.success.code.length"></div>
+      <div class="alert-danger mr-2" [translate]="message.footer.error.code"
+        [translateParams]="message.footer.error.param" *ngIf="message.footer.error.code.length"></div>
+    </div>
+    <!-- 右ボタンエリア -->
+    <div class="footer-right">
+      <ng-container *ngIf="(path === PATH.NEW)">
+        <button type="submit" class="btn btn-info mr-0 ml-3" [disabled]="disabled" (click)="onEntry()">登録</button>
+      </ng-container>
+      <ng-container *ngIf="(path === PATH.EDIT)">
+        <button type="submit" class="btn btn-success mr-0 ml-3" [disabled]="disabled" (click)="onUpdate()">更新</button>
+      </ng-container>
+    </div>
+  </footer>
+</form>

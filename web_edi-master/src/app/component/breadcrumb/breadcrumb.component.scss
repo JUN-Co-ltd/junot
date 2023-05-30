@@ -1,0 +1,12 @@
+.breadcrumb {
+  height: 30px;
+  max-height: 30px;
+  font-size: 15px;
+  padding: 0rem 1rem;
+  background-color: #ffffff;
+}
+
+.breadcrumb>li+li:before {
+  content: ">";
+  padding: 7px;
+}

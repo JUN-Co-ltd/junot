@@ -1,0 +1,123 @@
+.flex-row-nowrap{
+  display: flex;
+  flex-wrap:nowrap;
+}
+
+.search-input-area {
+  margin-bottom: 12px;
+}
+
+.search-input-title {
+  margin-left: 25px;
+	position:absolute;
+	bottom: 0;
+}
+
+.title-area{
+  /* 縦スクロール時に固定する */
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  height: 90px;
+  background-color: white;
+  border:0px solid white;
+  /* tbody内のセルより手前に表示する */
+  z-index: 1;
+}
+
+.title-list-checkbox-width{
+  max-width: 40px;
+  min-width: 40px;
+  background-color: white;
+  border:0px solid white;
+}
+
+.title-list-width{
+  background-color: white;
+  max-width: 150px;
+  min-width: 150px;
+  border:0;
+  /* tbody内のセルより手前に表示する */
+  z-index: 1;
+}
+
+.title-1-list-width{
+  background-color: white;
+  border:1px solid #000000;
+}
+.title-2-list-width{
+  height: 25px;
+  background-color: white;
+  border:1px solid white;
+}
+.title-3-list-width{
+  padding-left: 3px;
+  color: white;
+  background-color:gray;
+  border:1px solid #000000;
+}
+
+.data-area{
+  overflow: scroll;
+  margin-left: 20px;
+  width :1200px;
+  max-height: 800px;
+  min-height: 800px;
+  border: 0;
+}
+
+.btn-area{
+  max-height: 80px;
+  min-height: 80px;
+  margin-bottom: 40px;
+}
+
+.list-width{
+  max-width: 150px;
+  min-width: 150px;
+  border:1px solid #000000;
+}
+
+.list-checkbox-width{
+  max-width: 40px;
+  min-width: 40px;
+  padding-left: 12px;
+  border:1px solid #000000;
+}
+
+.list-error{
+  padding-left: 5px;
+  border:1px solid #000000;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+}
+
+.list-col {
+  width: 100%;
+}
+
+.font-color-red {
+  color: red !important;
+}
+
+.back-color-disabled {
+  background-color: white;
+}
+
+.back-color-edit {
+  background-color: lightsteelblue
+}
+
+.back-color-new {
+  background-color: lemonchiffon;
+}
+
+form {
+  padding-bottom: 20px;
+}
+
+.new-entry-btn {
+  margin-top: 12px;
+  margin-right: 24px;
+}

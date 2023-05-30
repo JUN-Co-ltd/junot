@@ -1,0 +1,62 @@
+// 画像ドロップエリア
+#dropArea {
+  overflow: hidden;
+  width: 100%;
+  height: 250px;
+  padding: 105px 10px;
+  margin-top: 4%;
+  margin-bottom: 10%;
+  background: #fff;
+  border: 3px #666 dashed;
+  color: #999;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+}
+
+input[type="file"] {
+  height: 0px;
+  visibility: hidden;
+  position: absolute;
+}
+
+.btn {
+  margin-right: 12px;
+}
+
+.memo-margin {
+  margin: 20px 0px;
+}
+
+.item-margin {
+  margin: 5px 0px;
+}
+
+.input-memo {
+  width: 90%;
+}
+
+a {
+  margin-right: 10px;
+  margin-left: 3px;
+
+  &.trash-icon {
+    cursor: pointer;
+  }
+}
+
+.custom-error-msg {
+  margin-left: 10px;
+}
+
+footer {
+  // 左の固定
+  .footer-left {
+    max-width: 104px;
+  }
+
+  // 右の固定幅
+  .footer-right {
+    max-width: 170px;
+  }
+}

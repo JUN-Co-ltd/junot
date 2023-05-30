@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="invalid-feedback custom_error_msg" translate id="getDataErrorInfo" name="errorInfo"></div>
+  <div *ngIf="news!=null && !({news:news,today:null} | isWithinOpenPeriod)" [translate]='"INFO.OUT_OF_OPEN_PERIOD"'></div>
+  <div *ngIf="news!=null && ({news:news,today:null} | isWithinOpenPeriod)">
+    <div class="heading-area">
+      <div class="heading-info-row row">
+        <div *ngIf="({news:news,today:null} | isNewNews)" class="new-mark">New</div>
+      </div>
+      <div class="heading-title-row row">
+        {{news.title}}
+      </div>
+    </div>
+    <div class="content-area">
+      <div class="open-start-at">
+        {{news.openStartAt| date: 'yyyy/MM/dd'}}
+      </div>
+      <div class="news-content" [innerHTML]="news.content | safeHtml">
+      </div>
+    </div>
+  </div>
+</div>

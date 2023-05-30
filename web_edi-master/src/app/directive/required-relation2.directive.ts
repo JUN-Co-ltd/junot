@@ -1,0 +1,24 @@
+import { Directive, Input } from '@angular/core';
+import { NG_VALIDATORS, Validator, AbstractControl } from '@angular/forms';
+import { ValidatorService } from '../service/bo/validator.service';
+
+/**
+ * ※このクラスを修正する場合、RequiredRelationDirectiveも
+ * 同じにしてください。
+ */
+@Directive({
+  selector: '[appRequiredRelation2]',
+  providers: [{ provide: NG_VALIDATORS, useExisting: RequiredRelation2Directive, multi: true }]
+})
+export class RequiredRelation2Directive implements Validator {
+
+  // tslint:disable-next-line:no-input-rename
+  @Input('appRequiredRelation2')
+  fields: string[] = [];
+
+  constructor(private validatorService: ValidatorService) { }
+
+  validate(control: AbstractControl): { [key: string]: any } | null {
+    return this.validatorService.relationRequiredValidator(this.fields[0], this.fields[1])(control);
+  }
+}

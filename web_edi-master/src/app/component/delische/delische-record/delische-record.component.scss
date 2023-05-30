@@ -1,0 +1,156 @@
+$width1:20px;
+$width2:50px;
+$width3:90px;
+$width4:145px;
+$width7:180px;
+
+app-delische-record {
+  display: contents;
+}
+
+td.child-exists {
+  cursor: pointer;
+}
+
+fa-icon.alert-icon {
+  color: red;
+}
+
+.font-blue {
+  color: blue;
+}
+.font-green {
+  color: #3cb371;
+}
+.font-red {
+  color: red;
+}
+
+thead th {
+  background-color: lightgray;
+  /* 縦スクロール時に固定する */
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  /* tbody内のセルより手前に表示する */
+  z-index: 1;
+}
+
+td.fix-col {
+  /* 横スクロール時に固定する */
+  position: -webkit-sticky;
+  position: sticky;
+}
+
+.fix-col:nth-child(1) {
+  left: 0;
+}
+
+.fix-col:nth-child(2) {
+  left: $width1;
+}
+
+.fix-col:nth-child(3) {
+  left: $width1 + $width2;
+}
+
+.fix-col:nth-child(4) {
+  left: $width1 + $width2 + $width2;
+}
+
+.fix-col:nth-child(5) {
+  left: $width1 + $width2 + $width2 + $width2;
+}
+
+.fix-col:nth-child(6) {
+  left: $width1 + $width2 + $width2 + $width2 + $width2;
+}
+
+thead th.fix-col {
+  /* ヘッダー行内の他のセルより手前に表示する */
+  z-index: 2;
+}
+
+tr.row-product-complete {
+  background-color: lightgray;
+
+  td.fix-col {
+    background-color: lightgray;
+  }
+}
+
+tr.row-order {
+  background-color: #F8E6E0;
+
+  td.fix-col {
+    background-color: #F8E6E0;
+  }
+}
+
+tr.row-derivery-request {
+  background-color: #E0F8E0;
+
+  td.fix-col {
+    background-color: #E0F8E0;
+  }
+}
+
+tr.row-derivery-sku {
+  background-color: #EFFBFB;
+
+  td.fix-col {
+    background-color: #EFFBFB;
+  }
+}
+
+th,
+td {
+  font-size: 14px;
+  font-weight: normal;
+  height: 30px;
+  max-height: 30px;
+  padding: 0;
+  border: 1px solid gray;
+  vertical-align: top;
+
+  &.late-Delivery-at {
+    color: red;
+  }
+
+  fa-icon.alert-icon {
+    cursor: pointer;
+  }
+
+  &.width-1 {
+    width: $width1;
+    min-width: $width1;
+  }
+
+  &.width-2 {
+    width: $width2;
+    min-width: $width2;
+  }
+
+  &.width-3 {
+    width: $width3;
+    min-width: $width3;
+  }
+
+  &.width-4 {
+    width: $width4;
+    min-width: $width4;
+  }
+  
+  &.width-7 {
+    width: $width7;
+    min-width: $width7;
+  }
+}
+
+td.ellipsis {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
